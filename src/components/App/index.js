@@ -114,6 +114,7 @@ class App extends Component {
       getString = getString.split('#')[0];
 
     }
+    return (<></>);
 
     switch (getString) {
       case "staking": 
