@@ -11,7 +11,7 @@ contract Market is Admin{
   TRC20_Interface CSC_Contract;
   TRC20_Interface OTRO_Contract;
 
-  address public token;
+  address public token = 0x038987095f309d3640F51644430dc6C7C4E2E409;
 
   struct Investor {
     bool registered;
@@ -20,12 +20,29 @@ contract Market is Admin{
     uint256 gastado;
   }
 
+  struct Item {
+    string nombre;
+    uint256 valor;
+    bool ilimitado;
+    uint256 cantidad;
+  }
+  
   mapping (address => Investor) public investors;
+  mapping (address => Item) public inventario;
+  mapping (uint => Item) public items;
 
-  constructor(address _token) {
+  constructor() {
 
-    token = _token; 
-    CSC_Contract = TRC20_Interface(_token);
+    Item storage item = items[0];
+    item = Item(
+    {
+      nombre:"t1",
+      valor: 1250 * 10**18,
+      ilimitado: false,
+      cantidad: 1000
+    });
+      
+    CSC_Contract = TRC20_Interface(token);
 
   }
 
@@ -38,6 +55,25 @@ contract Market is Admin{
     usuario.registered = true;
     usuario.correo = _correo;
 
+  }
+  
+  function buyItem(uint256 _value) public returns(bool){
+
+    Investor storage usuario = investors[msg.sender];
+
+    if ( usuario.registered) {
+
+        if( CSC_Contract.allowance(msg.sender, address(this)) < _value )revert();
+        if(!CSC_Contract.transferFrom(msg.sender, address(this), _value))revert();
+      
+        usuario.balance += _value;
+
+        return true;
+      
+    } else {
+        revert();
+    }
+    
   }
 
    function buyCoins(uint256 _value) public returns(bool){
@@ -89,16 +125,6 @@ contract Market is Admin{
         revert();
     }
     
-  }
-
-  function ChangeTokenCSC(address _tokenERC20) public onlyOwner returns (bool){
-
-    CSC_Contract = TRC20_Interface(_tokenERC20);
-
-    token = _tokenERC20;
-
-    return true;
-
   }
 
   function ChangeTokenOTRO(address _tokenERC20) public onlyOwner returns (bool){
