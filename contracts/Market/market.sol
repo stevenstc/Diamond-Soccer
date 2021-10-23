@@ -28,19 +28,37 @@ contract Market is Admin{
   }
   
   mapping (address => Investor) public investors;
-  mapping (address => Item) public inventario;
+  mapping (address => Item[]) public inventario;
   mapping (uint => Item) public items;
 
   constructor() {
 
-    Item storage item = items[0];
-    item = Item(
+    Item memory teams = Item(
     {
-      nombre:"t1",
+      nombre:"t1-brazil-legendario",
       valor: 1250 * 10**18,
       ilimitado: false,
       cantidad: 1000
     });
+    items[0] = teams;
+
+    teams = Item(
+    {
+      nombre:"t2-argentina-legendario",
+      valor: 1250 * 10**18,
+      ilimitado: false,
+      cantidad: 10
+    });
+    items[1] = teams;
+
+    teams = Item(
+    {
+      nombre:"t3-alemania-legendario",
+      valor: 1250 * 10**18,
+      ilimitado: false,
+      cantidad: 1
+    });
+    items[2] = teams;
       
     CSC_Contract = TRC20_Interface(token);
 
@@ -57,22 +75,22 @@ contract Market is Admin{
 
   }
   
-  function buyItem(uint256 _value) public returns(bool){
+  function buyItem(uint256 _id) public returns(bool){
 
-    Investor storage usuario = investors[msg.sender];
+    Investor memory usuario = investors[msg.sender];
+    Item memory item = items[_id];
 
-    if ( usuario.registered) {
-
-        if( CSC_Contract.allowance(msg.sender, address(this)) < _value )revert();
-        if(!CSC_Contract.transferFrom(msg.sender, address(this), _value))revert();
-      
-        usuario.balance += _value;
-
-        return true;
-      
-    } else {
-        revert();
+    if ( !usuario.registered)revert();
+    if ( !item.ilimitado){
+      if(item.cantidad < 1)revert();
     }
+    if( CSC_Contract.allowance(msg.sender, address(this)) < item.valor )revert();
+    if(!CSC_Contract.transferFrom(msg.sender, address(this), item.valor))revert();
+      
+    inventario[msg.sender].push(item);
+
+    return true;
+      
     
   }
 
