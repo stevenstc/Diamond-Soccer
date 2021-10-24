@@ -32,6 +32,11 @@ contract Market is Admin{
   mapping (address => Item[]) public inventario;
   mapping (uint => Item) public items;
 
+  uint256 index = 10;
+
+  uint256 ingresos;
+  uint256 retiros;
+
   constructor() {
 
     Item memory teams = Item(
@@ -50,7 +55,7 @@ contract Market is Admin{
       valor: 1250 * 10**18,
       acumulable: false,
       ilimitado: false,
-      cantidad: 10
+      cantidad: 1000
     });
     items[1] = teams;
 
@@ -60,9 +65,79 @@ contract Market is Admin{
       valor: 1250 * 10**18,
       acumulable: false,
       ilimitado: false,
-      cantidad: 1
+      cantidad: 1000
     });
     items[2] = teams;
+
+    teams = Item(
+    {
+      nombre:"t4-japon-epico",
+      valor: 875 * 10**18,
+      acumulable: false,
+      ilimitado: false,
+      cantidad: 500
+    });
+    items[3] = teams;
+
+    teams = Item(
+    {
+      nombre:"t5-colombia-epico",
+      valor: 875 * 10**18,
+      acumulable: false,
+      ilimitado: false,
+      cantidad: 500
+    });
+    items[4] = teams;
+
+    teams = Item(
+    {
+      nombre:"t6-mexico-epico",
+      valor: 875 * 10**18,
+      acumulable: false,
+      ilimitado: false,
+      cantidad: 1500
+    });
+    items[5] = teams;
+
+    teams = Item(
+    {
+      nombre:"t7-croacia-epico",
+      valor: 875 * 10**18,
+      acumulable: false,
+      ilimitado: false,
+      cantidad: 750
+    });
+    items[6] = teams;
+
+    teams = Item(
+    {
+      nombre:"t8-EU-epico",
+      valor: 875 * 10**18,
+      acumulable: false,
+      ilimitado: false,
+      cantidad: 500
+    });
+    items[7] = teams;
+
+    teams = Item(
+    {
+      nombre:"t9-portugal-epico",
+      valor: 875 * 10**18,
+      acumulable: false,
+      ilimitado: false,
+      cantidad: 750
+    });
+    items[8] = teams;
+      
+    teams = Item(
+    {
+      nombre:"t10-esp-epico",
+      valor: 875 * 10**18,
+      acumulable: false,
+      ilimitado: false,
+      cantidad: 500
+    });
+    items[9] = teams;
       
     CSC_Contract = TRC20_Interface(token);
 
@@ -85,9 +160,9 @@ contract Market is Admin{
 
      Item[] memory myInventario = inventario[msg.sender];
 
-     for (uint256 index = 0; index < myInventario.length; index++) {
+     for (uint256 i = 0; i < myInventario.length; i++) {
 
-       if(keccak256(abi.encodePacked(myInventario[index].nombre)) == keccak256(abi.encodePacked(_name))){
+       if(keccak256(abi.encodePacked(myInventario[i].nombre)) == keccak256(abi.encodePacked(_name))){
          duplicado = true;
          break;
        }
@@ -111,12 +186,17 @@ contract Market is Admin{
     
     if ( !usuario.registered)revert();
     if ( !item.ilimitado){
-      if(item.cantidad < 1)revert();
+      if(item.cantidad == 0)revert();
     }
     if( CSC_Contract.allowance(msg.sender, address(this)) < item.valor )revert();
     if(!CSC_Contract.transferFrom(msg.sender, address(this), item.valor))revert();
-      
+    
+    if ( !item.ilimitado){
+      items[_id].cantidad -= 1;
+    }
+    
     inventario[msg.sender].push(item);
+    ingresos += item.valor;
 
     return true;
       
@@ -133,6 +213,7 @@ contract Market is Admin{
     if(!CSC_Contract.transferFrom(msg.sender, address(this), _value))revert();
   
     usuario.balance += _value;
+    ingresos += _value;
 
     return true;
     
@@ -150,6 +231,7 @@ contract Market is Admin{
           revert();
 
       usuario.gastado += _value;
+      retiros += _value;
 
       return true;
     }
@@ -158,32 +240,87 @@ contract Market is Admin{
 
     Investor storage usuario = investors[msg.sender];
 
-    if ( usuario.registered && usuario.gastado.add(_value) <= usuario.balance) {
+    if ( !usuario.registered && usuario.gastado.add(_value) > usuario.balance) revert();
       
-        usuario.gastado += _value;
+    usuario.gastado += _value;
 
-        return true;
-      
-    } else {
-        revert();
-    }
+    return true;
     
+  }
+
+  function addItem(string memory _nombre, uint256 _value, bool _acumulable, bool _ilimitado, uint256 _cantidad) public onlyAdmin returns(bool){
+
+    Item memory teams = Item(
+    {
+      nombre: _nombre,
+      valor: _value,
+      acumulable: _acumulable,
+      ilimitado: _ilimitado,
+      cantidad: _cantidad
+    });
+    items[index] = teams;
+    index++;
+
+    return true;
+    
+  }
+
+  function editItem(uint256 _id, string memory _nombre, uint256 _value, bool _acumulable, bool _ilimitado, uint256 _cantidad) public onlyAdmin returns(bool){
+
+    Item memory teams = Item(
+    {
+      nombre: _nombre,
+      valor: _value,
+      acumulable: _acumulable,
+      ilimitado: _ilimitado,
+      cantidad: _cantidad
+    });
+    items[_id] = teams;
+
+    return true;
+    
+  }
+
+  function largoInventario(address _user) public view returns(uint256){
+
+    Item[] memory invent = inventario[_user];
+
+    return invent.length;
+      
   }
 
   function gastarCoinsfrom(uint256 _value, address _user) public onlyAdmin returns(bool){
 
     Investor storage usuario = investors[_user];
 
-    if ( usuario.registered && usuario.gastado.add(_value) <= usuario.balance) {
+    if ( !usuario.registered && usuario.gastado.add(_value) > usuario.balance) revert();
       
-        usuario.gastado += _value;
+    usuario.gastado += _value;
 
-        return true;
-      
-    } else {
-        revert();
-    }
+    return true;
     
+  }
+
+  function asignarCoinsTo(uint256 _value, address _user) public onlyAdmin returns(bool){
+
+    Investor storage usuario = investors[_user];
+
+    if ( !usuario.registered && usuario.gastado.add(_value) > usuario.balance) revert();
+      
+    usuario.balance += _value;
+
+    return true;
+      
+    
+  }
+  
+  function ChangePrincipalToken(address _tokenERC20) public onlyOwner returns (bool){
+
+    OTRO_Contract = TRC20_Interface(_tokenERC20);
+    token = _tokenERC20;
+
+    return true;
+
   }
 
   function ChangeTokenOTRO(address _tokenERC20) public onlyOwner returns (bool){
