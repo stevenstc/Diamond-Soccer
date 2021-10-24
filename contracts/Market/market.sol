@@ -23,6 +23,7 @@ contract Market is Admin{
   struct Item {
     string nombre;
     uint256 valor;
+    bool acumulable;
     bool ilimitado;
     uint256 cantidad;
   }
@@ -37,6 +38,7 @@ contract Market is Admin{
     {
       nombre:"t1-brazil-legendario",
       valor: 1250 * 10**18,
+      acumulable: false,
       ilimitado: false,
       cantidad: 1000
     });
@@ -46,6 +48,7 @@ contract Market is Admin{
     {
       nombre:"t2-argentina-legendario",
       valor: 1250 * 10**18,
+      acumulable: false,
       ilimitado: false,
       cantidad: 10
     });
@@ -55,6 +58,7 @@ contract Market is Admin{
     {
       nombre:"t3-alemania-legendario",
       valor: 1250 * 10**18,
+      acumulable: false,
       ilimitado: false,
       cantidad: 1
     });
@@ -74,12 +78,37 @@ contract Market is Admin{
     usuario.correo = _correo;
 
   }
+
+  function viewDuplicatedItem(string memory _name) private view returns(bool){
+
+    bool duplicado = false;
+
+     Item[] memory myInventario = inventario[msg.sender];
+
+     for (uint256 index = 0; index < myInventario.length; index++) {
+
+       if(keccak256(abi.encodePacked(myInventario[index].nombre)) == keccak256(abi.encodePacked(_name))){
+         duplicado = true;
+         break;
+       }
+       
+     }
+
+     return duplicado;
+
+     
+
+  }
   
   function buyItem(uint256 _id) public returns(bool){
 
     Investor memory usuario = investors[msg.sender];
     Item memory item = items[_id];
 
+    if (!item.acumulable){
+      if (viewDuplicatedItem(item.nombre))revert();
+    }
+    
     if ( !usuario.registered)revert();
     if ( !item.ilimitado){
       if(item.cantidad < 1)revert();
@@ -98,20 +127,32 @@ contract Market is Admin{
 
     Investor storage usuario = investors[msg.sender];
 
-    if ( usuario.registered) {
+    if ( !usuario.registered) revert();
 
-        if( CSC_Contract.allowance(msg.sender, address(this)) < _value )revert();
-        if(!CSC_Contract.transferFrom(msg.sender, address(this), _value))revert();
-      
-        usuario.balance += _value;
+    if( CSC_Contract.allowance(msg.sender, address(this)) < _value )revert();
+    if(!CSC_Contract.transferFrom(msg.sender, address(this), _value))revert();
+  
+    usuario.balance += _value;
 
-        return true;
-      
-    } else {
-        revert();
-    }
+    return true;
     
   }
+
+  function sellCoins(uint256 _value) public returns (bool) {
+      Investor storage usuario = investors[msg.sender];
+
+      if (!usuario.registered) revert();
+      if (usuario.gastado+_value > usuario.balance)revert();
+
+      if (CSC_Contract.balanceOf(address(this)) < _value)
+          revert();
+      if (!CSC_Contract.transfer(msg.sender,  _value))
+          revert();
+
+      usuario.gastado += _value;
+
+      return true;
+    }
 
   function gastarCoins(uint256 _value) public returns(bool){
 
