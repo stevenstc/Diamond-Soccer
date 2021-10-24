@@ -20,7 +20,7 @@ Equipos Disponibles : 5Mil equipos
 Destribucion de cantidad de equipos:
 
 -Japon = 500 Equipos
--colombia = 500 Equipos
+-colombia = 500 Equipos 
 -Mexico = 1500 equipos
 -croacia = 750 equipos
 -Estados unidos= 500 equipos
