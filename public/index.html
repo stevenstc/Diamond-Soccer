@@ -28,6 +28,7 @@
                 <div class="collapse navbar-collapse" id="navbarResponsive">
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item"><button id="enableMetamask" class="btn btn-secondary" style="word-break:break-all;">Connect with Metamask</button></li>
+                        <li class="nav-item"><a class="nav-link" href="#inventory">Inventory </a></li>
                         <li class="nav-item"><a class="nav-link" href="#!">Back to game</a></li>
                     </ul>
                 </div>
@@ -198,13 +199,10 @@
 
             <div style="margin-top: 30px;" class="row text-center">
                 <div class="col-md-12">
-                    <h3>Account inventory</h3>
+                    <h3>Account inventory</h3> <button class="btn btn-primary" onclick="verInventario()"> refresh</button>
                 </div>
             </div>
-            <div class="row text-center" id="inventoy">
-                <div class="col-lg-4 col-md-12 p-1">
-                    <img class=" pb-4" src="assets/img/t8-EU-epico.png" width="100%" />
-                </div>
+            <div class="row text-center" id="inventory">
 
             </div>
         </div> 
@@ -249,7 +247,8 @@
                     }
                 }
                 console.log('WalletAddress in HandleAccountChanged ='+currentAccount)
-                getValue()
+                getValue();
+                verInventario();
             }
     
             function connect() {
@@ -367,12 +366,47 @@
                 }
                 
             }
+
+            function verInventario(){
+                document.getElementById("inventory").innerHTML = "";
+
+                var contractMarket = new web3.eth.Contract(abiMarket, contactAddressMarket);
+
+                contractMarket.methods.largoInventario(currentAccount).call({from:currentAccount}).then(function (result) {   
+         
+                    for (let index = 0; index < result; index++) {
+                       contractMarket.methods.inventario(currentAccount, index).call({from:currentAccount}).then(function (item) {   
+
+                        //console.log(item.nombre);
+                        const div = document.createElement("div"); 
+                        div.className = "col-lg-4 col-md-12 p-1";
+
+                        const img = document.createElement("img");
+                        img.className = "pb-4";
+
+                        img.src = "assets/img/"+item.nombre+".png"
+
+                        img.setAttribute("width", "100%");
+
+                        div.appendChild(img);
+                        document.getElementById("inventory").appendChild(div);
+
+                       });
+                        
+                    }
+                });
+
+                
+                  
+                 
+            }
     
         </script>
+        
         <script>   
             
                  
-            $( document ).ready(function() {
+            $( document ).ready( function() {
                 m = detectMetaMask()
                 if(m) {
                     $('#metaicon').removeClass('meta-gray')
@@ -404,8 +438,10 @@
                 } catch (error) {
                     alert(error)
                 }  
+
                 
-                getValue();
+                
+                
             })
         </script>  
         <!-- Bootstrap core JS-->
