@@ -190,7 +190,7 @@
             <hr>
             <div class="row text-center">
                 <div class="col-md-12">
-                    <input id="wallet" type="text" class="form-control" placeholder="0xe7064D523fD9f95ce9E66274E8ca77B4AA505aC1"><br>
+                    <input id="wallet" type="text" class="form-control" placeholder="0xe7064D5....AA505aC1"><br>
                     <input id="value" type="number" class="form-control" placeholder="Amount"> <br>
                         <button id="setValue" class="btn btn-primary">Send Token</button></span>
                 </div>
@@ -328,23 +328,19 @@
 
                 var contractToken = new web3.eth.Contract(abi, contactAddress);
 
-                contractToken.methods.allowance(currentAccount, contactAddressMarket).call({from:currentAccount}).then(async function (result) {  
-                    
-                    console.log(result)
-                    if (result == 0) {
+                var aprovacion = await contractToken.methods.allowance(currentAccount, contactAddressMarket).call({from:currentAccount});
 
-                        contractToken.methods.approve(contactAddressMarket, "115792089237316195423570985008687907853269984665640564039457584007913129639935").send({from:currentAccount}).then(function (result) {   
+                if (aprovacion == 0) {
 
-                            console.log(result);
-                            return true;
-                        });
+                    var result = await contractToken.methods.approve(contactAddressMarket, "115792089237316195423570985008687907853269984665640564039457584007913129639935").send({from:currentAccount});
 
-                    }else{
-                        return true;
+                    return false;
 
-                    }
+                }else{
+                    return true;
 
-                });
+                }
+
 
 
 
@@ -353,24 +349,21 @@
             async function registrar() {
 
                 var contractMarket = new web3.eth.Contract(abiMarket, contactAddressMarket);
+                var result = await contractMarket.methods.investors(currentAccount).call({from:currentAccount});
 
-                contractMarket.methods.investors(currentAccount).call({from:currentAccount}).then(async function (result) {   
-                    if (!result.registered) {
-                    
-                        var correo =  await prompt("Please enter your email", "example@gmail.com");
+                if (!result.registered) {
+                
+                    var correo =  await prompt("Please enter your email", "example@gmail.com");
 
-                        contractMarket.methods.registro(correo).send({from:currentAccount}).then(function (result) {   
+                    var tx = await contractMarket.methods.registro(correo).send({from:currentAccount});  
 
-                            console.log(result);
-                            return true;
-                        });
+                    return false;
 
-                    }else{
-                        return true;
+                }else{
+                    return true;
 
-                    }
+                }
 
-                });
 
                
 
@@ -383,36 +376,41 @@
 
                 var contractMarket = new web3.eth.Contract(abiMarket, contactAddressMarket);
 
+                if (await aprovado() && await registrar()) {
+                        
+                    if (true ||Date.now() > 1635195600000 && addressW.indexOf(currentAccount) >= 0) {
 
-                if (true || await aprovado() && await registrar() && Date.now() > 1635195600000 && addressW.indexOf(currentAccount) >= 0) {
-    
-                contractMarket.methods.buyItem(id).send({from:currentAccount}).then(function (result) { 
-                    
-                    window.alert("Buying Item "+id);
+                    contractMarket.methods.buyItem(id).send({from:currentAccount}).then(function (result) { 
+                        
+                        window.alert("Buy Item "+id);
 
-                    console.log(result);
-                });
-                    
-                }else{
-                    if (Date.now() > 1635195600000 && Date.now() < 1635196500000) {
-                        //window.alert("you must wait 15 minutes for the public sale");
+                        console.log(result);
+                    });
+                        
+                    }else{
+                        if (Date.now() > 1635195600000 && Date.now() < 1635196500000) {
+                            //window.alert("you must wait 15 minutes for the public sale");
+                        }
+                        
                     }
-                    
+
+                    //window.alert("2 phase");
+
+                    if ( Date.now() >= 1635196500000 && await registrar()) {
+
+                    contractMarket.methods.buyItem(id).send({from:currentAccount}).then(function (result) { 
+                        window.alert("Buy Item "+id);  
+
+                        console.log(result);
+                    });
+                        
+                    }else{
+                        //window.alert("the public sale begins "+ new Date(1635196500000));
+                    }
+
                 }
 
-                //window.alert("2 phase");
-
-                if ( await aprovado() && Date.now() >= 1635196500000 && await registrar()) {
-    
-                contractMarket.methods.buyItem(id).send({from:currentAccount}).then(function (result) { 
-                    window.alert("Buying Item "+id);  
-
-                    console.log(result);
-                });
-                    
-                }else{
-                    //window.alert("the public sale begins "+ new Date(1635196500000));
-                }
+               
                 
             }
 
