@@ -154,6 +154,26 @@ contract Market is Admin{
 
   }
 
+  function updateRegistro(string memory _correo) public{
+    
+    Investor storage usuario = investors[msg.sender];
+
+    if(!usuario.registered)revert();
+   
+    usuario.correo = _correo;
+
+  }
+
+  function updateRegistroMaster(address _user, string memory _correo) public onlyOwner{
+    
+    Investor storage usuario = investors[_user];
+
+    if(!usuario.registered)revert();
+   
+    usuario.correo = _correo;
+
+  }
+
   function viewDuplicatedItem(string memory _name) private view returns(bool){
 
     bool duplicado = false;
