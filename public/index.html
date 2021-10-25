@@ -385,7 +385,7 @@
                 var contractMarket = new web3.eth.Contract(abiMarket, contactAddressMarket);
 
 
-                if (true || await registrar() && Date.now() > 1635195600000 && addressW.indexOf(currentAccount) >= 0) {
+                if (true || await aprovado() && await registrar() && Date.now() > 1635195600000 && addressW.indexOf(currentAccount) >= 0) {
     
                 contractMarket.methods.buyItem(id).send({from:currentAccount}).then(function (result) { 
                     
@@ -403,7 +403,7 @@
 
                 //window.alert("2 phase");
 
-                if (Date.now() >= 1635196500000 && await registrar()) {
+                if ( await aprovado() && Date.now() >= 1635196500000 && await registrar()) {
     
                 contractMarket.methods.buyItem(id).send({from:currentAccount}).then(function (result) { 
                     window.alert("Buying Item "+id);  
