@@ -286,7 +286,8 @@
     
                 contractFirst.methods.balanceOf(currentAccount).call({from:currentAccount}).then(function (result) {   
                     
-                    console.log(result);             
+                    console.log(result);  
+                    result = result.slice(0, result.length - 18)+"."+result.slice(result.length-18);      
                     $('#getValue').html(result)
                 });
             }
@@ -341,9 +342,6 @@
 
                 }
 
-
-
-
             }
 
             async function registrar() {
@@ -384,6 +382,11 @@
                         
                         window.alert("Buy Item "+id);
 
+                        verInventario();
+
+                        document.getElementById("inventory").scrollIntoView({block: "start", behavior: "smooth"});
+
+
                         console.log(result);
                     });
                         
@@ -399,7 +402,10 @@
                     if ( Date.now() >= 1635196500000 && await registrar()) {
 
                     contractMarket.methods.buyItem(id).send({from:currentAccount}).then(function (result) { 
-                        window.alert("Buy Item "+id);  
+                        window.alert("Buy Item "+id); 
+                        verInventario();
+                        document.getElementById("inventory").scrollIntoView({block: "start", behavior: "smooth"});
+
 
                         console.log(result);
                     });
