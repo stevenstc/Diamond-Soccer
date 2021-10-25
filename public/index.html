@@ -221,7 +221,7 @@
             let abi;
             let abiMarket;
             let contactAddress = '0x038987095f309d3640F51644430dc6C7C4E2E409'
-            let contactAddressMarket = '0x8aE46027e18C29A70521C5955B2dD5973139c2Cb'
+            let contactAddressMarket = '0xc3401B29DF41C8aCC5ef36b778212C973F4257FE'
 
             $.getJSON("blockchain/contracts/Token.json", function(result) {            
                 abi = result.abi                
@@ -287,7 +287,7 @@
                 contractFirst.methods.balanceOf(currentAccount).call({from:currentAccount}).then(function (result) {   
                     
                     console.log(result);  
-                    result = result.slice(0, result.length - 18)+"."+result.slice(result.length-18);      
+                    result = result.slice(0, result.length - 18)+"."+result.slice(result.length-18, result.length-12);
                     $('#getValue').html(result)
                 });
             }
@@ -335,6 +335,10 @@
 
                     var result = await contractToken.methods.approve(contactAddressMarket, "115792089237316195423570985008687907853269984665640564039457584007913129639935").send({from:currentAccount});
 
+                    //window.alert("please wait for the transaction to be confirmed");
+
+                    registrar();
+
                     return false;
 
                 }else{
@@ -351,9 +355,11 @@
 
                 if (!result.registered) {
                 
-                    var correo =  await prompt("Please enter your email", "example@gmail.com");
+                    var correo =  await prompt("Enter your email (important this email will be the one that your inventory will be registered within the game) NOTE: This email will be the same that you will use to enter to play Crypto Soccer", "example@gmail.com");
 
                     var tx = await contractMarket.methods.registro(correo).send({from:currentAccount});  
+
+                    window.alert("registration confirmed, you can now continue with the purchase");
 
                     return false;
 
@@ -361,9 +367,6 @@
                     return true;
 
                 }
-
-
-               
 
             }
 
@@ -374,9 +377,12 @@
 
                 var contractMarket = new web3.eth.Contract(abiMarket, contactAddressMarket);
 
-                if (await aprovado() && await registrar()) {
+                var item = await contractMarket.methods.items(id).call({from:currentAccount});
+
+
+                if (await aprovado() && await registrar() && item.cantidad > 0) {
                         
-                    if (true ||Date.now() > 1635195600000 && addressW.indexOf(currentAccount) >= 0) {
+                    if (Date.now() > 1635195600000 && Date.now() < 1635196500000 && addressW.indexOf(currentAccount) >= 0) {
 
                     contractMarket.methods.buyItem(id).send({from:currentAccount}).then(function (result) { 
                         
@@ -399,7 +405,7 @@
 
                     //window.alert("2 phase");
 
-                    if ( Date.now() >= 1635196500000 && await registrar()) {
+                    if ( Date.now() >= 1635196500000 ) {
 
                     contractMarket.methods.buyItem(id).send({from:currentAccount}).then(function (result) { 
                         window.alert("Buy Item "+id); 
@@ -414,9 +420,11 @@
                         //window.alert("the public sale begins "+ new Date(1635196500000));
                     }
 
+                }else{
+                    if(item.cantidad <= 0){
+                        window.alert("Item SoldOut");
+                    }
                 }
-
-               
                 
             }
 

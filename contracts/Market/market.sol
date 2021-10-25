@@ -7,11 +7,18 @@ import "./Admin.sol";
 
 contract Market is Admin{
   using SafeMath for uint256;
-
-  TRC20_Interface CSC_Contract;
-  TRC20_Interface OTRO_Contract;
-
+  
   address public token = 0x038987095f309d3640F51644430dc6C7C4E2E409;
+
+  TRC20_Interface CSC_Contract = TRC20_Interface(token);
+  TRC20_Interface OTRO_Contract = TRC20_Interface(token);
+
+  struct Tipos {
+    string tipo;
+    bool ilimitados;
+    uint256 cantidad;
+
+  }
 
   struct Investor {
     bool registered;
@@ -22,6 +29,7 @@ contract Market is Admin{
 
   struct Item {
     string nombre;
+    string tipo;
     uint256 valor;
     bool acumulable;
     bool ilimitado;
@@ -30,116 +38,128 @@ contract Market is Admin{
   
   mapping (address => Investor) public investors;
   mapping (address => Item[]) public inventario;
-  mapping (uint => Item) public items;
-
-  uint256 index = 10;
+  
+  Item[] public items;
+  Tipos[] public opciones;
 
   uint256 ingresos;
   uint256 retiros;
 
   constructor() {
-
-    Item memory teams = Item(
+     
+    items.push(
+    Item(
     {
       nombre:"t1-brazil-legendario",
+      tipo: "legendario",
       valor: 1250 * 10**18,
       acumulable: false,
       ilimitado: false,
       cantidad: 1000
-    });
-    items[0] = teams;
-
-    teams = Item(
+    }));
+    items.push(
+    Item(
     {
       nombre:"t2-argentina-legendario",
+      tipo: "legendario",
       valor: 1250 * 10**18,
       acumulable: false,
       ilimitado: false,
       cantidad: 1000
-    });
-    items[1] = teams;
-
-    teams = Item(
+    }));
+    items.push(
+    Item(
     {
       nombre:"t3-alemania-legendario",
+      tipo: "legendario",
       valor: 1250 * 10**18,
       acumulable: false,
       ilimitado: false,
       cantidad: 1000
-    });
-    items[2] = teams;
-
-    teams = Item(
+    }));
+    items.push(
+    Item(
     {
       nombre:"t4-japon-epico",
+      tipo: "epico",
       valor: 875 * 10**18,
       acumulable: false,
       ilimitado: false,
       cantidad: 500
-    });
-    items[3] = teams;
-
-    teams = Item(
+    }));
+    items.push(
+    Item(
     {
       nombre:"t5-colombia-epico",
+      tipo: "epico",
       valor: 875 * 10**18,
       acumulable: false,
       ilimitado: false,
       cantidad: 500
-    });
-    items[4] = teams;
-
-    teams = Item(
+    }));
+    items.push(
+    Item(
     {
       nombre:"t6-mexico-epico",
+      tipo: "epico",
       valor: 875 * 10**18,
       acumulable: false,
       ilimitado: false,
       cantidad: 1500
-    });
-    items[5] = teams;
-
-    teams = Item(
+    }));
+    items.push(
+    Item(
     {
       nombre:"t7-croacia-epico",
+      tipo: "epico",
       valor: 875 * 10**18,
       acumulable: false,
       ilimitado: false,
       cantidad: 750
-    });
-    items[6] = teams;
-
-    teams = Item(
+    }));
+    items.push(
+    Item(
     {
       nombre:"t8-EU-epico",
+      tipo: "epico",
       valor: 875 * 10**18,
       acumulable: false,
       ilimitado: false,
       cantidad: 500
-    });
-    items[7] = teams;
-
-    teams = Item(
+    }));
+    items.push(
+    Item(
     {
       nombre:"t9-portugal-epico",
+      tipo: "epico",
       valor: 875 * 10**18,
       acumulable: false,
       ilimitado: false,
       cantidad: 750
-    });
-    items[8] = teams;
-      
-    teams = Item(
+    }));
+    items.push(
+    Item(
     {
       nombre:"t10-esp-epico",
+      tipo: "epico",
       valor: 875 * 10**18,
       acumulable: false,
       ilimitado: false,
       cantidad: 500
-    });
-    items[9] = teams;
-      
-    CSC_Contract = TRC20_Interface(token);
+    }));
+
+    opciones.push( 
+    Tipos({
+      tipo :"legendario",
+      ilimitados: false,
+      cantidad: 1}
+    ));
+    opciones.push(
+    Tipos({
+      tipo :"epico",
+      ilimitados: false,
+      cantidad: 1}
+    ));
 
   }
 
@@ -174,24 +194,38 @@ contract Market is Admin{
 
   }
 
-  function viewDuplicatedItem(string memory _name) private view returns(bool){
+  function viewDuplicatedItem(uint256 _id) private view returns(bool){
 
+    Item memory item = items[_id];
+    Item[] memory myInventario = inventario[msg.sender];
     bool duplicado = false;
-
-     Item[] memory myInventario = inventario[msg.sender];
+    
 
      for (uint256 i = 0; i < myInventario.length; i++) {
 
-       if(keccak256(abi.encodePacked(myInventario[i].nombre)) == keccak256(abi.encodePacked(_name))){
+       if(keccak256(abi.encodePacked(myInventario[i].nombre)) == keccak256(abi.encodePacked(item.nombre))){
          duplicado = true;
          break;
+       }
+
+       if(keccak256(abi.encodePacked(myInventario[i].tipo)) == keccak256(abi.encodePacked(item.tipo))){
+         uint256 cantidad = 0;
+         for (uint256 e = 0; e < opciones.length; e++) {
+           if(keccak256(abi.encodePacked(myInventario[i].tipo)) == keccak256(abi.encodePacked(opciones[e].tipo))){
+             cantidad++;
+             if(cantidad >= opciones[e].cantidad && !opciones[e].ilimitados){
+                duplicado = true;
+                break;
+              }
+           }
+            
+         }
+         
        }
        
      }
 
      return duplicado;
-
-     
 
   }
   
@@ -201,13 +235,14 @@ contract Market is Admin{
     Item memory item = items[_id];
 
     if (!item.acumulable){
-      if (viewDuplicatedItem(item.nombre))revert();
+      if (viewDuplicatedItem(_id))revert();
     }
     
     if ( !usuario.registered)revert();
     if ( !item.ilimitado){
       if(item.cantidad == 0)revert();
     }
+    
     if( CSC_Contract.allowance(msg.sender, address(this)) < item.valor )revert();
     if(!CSC_Contract.transferFrom(msg.sender, address(this), item.valor))revert();
     
@@ -220,7 +255,6 @@ contract Market is Admin{
 
     return true;
       
-    
   }
 
    function buyCoins(uint256 _value) public returns(bool){
@@ -268,37 +302,62 @@ contract Market is Admin{
     
   }
 
-  function addItem(string memory _nombre, uint256 _value, bool _acumulable, bool _ilimitado, uint256 _cantidad) public onlyAdmin returns(bool){
+  function addItem(string memory _nombre, string memory _tipo, uint256 _value, bool _acumulable, bool _ilimitado, uint256 _cantidad) public onlyOwner returns(bool){
 
-    Item memory teams = Item(
-    {
-      nombre: _nombre,
-      valor: _value,
-      acumulable: _acumulable,
-      ilimitado: _ilimitado,
-      cantidad: _cantidad
-    });
-    items[index] = teams;
-    index++;
+    items.push(
+      Item(
+        {
+          nombre: _nombre,
+          tipo: _tipo,
+          valor: _value,
+          acumulable: _acumulable,
+          ilimitado: _ilimitado,
+          cantidad: _cantidad
+        }
+      )
+    );
 
     return true;
     
   }
 
-  function editItem(uint256 _id, string memory _nombre, uint256 _value, bool _acumulable, bool _ilimitado, uint256 _cantidad) public onlyAdmin returns(bool){
+  function editItem(uint256 _id, string memory _nombre, string memory _tipo, uint256 _value, bool _acumulable, bool _ilimitado, uint256 _cantidad) public onlyOwner returns(bool){
 
-    Item memory teams = Item(
+    items[_id] = Item(
     {
       nombre: _nombre,
+      tipo: _tipo,
       valor: _value,
       acumulable: _acumulable,
       ilimitado: _ilimitado,
       cantidad: _cantidad
     });
-    items[_id] = teams;
 
     return true;
     
+  }
+
+  function addOption(string memory _tipo, bool _ilimitado, uint256 _cantidad) public onlyOwner returns(bool) {
+
+    opciones.push(
+      Tipos({
+      tipo : _tipo,
+      ilimitados: _ilimitado,
+      cantidad: _cantidad})
+    );
+    return true;
+
+  }
+
+  function editOption(uint256 _id, string memory _tipo, bool _ilimitado, uint256 _cantidad) public onlyOwner returns(bool) {
+
+    opciones[_id] = 
+      Tipos({
+      tipo : _tipo,
+      ilimitados: _ilimitado,
+      cantidad: _cantidad});
+    return true;
+
   }
 
   function largoInventario(address _user) public view returns(uint256){
@@ -306,6 +365,18 @@ contract Market is Admin{
     Item[] memory invent = inventario[_user];
 
     return invent.length;
+      
+  }
+
+  function largoItems() public view returns(uint256){
+
+    return items.length;
+      
+  }
+  
+  function largoOptions() public view returns(uint256){
+
+    return opciones.length;
       
   }
 
