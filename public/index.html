@@ -23,13 +23,13 @@
         <!-- Navigation-->
         <nav class="navbar navbar-expand-lg navbar-dark navbar-custom fixed-top">
             <div class="container px-5">
-                <a class="navbar-brand" href="#page-top">Soccer Market</a>
+                <a class="navbar-brand" href="#page-top"><img src="assets/img/logo.png" height="50px"/> Market</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
                 <div class="collapse navbar-collapse" id="navbarResponsive">
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item"><button id="enableMetamask" class="btn btn-secondary" style="word-break:break-all;">Connect with Metamask</button></li>
                         <li class="nav-item"><a class="nav-link" href="#inventory">Inventory </a></li>
-                        <li class="nav-item"><a class="nav-link" href="#!">Back to game</a></li>
+                        <li class="nav-item"><a class="nav-link" href="https://www.cryptosoccergames.com">Back to game</a></li>
                     </ul>
                 </div>
             </div>
@@ -42,6 +42,7 @@
 					<div class="row">
                         <div class="col-lg-12 col-md-12 p-4 text-center" >
                     		<h2 class=" pb-4">Legendary Teams</h2>
+                            <p>Maximum (1) one Legendary team per wallet </p>
 						</div>
 				  		
                         <div class="col-lg-4 col-md-12 p-4 text-center monedas" >
@@ -74,6 +75,7 @@
 					<div class="row">
                         <div class="col-lg-12 col-md-12 p-4 text-center" >
                     		<h2 class=" pb-4">Epic Teams</h2>
+                            <p>Maximum (1) one epic team per wallet </p>
 						</div>
 				  		
                         <div class="col-lg-4 col-md-12 p-4 text-center monedas" >
@@ -145,19 +147,19 @@
 						<div class="col-lg-4 col-md-12 p-4 text-center monedas" >
                     		<h2 class=" pb-4">BASIC</h2>
 							<img class=" pb-4" src="assets/img/01.png" width="100%" />
-                    		<div class="position-relative btn-monedas" onClick="javascript:void(0)" ><span  class="position-absolute top-50 end-0 translate-middle-y p-5">99</span></div>
+                    		<div class="position-relative btn-monedas" onClick="javascript:void(0)" ><span  class="position-absolute top-50 end-0 translate-middle-y p-5">soon...</span></div>
 						</div>
 						
 						<div class="col-lg-4 col-md-12 p-4 monedas">
                     		<h2 class=" pb-4">PREMIUM</h2>
 							<img class=" pb-4" src="assets/img/02.png" width="100%" />
-                    		<div class="position-relative btn-monedas" onClick="javascript:void(0)" ><span  class="position-absolute top-50 end-0 translate-middle-y p-5">999</span></div>
+                    		<div class="position-relative btn-monedas" onClick="javascript:void(0)" ><span  class="position-absolute top-50 end-0 translate-middle-y p-5">soon...</span></div>
 						</div>
 						
 						<div class="col-lg-4 col-md-12 p-4 monedas" >
                     		<h2 class=" pb-4">GOLD</h2>
 							<img class=" pb-4" src="assets/img/03.png" width="100%" />
-                    		<div class="position-relative btn-monedas" onClick="javascript:void(0)"><span  class="position-absolute top-50 end-0 translate-middle-y p-5">9999</span></div>
+                    		<div class="position-relative btn-monedas" onClick="javascript:void(0)"><span  class="position-absolute top-50 end-0 translate-middle-y p-5">soon...</span></div>
 						</div>
 						
 					</div>
@@ -220,8 +222,8 @@
             let web3;
             let abi;
             let abiMarket;
-            let contactAddress = '0x038987095f309d3640F51644430dc6C7C4E2E409'
-            let contactAddressMarket = '0xc3401B29DF41C8aCC5ef36b778212C973F4257FE'
+            let contactAddress = '0xF0fB4a5ACf1B1126A991ee189408b112028D7A63'
+            let contactAddressMarket = '0x038987095f309d3640F51644430dc6C7C4E2E409'
 
             $.getJSON("blockchain/contracts/Token.json", function(result) {            
                 abi = result.abi                
@@ -382,7 +384,7 @@
 
                 if (await aprovado() && await registrar() && item.cantidad > 0) {
                         
-                    if (Date.now() > 1635195600000 && Date.now() < 1635196500000 && addressW.indexOf(currentAccount) >= 0) {
+                    if (Date.now() > 1635368400000 && Date.now() < 1635369300000 && addressW.indexOf(currentAccount) >= 0) {
 
                     contractMarket.methods.buyItem(id).send({from:currentAccount}).then(function (result) { 
                         
@@ -396,16 +398,9 @@
                         console.log(result);
                     });
                         
-                    }else{
-                        if (Date.now() > 1635195600000 && Date.now() < 1635196500000) {
-                            //window.alert("you must wait 15 minutes for the public sale");
-                        }
-                        
                     }
 
-                    //window.alert("2 phase");
-
-                    if ( Date.now() >= 1635196500000 ) {
+                    if ( Date.now() >= 1635369300000 ) {
 
                     contractMarket.methods.buyItem(id).send({from:currentAccount}).then(function (result) { 
                         window.alert("Buy Item "+id); 
@@ -417,7 +412,11 @@
                     });
                         
                     }else{
-                        //window.alert("the public sale begins "+ new Date(1635196500000));
+                        if (Date.now() > 1635368400000 && Date.now() < 1635369300000) {
+                            window.alert("you must wait 15 minutes for the public sale");
+                        }
+
+                        window.alert("the public sale begins "+ new Date(1635369300000));
                     }
 
                 }else{

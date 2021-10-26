@@ -1,9 +1,137 @@
-pragma solidity >=0.8.0;
+pragma solidity >=0.7.0;
 // SPDX-License-Identifier: Apache 2.0
 
-import "./SafeMath.sol";
-import "./InterfaseTRC20.sol";
-import "./Admin.sol";
+library SafeMath {
+
+    function mul(uint a, uint b) internal pure returns (uint) {
+        if (a == 0) {
+            return 0;
+        }
+
+        uint c = a * b;
+        require(c / a == b);
+
+        return c;
+    }
+
+    function div(uint a, uint b) internal pure returns (uint) {
+        require(b > 0);
+        uint c = a / b;
+
+        return c;
+    }
+
+    function sub(uint a, uint b) internal pure returns (uint) {
+        require(b <= a);
+        uint c = a - b;
+
+        return c;
+    }
+
+    function add(uint a, uint b) internal pure returns (uint) {
+        uint c = a + b;
+        require(c >= a);
+
+        return c;
+    }
+
+}
+
+pragma solidity >=0.7.0;
+
+interface TRC20_Interface {
+
+    function allowance(address _owner, address _spender) external view returns (uint remaining);
+
+    function transferFrom(address _from, address _to, uint _value) external returns (bool);
+
+    function transfer(address direccion, uint cantidad) external returns (bool);
+
+    function balanceOf(address who) external view returns (uint256);
+
+    function decimals() external view returns(uint);
+}
+
+pragma solidity >=0.7.0;
+
+/**
+ * @title Ownable
+ * @dev The Ownable contract has an owner address, and provides basic authorization control
+ * functions, this simplifies the implementation of "user permissions".
+ */
+contract Ownable {
+  address payable public owner;
+
+
+  event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+
+
+  /**
+   * @dev The Ownable constructor sets the original `owner` of the contract to the sender
+   * account.
+   */
+  constructor(){
+    owner = payable(msg.sender);
+  }
+
+
+  /**
+   * @dev Throws if called by any account other than the owner.
+   */
+  modifier onlyOwner() {
+    if(msg.sender != owner)revert();
+    _;
+  }
+
+
+  /**
+   * @dev Allows the current owner to transfer control of the contract to a newOwner.
+   * @param newOwner The address to transfer ownership to.
+   */
+  function transferOwnership(address payable newOwner) public onlyOwner {
+    if(newOwner == address(0))revert();
+    emit OwnershipTransferred(owner, newOwner);
+    owner = newOwner;
+  }
+
+}
+
+pragma solidity >=0.7.0;
+
+contract Admin is Ownable{
+  mapping (address => bool) public admin;
+
+
+  event NewAdmin(address indexed admin);
+
+  event AdminRemoved(address indexed admin);
+
+
+  constructor(){
+    admin[msg.sender] = true;
+  }
+
+  modifier onlyAdmin() {
+    require(admin[msg.sender]);
+    _;
+  }
+
+
+  function makeNewAdmin(address payable _newadmin) public onlyOwner {
+    require(_newadmin != address(0));
+    emit NewAdmin(_newadmin);
+    admin[_newadmin] = true;
+  }
+
+  function makeRemoveAdmin(address payable _oldadmin) public onlyOwner {
+    require(_oldadmin != address(0));
+    emit AdminRemoved(_oldadmin);
+    admin[_oldadmin] = false;
+  }
+
+}
+
+pragma solidity >=0.7.0;
 
 contract Market is Admin{
   using SafeMath for uint256;
