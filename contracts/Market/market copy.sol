@@ -1,4 +1,4 @@
-pragma solidity >=0.7.0;
+pragma solidity >=0.8.0;
 // SPDX-License-Identifier: Apache 2.0
 
 library SafeMath {
@@ -37,7 +37,7 @@ library SafeMath {
 
 }
 
-pragma solidity >=0.7.0;
+pragma solidity >=0.8.0;
 
 interface TRC20_Interface {
 
@@ -52,7 +52,7 @@ interface TRC20_Interface {
     function decimals() external view returns(uint);
 }
 
-pragma solidity >=0.7.0;
+pragma solidity >=0.8.0;
 
 /**
  * @title Ownable
@@ -96,7 +96,7 @@ contract Ownable {
 
 }
 
-pragma solidity >=0.7.0;
+pragma solidity >=0.8.0;
 
 contract Admin is Ownable{
   mapping (address => bool) public admin;
@@ -131,7 +131,7 @@ contract Admin is Ownable{
 
 }
 
-pragma solidity >=0.7.0;
+pragma solidity >=0.8.0;
 
 contract Market is Admin{
   using SafeMath for uint256;
