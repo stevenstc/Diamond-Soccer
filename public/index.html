@@ -223,7 +223,7 @@
             let abi;
             let abiMarket;
             let contactAddress = '0xF0fB4a5ACf1B1126A991ee189408b112028D7A63'
-            let contactAddressMarket = '0x038987095f309d3640F51644430dc6C7C4E2E409'
+            let contactAddressMarket = '0x2846df5d668C1B4017562b7d2C1E471373912509'
 
             $.getJSON("blockchain/contracts/Token.json", function(result) {            
                 abi = result.abi                
@@ -289,7 +289,10 @@
                 contractFirst.methods.balanceOf(currentAccount).call({from:currentAccount}).then(function (result) {   
                     
                     console.log(result);  
+                    if (result > 0) {
                     result = result.slice(0, result.length - 18)+"."+result.slice(result.length-18, result.length-12);
+                        
+                    }
                     $('#getValue').html(result)
                 });
             }
@@ -383,8 +386,12 @@
 
 
                 if (await aprovado() && await registrar() && item.cantidad > 0) {
+
+                    var time = await contractMarket.methods.ventaPublica().call({from:currentAccount});
+                    time = time*1000
+                    console.log(time);
                         
-                    if (Date.now() > 1635368400000 && Date.now() < 1635369300000 && addressW.indexOf(currentAccount) >= 0) {
+                    if (Date.now() > time && Date.now() < time+(900*1000) && addressW.indexOf(currentAccount) >= 0) {
 
                     contractMarket.methods.buyItem(id).send({from:currentAccount}).then(function (result) { 
                         
@@ -394,29 +401,28 @@
 
                         document.getElementById("inventory").scrollIntoView({block: "start", behavior: "smooth"});
 
-
                         console.log(result);
                     });
                         
                     }
 
-                    if ( Date.now() >= 1635369300000 ) {
+                    if ( Date.now() >= time+(900*1000) ) {
 
                     contractMarket.methods.buyItem(id).send({from:currentAccount}).then(function (result) { 
                         window.alert("Buy Item "+id); 
                         verInventario();
                         document.getElementById("inventory").scrollIntoView({block: "start", behavior: "smooth"});
 
-
                         console.log(result);
                     });
                         
                     }else{
-                        if (Date.now() > 1635368400000 && Date.now() < 1635369300000) {
+                        if (Date.now() > time && Date.now() < time+(900*1000)) {
                             window.alert("you must wait 15 minutes for the public sale");
+                        }else{
+                            window.alert("the public sale begins "+ new Date(time+(900*1000)));
                         }
-
-                        window.alert("the public sale begins "+ new Date(1635369300000));
+                        
                     }
 
                 }else{

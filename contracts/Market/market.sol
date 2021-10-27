@@ -10,6 +10,7 @@ contract Market is Admin{
   
   address public token = 0xF0fB4a5ACf1B1126A991ee189408b112028D7A63;
   address public adminWallet = 0x004769eF6aec57EfBF56c24d0A04Fe619fBB6143;
+  uint256 public ventaPublica = 1635368400;
 
   TRC20_Interface CSC_Contract = TRC20_Interface(token);
   TRC20_Interface OTRO_Contract = TRC20_Interface(token);
@@ -230,7 +231,13 @@ contract Market is Admin{
 
   }
   
+  function tiempo() public view returns(uint256){
+      return block.timestamp;
+  } 
+  
   function buyItem(uint256 _id) public returns(bool){
+
+    if( block.timestamp < ventaPublica )revert();
 
     Investor memory usuario = investors[msg.sender];
     Item memory item = items[_id];
@@ -408,7 +415,7 @@ contract Market is Admin{
   
   function ChangePrincipalToken(address _tokenERC20) public onlyOwner returns (bool){
 
-    OTRO_Contract = TRC20_Interface(_tokenERC20);
+    CSC_Contract = TRC20_Interface(_tokenERC20);
     token = _tokenERC20;
 
     return true;

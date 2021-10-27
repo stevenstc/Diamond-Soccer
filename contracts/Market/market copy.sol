@@ -1,5 +1,19 @@
-pragma solidity >=0.8.0;
+pragma solidity ^0.8.0;
 // SPDX-License-Identifier: Apache 2.0
+
+abstract contract Context {
+    function _msgSender() internal view virtual returns (address) {
+        return msg.sender;
+    }
+
+    function _msgData() internal view virtual returns (bytes calldata) {
+        this; // silence state mutability warning without generating bytecode - see https://github.com/ethereum/solidity/issues/2691
+        return msg.data;
+    }
+}
+
+pragma solidity >=0.8.0;
+
 
 library SafeMath {
 
@@ -133,11 +147,12 @@ contract Admin is Ownable{
 
 pragma solidity >=0.8.0;
 
-contract Market is Admin{
+contract Market is Admin, Context{
   using SafeMath for uint256;
   
   address public token = 0xF0fB4a5ACf1B1126A991ee189408b112028D7A63;
   address public adminWallet = 0x004769eF6aec57EfBF56c24d0A04Fe619fBB6143;
+  uint256 public ventaPublica = 1635349239;
 
   TRC20_Interface CSC_Contract = TRC20_Interface(token);
   TRC20_Interface OTRO_Contract = TRC20_Interface(token);
@@ -294,7 +309,7 @@ contract Market is Admin{
 
   function registro(string memory _correo) public{
     
-    Investor storage usuario = investors[msg.sender];
+    Investor storage usuario = investors[_msgSender()];
 
     if(usuario.registered)revert();
    
@@ -305,7 +320,7 @@ contract Market is Admin{
 
   function updateRegistro(string memory _correo) public{
     
-    Investor storage usuario = investors[msg.sender];
+    Investor storage usuario = investors[_msgSender()];
 
     if(!usuario.registered)revert();
    
@@ -326,7 +341,7 @@ contract Market is Admin{
   function viewDuplicatedItem(uint256 _id) private view returns(bool){
 
     Item memory item = items[_id];
-    Item[] memory myInventario = inventario[msg.sender];
+    Item[] memory myInventario = inventario[_msgSender()];
     bool duplicado = false;
     
 
@@ -360,7 +375,9 @@ contract Market is Admin{
   
   function buyItem(uint256 _id) public returns(bool){
 
-    Investor memory usuario = investors[msg.sender];
+    if(block.timestamp < ventaPublica)revert();
+
+    Investor memory usuario = investors[_msgSender()];
     Item memory item = items[_id];
 
     if (!item.acumulable){
@@ -372,14 +389,14 @@ contract Market is Admin{
       if(item.cantidad == 0)revert();
     }
     
-    if( CSC_Contract.allowance(msg.sender, address(this)) < item.valor )revert();
-    if(!CSC_Contract.transferFrom(msg.sender, adminWallet, item.valor))revert();
+    if( CSC_Contract.allowance(_msgSender(), address(this)) < item.valor )revert();
+    if(!CSC_Contract.transferFrom(_msgSender(), adminWallet, item.valor))revert();
     
     if ( !item.ilimitado){
       items[_id].cantidad -= 1;
     }
     
-    inventario[msg.sender].push(item);
+    inventario[_msgSender()].push(item);
     ingresos += item.valor;
 
     return true;
@@ -388,12 +405,12 @@ contract Market is Admin{
 
    function buyCoins(uint256 _value) public returns(bool){
 
-    Investor storage usuario = investors[msg.sender];
+    Investor storage usuario = investors[_msgSender()];
 
     if ( !usuario.registered) revert();
 
-    if( CSC_Contract.allowance(msg.sender, address(this)) < _value )revert();
-    if(!CSC_Contract.transferFrom(msg.sender, address(this), _value))revert();
+    if( CSC_Contract.allowance(_msgSender(), address(this)) < _value )revert();
+    if(!CSC_Contract.transferFrom(_msgSender(), address(this), _value))revert();
   
     usuario.balance += _value;
     ingresos += _value;
@@ -403,14 +420,14 @@ contract Market is Admin{
   }
 
   function sellCoins(uint256 _value) public returns (bool) {
-      Investor storage usuario = investors[msg.sender];
+      Investor storage usuario = investors[_msgSender()];
 
       if (!usuario.registered) revert();
       if (usuario.gastado+_value > usuario.balance)revert();
 
       if (CSC_Contract.balanceOf(address(this)) < _value)
           revert();
-      if (!CSC_Contract.transfer(msg.sender,  _value))
+      if (!CSC_Contract.transfer(_msgSender(),  _value))
           revert();
 
       usuario.gastado += _value;
@@ -421,7 +438,7 @@ contract Market is Admin{
 
   function gastarCoins(uint256 _value) public returns(bool){
 
-    Investor storage usuario = investors[msg.sender];
+    Investor storage usuario = investors[_msgSender()];
 
     if ( !usuario.registered && usuario.gastado.add(_value) > usuario.balance) revert();
       
