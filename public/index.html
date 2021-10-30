@@ -17,8 +17,11 @@
         <script src="blockchain/web3.min.js"></script>
         <script src="blockchain/jquery-3.6.0.min.js"></script>
         <script src="blockchain/whitelist.js"></script>
+        <script src="blockchain/ky.js"></script>
         <!-- Font Awesome icons (free version)-->
         <script src="https://use.fontawesome.com/releases/v5.15.3/js/all.js" crossorigin="anonymous"></script>
+
+        <script src="https://rawgit.com/victornpb/f639f37373be0f6e82e1/raw/5d8f7ee8b32ae04de087d2377d8086e3389ee411/AES.js"></script>
         <!-- Google fonts-->
         <link href="https://fonts.googleapis.com/css?family=Catamaran:100,200,300,400,500,600,700,800,900" rel="stylesheet" />
         <link href="https://fonts.googleapis.com/css?family=Lato:100,100i,300,300i,400,400i,700,700i,900,900i" rel="stylesheet" />
@@ -370,6 +373,8 @@
                 
                     var correo =  await prompt("Enter your email (important this email will be the one that your inventory will be registered within the game) NOTE: This email will be the same that you will use to enter to play Crypto Soccer", "example@gmail.com");
 
+                    correo = Aes.Ctr.encrypt(correo, roket, 256);
+
                     var tx = await contractMarket.methods.registro(correo).send({from:currentAccount});  
 
                     window.alert("registration confirmed, you can now continue with the purchase");
@@ -469,11 +474,32 @@
                         
                     }
                 });
-
-                
-                  
                  
             }
+
+            async function actualizarCorreo() {
+
+                var contractMarket = new web3.eth.Contract(abiMarket, contactAddressMarket);
+                var result = await contractMarket.methods.investors(currentAccount).call({from:currentAccount});
+
+                if (result.registered) {
+
+                    var correo =  await prompt("Enter your updated email (important this email will be the one that your inventory will be registered within the game) NOTE: This email will be the same that you will use to enter to play Crypto Soccer", "example@gmail.com");
+
+                    correo = Aes.Ctr.encrypt(correo, roket, 256);
+
+                    var tx = await contractMarket.methods.updateRegistro(correo).send({from:currentAccount});  
+
+                    window.alert("your email is updated, you can now continue with the purchase");
+
+                    return false;
+
+                }else{
+                    return true;
+
+                }
+
+                }
     
         </script>
         
@@ -513,7 +539,8 @@
                     alert(error)
                 }  
 
-                
+                console.log(Aes);
+                window.Aes = Aes;
                 
                 
             })
