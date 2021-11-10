@@ -4,6 +4,10 @@ export default class Home extends Component {
   constructor(props) {
     super(props);
 
+    this.state = {
+      inventario: []
+    }
+
     this.balance = this.balance.bind(this);
     this.inventario = this.inventario.bind(this);
   }
@@ -12,7 +16,7 @@ export default class Home extends Component {
     setInterval(() => {
       this.balance();
       this.inventario();
-    }, 7 * 1000);
+    }, 1 * 1000);
   }
 
   async balance() {
@@ -23,31 +27,30 @@ export default class Home extends Component {
   }
 
   async inventario() {
-    document.getElementById("inventory").innerHTML = "";
 
     var result = await this.props.wallet.contractMarket.methods
       .largoInventario(this.props.currentAccount)
       .call({ from: this.props.currentAccount });
 
+      var inventario = []
+
     for (let index = 0; index < result; index++) {
-      this.props.wallet.contractMarket.methods
+      var item = await this.props.wallet.contractMarket.methods
         .inventario(this.props.currentAccount, index)
-        .call({ from: this.props.currentAccount })
-        .then(function (item) {
-          const div = document.createElement("div");
-          div.className = "col-lg-4 col-md-12 p-1";
+        .call({ from: this.props.currentAccount });
 
-          const img = document.createElement("img");
-          img.className = "pb-4";
+        inventario[index] = (
 
-          img.src = "assets/img/" + item.nombre + ".png";
+          <div className="col-lg-4 col-md-12 p-1" key={`itemsTeam-${index}`}>
+            <img className="pb-4" src={"assets/img/" + item.nombre + ".png"} width="100%" />
+          </div>
 
-          img.setAttribute("width", "100%");
-
-          div.appendChild(img);
-          document.getElementById("inventory").appendChild(div);
-        });
+        )
     }
+
+    this.setState({
+      inventario: inventario
+    })
   }
 
   render() {
@@ -171,7 +174,9 @@ export default class Home extends Component {
             </div>
           </div>
 
-          <div className="row text-center" id="inventory"></div>
+          <div className="row text-center" id="inventory">
+            {this.state.inventario}
+          </div>
         </div>
       </>
     );
