@@ -86,7 +86,7 @@ export default class HomeFan extends Component {
 
         console.log(valor)
 
-      if(valor == 0){
+      if(valor === 0){
         valor = "Soon...";
       }else{
         valor = valor/10**18;

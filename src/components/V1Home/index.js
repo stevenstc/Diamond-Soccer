@@ -42,7 +42,7 @@ export default class Home extends Component {
         inventario[index] = (
 
           <div className="col-lg-4 col-md-12 p-1" key={`itemsTeam-${index}`}>
-            <img className="pb-4" src={"assets/img/" + item.nombre + ".png"} width="100%" />
+            <img className="pb-4" src={"assets/img/" + item.nombre + ".png"} width="100%" alt={"team "+item.nombre} />
           </div>
 
         )
@@ -74,7 +74,6 @@ export default class Home extends Component {
                   />
                   <div
                     className="position-relative btn-monedas"
-                    onClick="javascript:void(0)"
                   >
                     <span className="position-absolute top-50 end-0 translate-middle-y p-5">
                       soon...
@@ -92,7 +91,6 @@ export default class Home extends Component {
                   />
                   <div
                     className="position-relative btn-monedas"
-                    onClick="javascript:void(0)"
                   >
                     <span className="position-absolute top-50 end-0 translate-middle-y p-5">
                       soon...
@@ -110,7 +108,6 @@ export default class Home extends Component {
                   />
                   <div
                     className="position-relative btn-monedas"
-                    onClick="javascript:void(0)"
                   >
                     <span className="position-absolute top-50 end-0 translate-middle-y p-5">
                       soon...
