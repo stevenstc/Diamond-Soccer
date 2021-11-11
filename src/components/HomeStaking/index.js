@@ -51,6 +51,7 @@ export default class HomeStaking extends Component {
     }
 
     amount = await replaceAll(amount, ".", "" );
+    amount = await replaceAll(amount, ",", "" );
 
     console.log(amount);
 
@@ -66,7 +67,7 @@ export default class HomeStaking extends Component {
       alert("staking ended");
       return;
     }
-    
+
     if(balance >= parseInt(valor*10**18)){
         if (aprovado > 0) {
           if (Date.now() >= inicio*1000) {
