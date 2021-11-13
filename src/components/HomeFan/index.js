@@ -130,7 +130,7 @@ export default class HomeFan extends Component {
               alt=""
             />
 
-            <h2 className="centradoStake">
+            <h2 className="centradoFan">
               <b>{votos} votes</b>
             </h2>
             
