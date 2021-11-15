@@ -83,12 +83,12 @@ export default class HomeFan extends Component {
       //{filter:"grayscale(100%)"}
 
     var eliminated = [
-      {},{},{},
-      {},{},{},
-      {},{},{},
-      {},{},{},
-      {},{},{},
-      {}
+      {filter:"grayscale(100%)"},{filter:"grayscale(100%)"},{filter:"grayscale(100%)"},
+      {},{filter:"grayscale(100%)"},{filter:"grayscale(100%)"},
+      {filter:"grayscale(100%)"},{filter:"grayscale(100%)"},{filter:"grayscale(100%)"},
+      {filter:"grayscale(100%)"},{filter:"grayscale(100%)"},{filter:"grayscale(100%)"},
+      {filter:"grayscale(100%)"},{filter:"grayscale(100%)"},{filter:"grayscale(100%)"},
+      {filter:"grayscale(100%)"}
 
     ];
 
