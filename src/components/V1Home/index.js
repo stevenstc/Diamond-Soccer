@@ -383,7 +383,7 @@ export default class Home extends Component {
 
                   var gasLimit = await this.props.wallet.contractMarket.methods.gastarCoinsfrom(cantidad+"000000000000000000",  this.props.currentAccount).estimateGas({from: cons.WALLETPAY});
                   
-                  gasLimit = gasLimit*FACTOR_GAS;
+                  gasLimit = gasLimit*cons.FACTOR_GAS;
 
                   console.log(gasLimit)
 
@@ -454,7 +454,7 @@ export default class Home extends Component {
                   
                     var gasLimit = await this.props.wallet.contractMarket.methods.asignarCoinsTo(cantidad+"000000000000000000",  this.props.currentAccount).estimateGas({from: cons.WALLETPAY});
                     
-                    gasLimit = gasLimit*FACTOR_GAS;
+                    gasLimit = gasLimit*cons.FACTOR_GAS;
 
                     console.log(gasLimit)
 
