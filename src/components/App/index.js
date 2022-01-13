@@ -3,6 +3,7 @@ import React, { Component } from "react";
 import Web3 from "web3";
 
 import Home from "../V1Home";
+import Market from "../Market";
 import Fan from "../HomeFan";
 import Staking from "../HomeStaking"
 import TronLinkGuide from "../TronLinkGuide";
@@ -12,17 +13,23 @@ import abiToken from "../../token";
 import abiMarket from "../../market";
 import abiFan from "../../fan"
 import abiStaking from "../../staking"
+import abiFaucet from "../../faucet"
 
 var addressToken = cons.TOKEN;
 var addressMarket = cons.SC;
 var addressFan = cons.SC2;
 var addressStaking = cons.SC3;
+var addressFaucet = cons.SC4;
+
+var chainId = '0x38';
 
 if(cons.WS){
   addressToken = cons.TokenTest;
   addressMarket = cons.SCtest;
   addressFan = cons.SC2test;
   addressStaking = cons.SC3test;
+  addressFaucet = cons.SC4;
+  chainId = '0x61';
 }
 
 
@@ -46,44 +53,73 @@ class App extends Component {
 
   async componentDidMount() {
 
+    await window.ethereum.request({
+      method: 'wallet_switchEthereumChain',
+      params: [{ chainId: chainId}],
+    });
+
+    //TESTNET  '0x61'
+    //mainet  '0x38'
+
       if (typeof window.ethereum !== 'undefined') {           
-        var resultado = await window.ethereum.request({ method: 'eth_requestAccounts' });
-          console.log(resultado[0]);
+        window.ethereum.request({ method: 'eth_requestAccounts' })
+        .then((accounts) => {
+          //console.log(accounts)
           this.setState({
-            currentAccount: resultado[0],
+            currentAccount: accounts[0],
             metamask: true,
             conectado: true
           })
+        })
+        .catch((error) => {
+          console.error(error)
+          this.setState({
+            metamask: false,
+            conectado: false
+          })   
+        });
 
-      } else {          
+      } else {    
         this.setState({
           metamask: false,
           conectado: false
-        })      
+        })         
+           
       }
 
       setInterval(async() => {
         if (typeof window.ethereum !== 'undefined') {           
-          var resultado = await window.ethereum.request({ method: 'eth_requestAccounts' });
-            //console.log(resultado[0]);
+          window.ethereum.request({ method: 'eth_requestAccounts' })
+          .then((accounts) => {
+            //console.log(accounts)
             this.setState({
-              currentAccount: resultado[0],
+              currentAccount: accounts[0],
               metamask: true,
               conectado: true
             })
+          })
+          .catch((error) => {
+            console.error(error)
+            this.setState({
+              metamask: false,
+              conectado: false
+            })   
+          });
   
-        } else {          
+        } else {    
           this.setState({
             metamask: false,
             conectado: false
-          })      
+          })         
+             
         }
 
       },7*1000);
 
-
-    try {         
-      var web3 = new Web3(window.web3.currentProvider);// mainet... metamask
+    try {       
+      var web3 = new Web3(window.web3.currentProvider);
+      //var web3 = new Web3(window.web3.providers.HttpProvider("https://data-seed-prebsc-1-s1.binance.org:8545/")); // TESTNET  '0x61'
+      //var web3 = new Web3(window.web3.providers.HttpProvider("https://bsc-dataseed.binance.org/"));// mainet... 
       var contractToken = new web3.eth.Contract(
         abiToken,
         addressToken
@@ -100,6 +136,10 @@ class App extends Component {
         abiStaking,
         addressStaking
       );
+      var contractFaucet = new web3.eth.Contract(
+        abiFaucet,
+        addressFaucet
+      )
 
       this.setState({
         binanceM:{
@@ -107,13 +147,16 @@ class App extends Component {
           contractToken: contractToken,
           contractMarket: contractMarket,
           contractFan: contractFan,
-          contractStaking: contractStaking
+          contractStaking: contractStaking,
+          contractFaucet: contractFaucet
         }
       })
-      //web3 = new Web3(new Web3.providers.HttpProvider("https://data-seed-prebsc-1-s1.binance.org:8545/"));
+      
     } catch (error) {
         alert(error);
     }  
+
+      
 
   }
 
@@ -141,6 +184,8 @@ class App extends Component {
         return(<Fan wallet={this.state.binanceM} currentAccount={this.state.currentAccount}/>);
       case "staking":
         return(<Staking wallet={this.state.binanceM} currentAccount={this.state.currentAccount}/>);
+      case "market":
+        return(<Market wallet={this.state.binanceM} currentAccount={this.state.currentAccount}/>);
       default:
         return(<Home wallet={this.state.binanceM} currentAccount={this.state.currentAccount}/>);
     }
