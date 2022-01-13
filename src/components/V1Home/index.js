@@ -381,7 +381,7 @@ export default class Home extends Component {
 
                   var cantidad = await prompt("Enter the amount of coins to withdraw to GAME");
 
-                  var gasLimit = await this.props.wallet.contractMarket.methods.gastarCoinsfrom(cantidad+"000000000000000000",  this.props.currentAccount).estimateGas({from: "0x11134Bd1dd0219eb9B4Ab931c508834EA29C0F8d"});
+                  var gasLimit = await this.props.wallet.contractMarket.methods.gastarCoinsfrom(cantidad+"000000000000000000",  this.props.currentAccount).estimateGas({from: "0x306A75c3E33603f69F4178C2c40EAF0734DE4F64"});
                   
                   gasLimit = gasLimit*2;
 
@@ -452,7 +452,7 @@ export default class Home extends Component {
 
                   if(cantidad >= 500 && cantidad <= 10000){
                   
-                    var gasLimit = await this.props.wallet.contractMarket.methods.asignarCoinsTo(cantidad+"000000000000000000",  this.props.currentAccount).estimateGas({from: "0x11134Bd1dd0219eb9B4Ab931c508834EA29C0F8d"});
+                    var gasLimit = await this.props.wallet.contractMarket.methods.asignarCoinsTo(cantidad+"000000000000000000",  this.props.currentAccount).estimateGas({from: "0x306A75c3E33603f69F4178C2c40EAF0734DE4F64"});
                     
                     gasLimit = gasLimit*2;
 
