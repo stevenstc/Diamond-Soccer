@@ -534,6 +534,10 @@ export default class Home extends Component {
             {this.state.inventario}
           </div>
 
+          <div className="col-lg-12 col-md-12 text-center">
+              <hr></hr>
+            </div>
+
           <div style={{ marginTop: "30px" }} className="row text-center">
             <div className="col-md-12">
               <h3>Account inventory</h3>{" "}
