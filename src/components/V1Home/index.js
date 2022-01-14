@@ -13,7 +13,8 @@ export default class Home extends Component {
       inventario: [],
       itemsYoutube: [],
       balance: "Loading...",
-      balanceGAME: "Loading..."
+      balanceGAME: "Loading...",
+      email: "Loading...",
     }
 
     this.balance = this.balance.bind(this);
@@ -35,6 +36,7 @@ export default class Home extends Component {
     await this.balanceInMarket();
     await this.inventario();
     await this.balanceInGame();
+
   }
 
   async balance() {
@@ -228,7 +230,7 @@ export default class Home extends Component {
                 </div>
 
                 <div className="col-lg-4 col-md-12 p-4 text-center monedas">
-                  <h2 className=" pb-4">BASIC</h2>
+                  <h2 className=" pb-4">100 WCSC</h2>
                   <img
                     className=" pb-4"
                     src="assets/img/01.png"
@@ -240,7 +242,7 @@ export default class Home extends Component {
                     onClick={() => this.buyCoins(100)}
                   >
                     <span className="position-absolute top-50 end-0 translate-middle-y p-5">
-                      100 WCSC
+                      BUY
                     </span>
                   </div>
                 </div>
@@ -251,7 +253,7 @@ export default class Home extends Component {
                 
                 >
                   
-                  <h2 className=" pb-4">PREMIUM</h2>
+                  <h2 className=" pb-4">500 WCSC</h2>
                   <img
                     className=" pb-4"
                     src="assets/img/02.png"
@@ -262,7 +264,7 @@ export default class Home extends Component {
                     className="position-relative btn-monedas"
                   >
                     <span className="position-absolute top-50 end-0 translate-middle-y p-5">
-                      500 WCSC
+                      BUY
                     </span>
                   </div>
                 </div>
@@ -271,7 +273,7 @@ export default class Home extends Component {
                   className="col-lg-4 col-md-12 p-4 monedas"
                   onClick={() => this.buyCoins(1000)}
                 >
-                  <h2 className=" pb-4">GOLD</h2>
+                  <h2 className=" pb-4">1000 WCSC</h2>
                   <img
                     className=" pb-4"
                     src="assets/img/03.png"
@@ -282,7 +284,7 @@ export default class Home extends Component {
                     className="position-relative btn-monedas"
                   >
                     <span className="position-absolute top-50 end-0 translate-middle-y p-5">
-                      1000 WCSC
+                      BUY
                     </span>
                   </div>
                 </div>
@@ -293,14 +295,37 @@ export default class Home extends Component {
 
         <div className="container mt-3 mb-3">
           <div className="row text-center">
-            <div className="col-lg-12 col-md-12 text-center">
+            <div className="col-lg-4 col-md-4 ">
               <h2>Wallet conected</h2>
               <p>{this.props.currentAccount}</p>
-              <hr></hr>
             </div>
 
+            <div className="col-lg-4 col-md-4 ">
+              <button
+                className="btn btn-success"
+                onClick={() => this.update()}
+              >
+               <i class="fas fa-sync"></i> Refresh Info
+              </button>
+            </div>
+
+            <div className="col-lg-4 col-md-4">
+              <h2>Email registred</h2>
+              {this.state.email}
+              <br />
+              <button
+                className="btn btn-secondary"
+                onClick={() => this.updateEmail()}
+              >
+                <i class="fas fa-envelope-open-text"></i> Update Email
+              </button>
+            </div>
+
+          </div>
+          <hr></hr>
+          <div className="row text-center">
           
-            <div className="col-lg-4 col-md-12">
+            <div className="col-lg-4 col-md-12 mt-2">
             <img
                 src="assets/favicon.ico"
                 className="meta-gray"
@@ -318,9 +343,14 @@ export default class Home extends Component {
                 className="btn btn-primary"
                 onClick={async() => 
                 { 
+                  
                   var cantidad = await prompt("Enter the amount of coins to send to EXCHANGE");
 
-                  await this.buyCoins(cantidad);
+                  if(parseInt(cantidad) >= 100 ){
+                    await this.buyCoins(cantidad);
+                  }else{
+                    alert("please enter valid amount");
+                  }
 
                   this.update();
 
@@ -329,18 +359,10 @@ export default class Home extends Component {
                 {" "}
                 Buy WCSC {" -> "}
               </button>
-              <br /><br />
-              <button
-                className="btn btn-primary"
-                onClick={() => this.update()}
-              >
-                Refresh
-              </button>
-              <br />
 
             </div>
 
-            <div className="col-lg-4 col-md-12">
+            <div className="col-lg-4 col-md-12  mt-2">
             <img
                 src="assets/favicon.ico"
                 className="meta-gray"
@@ -376,8 +398,6 @@ export default class Home extends Component {
               <button
                 className="btn btn-primary"
                 onClick={async() => {
-
-                  console.log(cons.SCKDTT)
 
                   var cantidad = await prompt("Enter the amount of coins to withdraw to GAME");
 
@@ -430,7 +450,7 @@ export default class Home extends Component {
               </button>
             </div>
 
-            <div className="col-lg-4 col-md-12">
+            <div className="col-lg-4 col-md-12  mt-2">
             <img
                 src="assets/favicon.ico"
                 className="meta-gray"
@@ -495,17 +515,6 @@ export default class Home extends Component {
                 {" <-"} Withdraw To Exchange {" "}
               </button>
 
-              <br />
-              email: {this.state.email} {" "}
-              <br />
-              <button
-                className="btn btn-primary"
-                onClick={() => this.updateEmail()}
-              >
-                Update Email
-              </button>
-              <br />
-
             </div>
 
             <div className="col-lg-12 col-md-12 text-center">
@@ -514,6 +523,16 @@ export default class Home extends Component {
 
           </div>
           
+          <div style={{ marginTop: "30px" }} className="row text-center">
+            <div className="col-md-12">
+              <h3>IN GAME inventory</h3>{" "}
+              
+            </div>
+          </div>
+
+          <div className="row text-center" id="inventory">
+            {this.state.inventario}
+          </div>
 
           <div style={{ marginTop: "30px" }} className="row text-center">
             <div className="col-md-12">
@@ -525,6 +544,7 @@ export default class Home extends Component {
           <div className="row text-center" id="inventory">
             {this.state.inventario}
           </div>
+
         </div>
       </>
     );
