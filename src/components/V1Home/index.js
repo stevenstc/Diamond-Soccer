@@ -19,7 +19,7 @@ export default class Home extends Component {
       register: false,
       pais: "country not selected",
       paises:[
-        "Ninguno",
+        "please select a country",
         "Afghanistan",
         "Albania",
         "Algeria",
@@ -609,6 +609,11 @@ export default class Home extends Component {
           var datos = {};
           var tx = {};
           tx.status = true;
+
+          if(document.getElementById("pais").value === "null"){
+            alert("please select a country");
+            return;
+          }
           datos.pais = document.getElementById("pais").value;
           datos.username = await prompt("please set a username for the game:")
           var disponible = await fetch(cons.API+"api/v1/username/disponible/?username="+datos.username);
