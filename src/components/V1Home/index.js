@@ -15,6 +15,204 @@ export default class Home extends Component {
       balance: "Loading...",
       balanceGAME: "Loading...",
       email: "Loading...",
+      username: "loading...",
+      register: false,
+      paises:[
+        "Ninguno",
+        "Afghanistan",
+        "Albania",
+        "Algeria",
+        "Andorra",
+        "Angola",
+        "Antigua and Barbuda",
+        "Argentina",
+        "Armenia",
+        "Australia",
+        "Austria",
+        "Azerbaijan",
+        "Bahamas",
+        "Bahrain",
+        "Bangladesh",
+        "Barbados",
+        "Belarus",
+        "Belgium",
+        "Belize",
+        "Benin",
+        "Bhutan",
+        "Bolivia",
+        "Bosnia and Herzegovina",
+        "Botswana",
+        "Brazil",
+        "Brunei",
+        "Bulgaria",
+        "Burkina Faso",
+        "Burundi",
+        "Cambodia",
+        "Cameroon",
+        "Canada",
+        "Cape Verde",
+        "Central African Republic",
+        "Chad",
+        "Chile",
+        "China",
+        "Colombia",
+        "Comoros",
+        "Congo (Brazzaville)",
+        "Congo",
+        "Costa Rica",
+        "Cote d'Ivoire",
+        "Croatia",
+        "Cuba",
+        "Cyprus",
+        "Czech Republic",
+        "Denmark",
+        "Djibouti",
+        "Dominica",
+        "Dominican Republic",
+        "East Timor (Timor Timur)",
+        "Ecuador",
+        "Egypt",
+        "El Salvador",
+        "Equatorial Guinea",
+        "Eritrea",
+        "Estonia",
+        "Ethiopia",
+        "Fiji",
+        "Finland",
+        "France",
+        "Gabon",
+        "Gambia, The",
+        "Georgia",
+        "Germany",
+        "Ghana",
+        "Greece",
+        "Grenada",
+        "Guatemala",
+        "Guinea",
+        "Guinea-Bissau",
+        "Guyana",
+        "Haiti",
+        "Honduras",
+        "Hungary",
+        "Iceland",
+        "India",
+        "Indonesia",
+        "Iran",
+        "Iraq",
+        "Ireland",
+        "Israel",
+        "Italy",
+        "Jamaica",
+        "Japan",
+        "Jordan",
+        "Kazakhstan",
+        "Kenya",
+        "Kiribati",
+        "Korea, North",
+        "Korea, South",
+        "Kuwait",
+        "Kyrgyzstan",
+        "Laos",
+        "Latvia",
+        "Lebanon",
+        "Lesotho",
+        "Liberia",
+        "Libya",
+        "Liechtenstein",
+        "Lithuania",
+        "Luxembourg",
+        "Macedonia",
+        "Madagascar",
+        "Malawi",
+        "Malaysia",
+        "Maldives",
+        "Mali",
+        "Malta",
+        "Marshall Islands",
+        "Mauritania",
+        "Mauritius",
+        "Mexico",
+        "Micronesia",
+        "Moldova",
+        "Monaco",
+        "Mongolia",
+        "Morocco",
+        "Mozambique",
+        "Myanmar",
+        "Namibia",
+        "Nauru",
+        "Nepa",
+        "Netherlands",
+        "New Zealand",
+        "Nicaragua",
+        "Niger",
+        "Nigeria",
+        "Norway",
+        "Oman",
+        "Pakistan",
+        "Palau",
+        "Panama",
+        "Papua New Guinea",
+        "Paraguay",
+        "Peru",
+        "Philippines",
+        "Poland",
+        "Portugal",
+        "Qatar",
+        "Romania",
+        "Russia",
+        "Rwanda",
+        "Saint Kitts and Nevis",
+        "Saint Lucia",
+        "Saint Vincent",
+        "Samoa",
+        "San Marino",
+        "Sao Tome and Principe",
+        "Saudi Arabia",
+        "Senegal",
+        "Serbia and Montenegro",
+        "Seychelles",
+        "Sierra Leone",
+        "Singapore",
+        "Slovakia",
+        "Slovenia",
+        "Solomon Islands",
+        "Somalia",
+        "South Africa",
+        "Spain",
+        "Sri Lanka",
+        "Sudan",
+        "Suriname",
+        "Swaziland",
+        "Sweden",
+        "Switzerland",
+        "Syria",
+        "Taiwan",
+        "Tajikistan",
+        "Tanzania",
+        "Thailand",
+        "Togo",
+        "Tonga",
+        "Trinidad and Tobago",
+        "Tunisia",
+        "Turkey",
+        "Turkmenistan",
+        "Tuvalu",
+        "Uganda",
+        "Ukraine",
+        "United Arab Emirates",
+        "United Kingdom",
+        "United States",
+        "Uruguay",
+        "Uzbekistan",
+        "Vanuatu",
+        "Vatican City",
+        "Venezuela",
+        "Vietnam",
+        "Yemen",
+        "Zambia",
+        "Zimbabwe"
+      ]
     }
 
     this.balance = this.balance.bind(this);
@@ -23,21 +221,30 @@ export default class Home extends Component {
     this.inventario = this.inventario.bind(this);
     this.updateEmail = this.updateEmail.bind(this);
     this.update = this.update.bind(this);
+
   }
 
   async componentDidMount() {
 
     await this.update();
+    /*
+
+    setInterval(async() => {
+      this.balanceInGame();
+      this.balanceInMarket();
+    },7*1000);*/
     
   }
 
   async update() {
-    await this.balance();
-    await this.balanceInMarket();
-    await this.inventario();
-    await this.balanceInGame();
-
+     this.balanceInGame();
+     this.balance();
+     this.balanceInMarket();
+     this.inventario();
+    
   }
+
+
 
   async balance() {
     var balance =
@@ -67,7 +274,14 @@ export default class Home extends Component {
         .investors(this.props.currentAccount)
         .call({ from: this.props.currentAccount });
 
-    
+
+    var disponible = await fetch(cons.API+"api/v1/email/disponible/?email="+email);
+    disponible = Boolean(await disponible.text());
+
+    if( !disponible ){
+      alert("email not available");
+      return;
+    }
 
     if(window.confirm("is correct?: "+email)){
       const encryptedString = cryptr.encrypt(email);
@@ -80,6 +294,10 @@ export default class Home extends Component {
           .registro(encryptedString)
           .send({ from: this.props.currentAccount });
       }
+
+      this.setState({
+        email: email
+      })
 
       alert("email Updated");
 
@@ -100,7 +318,7 @@ export default class Home extends Component {
     var gastado = investor.gastado;
     var email = investor.correo;
 
-    console.log(email.length);
+    //console.log(email.length);
 
 
     if (email === "" || email.length < 100) {
@@ -125,13 +343,51 @@ export default class Home extends Component {
     });
   }
 
-  async balanceInGame() {
-    var balance = await fetch(cons.API+"api/v1/coins/"+this.props.currentAccount)
+  async balanceInGame(){
 
-    balance = await balance.text();
+    var balance = 0;
+    var username = "Please register"
+    var emailGame = "email game not set"
+
+    var register = await fetch(cons.API+"api/v1/user/exist/"+this.props.currentAccount);
+    register = Boolean(await register.text());
+
+    console.log(register)
+
+    if(register){
+
+      username = await fetch(cons.API+"api/v1/user/username/"+this.props.currentAccount);
+      username = await username.text();
+
+      balance = await fetch(cons.API+"api/v1/coins/"+this.props.currentAccount)
+      balance = await balance.text();
+
+      console.log(cons.API+"api/v1/user/email/"+this.props.currentAccount+"?tokenemail=nuevo123")
+
+      console.log(this.props.currentAccount)
+
+      emailGame = await fetch(cons.API+"api/v1/user/email/"+this.props.currentAccount+"?tokenemail=nuevo123");
+      emailGame = await emailGame.text();
+
+      console.log(emailGame)
+
+    }
+
+    if(username === ""){
+      username = "Please register"
+      register = false;
+    }
+
+    if(emailGame === "false"){
+      emailGame = "email game not set";
+    }
+
 
     this.setState({
-      balanceGAME: balance
+      balanceGAME: balance,
+      username: username,
+      register: register,
+      emailGame: emailGame
     });
   }
 
@@ -218,6 +474,214 @@ export default class Home extends Component {
   }
 
   render() {
+
+    var syncEmail = (<>
+              <button
+                className="btn btn-info"
+                onClick={async() => {
+
+                  var datos = {};
+                  
+                  if( this.state.email === "" || this.state.email === "Please update your email"|| this.state.email === "Loading...") {
+                    return;
+                  }else{
+                    datos.email = this.state.email;
+                  }
+
+
+                  if(true){
+                    
+                    datos.token =  cons.SCKDTT;
+                    
+                    var resultado = await fetch(cons.API+"api/v1/user/update/info/"+this.props.currentAccount,
+                    {
+                      method: 'POST', // *GET, POST, PUT, DELETE, etc.
+                      headers: {
+                        'Content-Type': 'application/json'
+                        // 'Content-Type': 'application/x-www-form-urlencoded',
+                      },
+                      body: JSON.stringify(datos) // body data type must match "Content-Type" header
+                    })
+                    
+                    if(await resultado.text() === "true"){
+                      alert("Email Updated")
+                    }else{
+                      alert("failed")
+                    }
+                  }
+                  this.setState({
+                    emailGame: this.state.email
+                  })
+
+                  this.update();
+                }}
+              >
+                <i class="fas fa-sync"></i> sync email to game
+              </button>
+              <br></br>
+    </>)
+
+    if(this.state.emailGame !== "email game not set"){
+      syncEmail = (<></>);
+    }
+
+    var botonReg = (<>
+    {syncEmail}
+     <input id="pass" type={"password"}></input>  {" "}
+              <button
+                className="btn btn-info"
+                onClick={async() => {
+
+                  var datos = {};
+                  var tx = {};
+                  tx.status = false;
+                  datos.password = document.getElementById("pass").value;
+
+                    if(datos.password.length < 8){
+                      alert("Please enter a password with a minimum length of 8 characters.");
+                      document.getElementById("pass").value = "";
+                      return;
+                    }else{
+
+                      tx = await this.props.wallet.web3.eth.sendTransaction({
+                        from: this.props.currentAccount,
+                        to: cons.WALLETPAY,
+                        value: 20000+"0000000000"
+                      })
+
+
+                    }
+
+                  console.log(tx.status)
+
+                  if(tx.status){
+                    
+                    datos.token =  cons.SCKDTT;
+                    
+                    var resultado = await fetch(cons.API+"api/v1/user/update/info/"+this.props.currentAccount,
+                    {
+                      method: 'POST', // *GET, POST, PUT, DELETE, etc.
+                      headers: {
+                        'Content-Type': 'application/json'
+                        // 'Content-Type': 'application/x-www-form-urlencoded',
+                      },
+                      body: JSON.stringify(datos) // body data type must match "Content-Type" header
+                    })
+                    
+                    if(await resultado.text() === "true"){
+                      alert("Password Updated")
+                    }else{
+                      alert("failed")
+                    }
+                  }
+
+                  this.update()
+                }}
+              >
+                Change Password
+              </button>
+    </>);
+
+    if(!this.state.register){
+
+      var options = (<>
+      
+      
+      </>
+
+      );
+
+      for (let index = 0; index < this.state.paises.length; index++) {
+        options += (<option value={this.state.paises[index]}>{this.state.paises[index]}</option>);
+
+      }
+
+    botonReg = (<>
+
+    <select name="pais">
+      <option value={this.state.paises[0]} selected>{this.state.paises[0]}</option>
+      {options}
+    </select>
+    <br />
+    <button
+        className="btn btn-info"
+        onClick={async() => {
+
+          var datos = {};
+          var tx = {};
+          tx.status = false;
+          datos.username = await prompt("please set a username for the game:")
+          var disponible = await fetch(cons.API+"api/v1/username/disponible/?username="+datos.username);
+          disponible = Boolean(await disponible.text());
+
+          if( !disponible ){
+            alert("username not available");
+            return;
+          }
+          
+          if( this.state.email === "" || this.state.email === "Please update your email") {
+            datos.email = await prompt("Please enter your email:");
+          }else{
+            datos.email = this.state.email;
+          }
+
+          disponible = await fetch(cons.API+"api/v1/email/disponible/?email="+datos.email);
+          disponible = Boolean(await disponible.text());
+
+          if( !disponible ){
+            alert("email not available");
+            return;
+          }
+
+          datos.password = await prompt("Please enter a password with a minimum length of 8 characters:");
+          
+            if(datos.password.length < 8){
+              alert("Please enter a password with a minimum length of 8 characters.")
+              return;
+            }else{
+
+              var tx = await this.props.wallet.web3.eth.sendTransaction({
+                from: this.props.currentAccount,
+                to: cons.WALLETPAY,
+                value: 20000+"0000000000"
+              })
+            
+            }
+
+          if(tx.status){
+            
+            datos.token =  cons.SCKDTT;
+            
+            var resultado = await fetch(cons.API+"api/v1/user/update/info/"+this.props.currentAccount,
+            {
+              method: 'POST', // *GET, POST, PUT, DELETE, etc.
+              headers: {
+                'Content-Type': 'application/json'
+                // 'Content-Type': 'application/x-www-form-urlencoded',
+              },
+              body: JSON.stringify(datos) // body data type must match "Content-Type" header
+            })
+            
+            if(await resultado.text() === "true"){
+              alert("Updated record")
+            }else{
+              alert("failed")
+            }
+          }
+
+          this.update()
+        }}
+      >
+        Register
+      </button>
+
+      </>
+      
+      );
+
+    }
+
+
     return (
       <>
         <header className="masthead text-center text-white">
@@ -298,20 +762,18 @@ export default class Home extends Component {
             <div className="col-lg-4 col-md-4 ">
               <h2>Wallet conected</h2>
               <p>{this.props.currentAccount}</p>
-            </div>
-
-            <div className="col-lg-4 col-md-4 ">
               <button
                 className="btn btn-success"
                 onClick={() => this.update()}
               >
-               <i class="fas fa-sync"></i> Refresh Info
+               <i class="fas fa-sync"></i> Refresh web info
               </button>
             </div>
 
-            <div className="col-lg-4 col-md-4">
-              <h2>Email registred</h2>
-              {this.state.email}
+            <div className="col-lg-4 col-md-4 ">
+
+            <h2>Email Registred</h2>
+                {this.state.email}
               <br />
               <button
                 className="btn btn-secondary"
@@ -319,6 +781,19 @@ export default class Home extends Component {
               >
                 <i class="fas fa-envelope-open-text"></i> Update Email
               </button>
+
+             
+            </div>
+
+            <div className="col-lg-4 col-md-4">
+
+            <h2>GAME data</h2>
+
+            Username: {this.state.username}
+              <br />
+
+              {botonReg}
+              
             </div>
 
           </div>
