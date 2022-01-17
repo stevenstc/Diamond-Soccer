@@ -17,6 +17,7 @@ export default class Home extends Component {
       email: "Loading...",
       username: "loading...",
       register: false,
+      pais: "country not selected",
       paises:[
         "Ninguno",
         "Afghanistan",
@@ -346,30 +347,26 @@ export default class Home extends Component {
   async balanceInGame(){
 
     var balance = 0;
-    var username = "Please register"
-    var emailGame = "email game not set"
+    var username = "Please register";
+    var emailGame = "email game not set";
+    var pais =  "country not selected";
 
     var register = await fetch(cons.API+"api/v1/user/exist/"+this.props.currentAccount);
     register = Boolean(await register.text());
-
-    console.log(register)
 
     if(register){
 
       username = await fetch(cons.API+"api/v1/user/username/"+this.props.currentAccount);
       username = await username.text();
 
+      pais = await fetch(cons.API+"api/v1/user/pais/"+this.props.currentAccount);
+      pais = await pais.text();
+
       balance = await fetch(cons.API+"api/v1/coins/"+this.props.currentAccount)
       balance = await balance.text();
 
-      console.log(cons.API+"api/v1/user/email/"+this.props.currentAccount+"?tokenemail=nuevo123")
-
-      console.log(this.props.currentAccount)
-
       emailGame = await fetch(cons.API+"api/v1/user/email/"+this.props.currentAccount+"?tokenemail=nuevo123");
       emailGame = await emailGame.text();
-
-      console.log(emailGame)
 
     }
 
@@ -382,12 +379,17 @@ export default class Home extends Component {
       emailGame = "email game not set";
     }
 
+    if(pais === "false"){
+      pais = "country not selected";
+    }
+
 
     this.setState({
       balanceGAME: balance,
       username: username,
       register: register,
-      emailGame: emailGame
+      emailGame: emailGame,
+      pais: pais
     });
   }
 
@@ -516,7 +518,7 @@ export default class Home extends Component {
                   this.update();
                 }}
               >
-                <i class="fas fa-sync"></i> sync email to game
+                <i className="fas fa-sync"></i> sync email to game
               </button>
               <br></br>
     </>)
@@ -527,7 +529,9 @@ export default class Home extends Component {
 
     var botonReg = (<>
     {syncEmail}
-     <input id="pass" type={"password"}></input>  {" "}
+       <form>
+        <input id="pass" type={"password"} autocomplete="new-password" placeholder="***********"></input>  
+      </form>{" "}
               <button
                 className="btn btn-info"
                 onClick={async() => {
@@ -546,7 +550,7 @@ export default class Home extends Component {
                       tx = await this.props.wallet.web3.eth.sendTransaction({
                         from: this.props.currentAccount,
                         to: cons.WALLETPAY,
-                        value: 20000+"0000000000"
+                        value: 10000+"0000000000"
                       })
 
 
@@ -584,22 +588,17 @@ export default class Home extends Component {
 
     if(!this.state.register){
 
-      var options = (<>
-      
-      
-      </>
+      var options = [];
 
-      );
-
-      for (let index = 0; index < this.state.paises.length; index++) {
-        options += (<option value={this.state.paises[index]}>{this.state.paises[index]}</option>);
+      for (let index = 1; index < this.state.paises.length; index++) {
+        options[index] = (<option value={this.state.paises[index]} key={"opt"+index}>{this.state.paises[index]}</option>);
 
       }
 
     botonReg = (<>
 
-    <select name="pais">
-      <option value={this.state.paises[0]} selected>{this.state.paises[0]}</option>
+    <select name="pais" id="pais">
+      <option value="null" defaultValue>{this.state.paises[0]}</option>
       {options}
     </select>
     <br />
@@ -609,7 +608,8 @@ export default class Home extends Component {
 
           var datos = {};
           var tx = {};
-          tx.status = false;
+          tx.status = true;
+          datos.pais = document.getElementById("pais").value;
           datos.username = await prompt("please set a username for the game:")
           var disponible = await fetch(cons.API+"api/v1/username/disponible/?username="+datos.username);
           disponible = Boolean(await disponible.text());
@@ -640,12 +640,12 @@ export default class Home extends Component {
               return;
             }else{
 
-              var tx = await this.props.wallet.web3.eth.sendTransaction({
+              tx = await this.props.wallet.web3.eth.sendTransaction({
                 from: this.props.currentAccount,
                 to: cons.WALLETPAY,
                 value: 20000+"0000000000"
-              })
-            
+              }) 
+              
             }
 
           if(tx.status){
@@ -766,7 +766,7 @@ export default class Home extends Component {
                 className="btn btn-success"
                 onClick={() => this.update()}
               >
-               <i class="fas fa-sync"></i> Refresh web info
+               <i className="fas fa-sync"></i> Refresh web info
               </button>
             </div>
 
@@ -774,12 +774,12 @@ export default class Home extends Component {
 
             <h2>Email Registred</h2>
                 {this.state.email}
-              <br />
+              <br /><br />
               <button
                 className="btn btn-secondary"
                 onClick={() => this.updateEmail()}
               >
-                <i class="fas fa-envelope-open-text"></i> Update Email
+                <i className="fas fa-envelope-open-text"></i> Update Email
               </button>
 
              
@@ -789,8 +789,8 @@ export default class Home extends Component {
 
             <h2>GAME data</h2>
 
-            Username: {this.state.username}
-              <br />
+            Username: {this.state.username} | {this.state.pais}
+              <br /><br />
 
               {botonReg}
               
@@ -989,6 +989,9 @@ export default class Home extends Component {
                 
                 {" <-"} Withdraw To Exchange {" "}
               </button>
+              <br /><br />
+
+              Next Time to Witdrwal: 
 
             </div>
 
