@@ -530,7 +530,7 @@ export default class Home extends Component {
     var botonReg = (<>
     {syncEmail}
        <form>
-        <input id="pass" type={"password"} autocomplete="new-password" placeholder="***********"></input>  
+        <input id="pass" type={"password"} autoComplete="new-password" placeholder="***********"></input>  
       </form>{" "}
               <button
                 className="btn btn-info"
