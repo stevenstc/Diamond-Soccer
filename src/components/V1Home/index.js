@@ -768,17 +768,46 @@ export default class Home extends Component {
             <div className="col-lg-4 col-md-4 ">
               <h2>Wallet conected</h2>
               <p>{this.props.currentAccount}</p>
+              <p>
+              <button
+                className="btn btn-success"
+                onClick={() => {
+
+                  window.ethereum.request({
+                  method: 'wallet_watchAsset',
+                  params: {
+                    type: 'ERC20',
+                    options: {
+                      address: this.props.wallet.contractToken._address,
+                      symbol: 'CSC',
+                      decimals: 18,
+                      image: 'https://cryptosoccermarket.com/assets/img/coin.png',
+                    },
+                  },
+                })
+                  .then((success) => {
+                    if (success) {
+                      console.log('FOO successfully added to wallet!')
+                    } else {
+                      throw new Error('Something went wrong.')
+                    }
+                  })
+                  .catch(console.error)}
+                }>
+               <i className="fas fa-plus-square"></i> Add CSC token to metamask
+              </button>
+              </p>
               <button
                 className="btn btn-success"
                 onClick={() => this.update()}
               >
-               <i className="fas fa-sync"></i> Refresh web info
+               <i className="fas fa-sync"></i> Refresh web page
               </button>
             </div>
 
             <div className="col-lg-4 col-md-4 ">
 
-            <h2>Email Registred</h2>
+            <h2>Email BlockChain Registred</h2>
                 {this.state.email}
               <br /><br />
               <button
