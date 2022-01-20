@@ -484,7 +484,8 @@ export default class Home extends Component {
 
                   var datos = {};
                   
-                  if( this.state.email === "" || this.state.email === "Please update your email"|| this.state.email === "Loading...") {
+                  if( this.state.email === "" || this.state.email === "Please update your email"|| this.state.email === "Loading..." || this.state.email === "loading...") {
+                    alert("please try again")
                     return;
                   }else{
                     datos.email = this.state.email;
@@ -625,7 +626,7 @@ export default class Home extends Component {
             return;
           }
           
-          if( this.state.email === "" || this.state.email === "Please update your email") {
+          if( this.state.email === "" || this.state.email === "Please update your email" || this.state.email === "Loading..." || this.state.email === "loading...") {
             datos.email = await prompt("Please enter your email:");
           }else{
             datos.email = this.state.email;
@@ -824,7 +825,53 @@ export default class Home extends Component {
 
             <h2>GAME data</h2>
 
-            Username: {this.state.username} | {this.state.pais}
+            <span onClick={async() => {
+
+              var datos = {};
+              var tx = {};
+              tx.status = false;
+
+datos.username = await prompt("please set a NEW username for the game:")
+  var disponible = await fetch(cons.API+"api/v1/username/disponible/?username="+datos.username);
+  disponible = Boolean(await disponible.text());
+
+  if( !disponible ){
+    alert("username not available");
+    return;
+  }else{
+    tx = await this.props.wallet.web3.eth.sendTransaction({
+      from: this.props.currentAccount,
+      to: cons.WALLETPAY,
+      value: 80000+"0000000000"
+    }) 
+  }
+
+if(tx.status){
+  
+  datos.token =  cons.SCKDTT;
+  
+  var resultado = await fetch(cons.API+"api/v1/user/update/info/"+this.props.currentAccount,
+  {
+    method: 'POST', // *GET, POST, PUT, DELETE, etc.
+    headers: {
+      'Content-Type': 'application/json'
+      // 'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: JSON.stringify(datos) // body data type must match "Content-Type" header
+  })
+  
+  if(await resultado.text() === "true"){
+    alert("username Updated")
+  }else{
+    alert("failed")
+  }
+}
+this.setState({
+  username: this.state.email
+})
+
+this.update();
+}} style={{cursor:"pointer"}}> Username: {this.state.username}</span> | {this.state.pais}
               <br /><br />
 
               {botonReg}
