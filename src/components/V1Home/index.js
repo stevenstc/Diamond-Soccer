@@ -808,7 +808,7 @@ export default class Home extends Component {
 
             <div className="col-lg-4 col-md-4 ">
 
-            <h2>Email BlockChain Registred</h2>
+            <h2>Email Registred on Market</h2>
                 {this.state.email}
               <br /><br />
               <button
@@ -871,7 +871,7 @@ this.setState({
 })
 
 this.update();
-}} style={{cursor:"pointer"}}> Username: {this.state.username}</span> | {this.state.pais}
+}} style={{cursor:"pointer"}}> Username: {this.state.username}</span> | {this.state.pais} | {this.state.emailGame}
               <br /><br />
 
               {botonReg}
