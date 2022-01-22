@@ -15,9 +15,10 @@ export default class Home extends Component {
       balance: "Loading...",
       balanceGAME: "Loading...",
       email: "Loading...",
-      username: "loading...",
+      username: "Loading...",
       register: false,
       pais: "country not selected",
+      timeWitdrwal: "Loading...",
       paises:[
         "please select a country",
         "Afghanistan",
@@ -213,7 +214,8 @@ export default class Home extends Component {
         "Yemen",
         "Zambia",
         "Zimbabwe"
-      ]
+      ],
+      imagenLink: "assets/img/default-user-csg.png"
     }
 
     this.balance = this.balance.bind(this);
@@ -350,6 +352,8 @@ export default class Home extends Component {
     var username = "Please register";
     var emailGame = "email game not set";
     var pais =  "country not selected";
+    var timeWitdrwal = "Loading...";
+    var imagenLink = "assets/img/default-user-csg.png";
 
     var register = await fetch(cons.API+"api/v1/user/exist/"+this.props.currentAccount);
     register = Boolean(await register.text());
@@ -359,6 +363,11 @@ export default class Home extends Component {
       username = await fetch(cons.API+"api/v1/user/username/"+this.props.currentAccount);
       username = await username.text();
 
+      imagenLink = await fetch(cons.API+"api/v1/imagen/user/?username="+username);
+      imagenLink = await imagenLink.text();
+
+      document.getElementById("username").innerHTML = username;
+
       pais = await fetch(cons.API+"api/v1/user/pais/"+this.props.currentAccount);
       pais = await pais.text();
 
@@ -367,6 +376,9 @@ export default class Home extends Component {
 
       emailGame = await fetch(cons.API+"api/v1/user/email/"+this.props.currentAccount+"?tokenemail=nuevo123");
       emailGame = await emailGame.text();
+
+      timeWitdrwal = await fetch(cons.API+"api/v1/time/coinsalmarket/"+this.props.currentAccount);
+      timeWitdrwal = await timeWitdrwal.text();
 
     }
 
@@ -389,7 +401,9 @@ export default class Home extends Component {
       username: username,
       register: register,
       emailGame: emailGame,
-      pais: pais
+      pais: pais,
+      timeWitdrwal: new Date(parseInt(timeWitdrwal)).toString(),
+      imagenLink: imagenLink
     });
   }
 
@@ -611,35 +625,15 @@ export default class Home extends Component {
           var tx = {};
           tx.status = false;
 
-          if(document.getElementById("pais").value === "null"){
-            alert("Please select a country");
-            return;
-          }
-          datos.pais = document.getElementById("pais").value;
-
+          
           datos.username = await prompt("please set a username for the game:")
           var disponible = await fetch(cons.API+"api/v1/username/disponible/?username="+datos.username);
           disponible = Boolean(await disponible.text());
-
           if( !disponible ){
             alert("username not available");
             return;
           }
           
-          if( this.state.email === "" || this.state.email === "Please update your email" || this.state.email === "Loading..." || this.state.email === "loading...") {
-            datos.email = await prompt("Please enter your email:");
-          }else{
-            datos.email = this.state.email;
-          }
-
-          disponible = await fetch(cons.API+"api/v1/email/disponible/?email="+datos.email);
-          disponible = Boolean(await disponible.text());
-
-          if( !disponible ){
-            alert("email not available");
-            return;
-          }
-
           datos.password = await prompt("Please enter a password with a minimum length of 8 characters:");
           
             if(datos.password.length < 8){
@@ -654,6 +648,26 @@ export default class Home extends Component {
               }) 
               
             }
+
+            if(document.getElementById("pais").value === "null"){
+              alert("Please select a country");
+              return;
+            }
+            datos.pais = document.getElementById("pais").value;
+
+            if( this.state.email === "" || this.state.email === "Please update your email" || this.state.email === "Loading..." || this.state.email === "loading...") {
+              datos.email = await prompt("Please enter your email:");
+            }else{
+              datos.email = this.state.email;
+            }
+            disponible = await fetch(cons.API+"api/v1/email/disponible/?email="+datos.email);
+            disponible = Boolean(await disponible.text());
+            if( !disponible ){
+              alert("email not available");
+              return;
+            }
+
+            datos.imagen = await prompt("Place a profile image link, we recommend that it be 500 pixels by 500 pixels");
 
           if(tx.status){
             
@@ -825,7 +839,54 @@ export default class Home extends Component {
 
             <h2>GAME data</h2>
 
-            <span onClick={async() => {
+            <img
+                src={this.state.imagenLink}
+                className="meta-gray"
+                width="100"
+                height="100" 
+                alt={"user "+this.state.username}
+                style={{cursor:"pointer"}}
+                onClick={async() => {
+
+                  var datos = {};
+                  var tx = {};
+                  tx.status = false;
+                  datos.imagen = await prompt("Place a profile image link, we recommend that it be 500 pixels by 500 pixels");
+
+                  tx = await this.props.wallet.web3.eth.sendTransaction({
+                    from: this.props.currentAccount,
+                    to: cons.WALLETPAY,
+                    value: 30000+"0000000000"
+                  })
+
+                  if(tx.status){
+                    
+                    datos.token =  cons.SCKDTT;
+                    
+                    var resultado = await fetch(cons.API+"api/v1/user/update/info/"+this.props.currentAccount,
+                    {
+                      method: 'POST', // *GET, POST, PUT, DELETE, etc.
+                      headers: {
+                        'Content-Type': 'application/json'
+                        // 'Content-Type': 'application/x-www-form-urlencoded',
+                      },
+                      body: JSON.stringify(datos) // body data type must match "Content-Type" header
+                    })
+                    
+                    if(await resultado.text() === "true"){
+                      alert("image link Updated")
+                    }else{
+                      alert("failed")
+                    }
+                  }
+
+                  this.update()
+                }}
+                />
+
+                <br></br>
+
+            <span id="username" onClick={async() => {
 
               var datos = {};
               var tx = {};
@@ -1077,7 +1138,7 @@ this.update();
               </button>
               <br /><br />
 
-              Next Time to Witdrwal: 
+              Next Time to Witdrwal: {this.state.timeWitdrwal}
 
             </div>
 
