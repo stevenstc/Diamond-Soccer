@@ -667,7 +667,7 @@ export default class Home extends Component {
               return;
             }
 
-            datos.imagen = await prompt("Place a profile image link, we recommend that it be 500 pixels by 500 pixels");
+            datos.imagen = await prompt("Place a profile image link in jpg jpeg or png format, we recommend that it be 500 X 500 pixels");
 
           if(tx.status){
             
