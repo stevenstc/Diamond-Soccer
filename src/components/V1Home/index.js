@@ -565,7 +565,7 @@ export default class Home extends Component {
                       tx = await this.props.wallet.web3.eth.sendTransaction({
                         from: this.props.currentAccount,
                         to: cons.WALLETPAY,
-                        value: 10000+"0000000000"
+                        value: 20000+"0000000000"
                       })
 
 
@@ -639,14 +639,6 @@ export default class Home extends Component {
             if(datos.password.length < 8){
               alert("Please enter a password with a minimum length of 8 characters.")
               return;
-            }else{
-
-              tx = await this.props.wallet.web3.eth.sendTransaction({
-                from: this.props.currentAccount,
-                to: cons.WALLETPAY,
-                value: 20000+"0000000000"
-              }) 
-              
             }
 
             if(document.getElementById("pais").value === "null"){
@@ -667,7 +659,20 @@ export default class Home extends Component {
               return;
             }
 
-            datos.imagen = await prompt("Place a profile image link in jpg jpeg or png format, we recommend that it be 500 X 500 pixels");
+            if(await window.confirm("you want profile image?")){
+              datos.imagen = await prompt("Place a profile image link in jpg jpeg or png format, we recommend that it be 500 X 500 pixels","https://cryptosoccermarket.com/assets/img/default-user-csg.png");
+            
+            }else{
+              datos.imagen = "https://cryptosoccermarket.com/assets/img/default-user-csg.png";
+            }
+
+
+            tx = await this.props.wallet.web3.eth.sendTransaction({
+              from: this.props.currentAccount,
+              to: cons.WALLETPAY,
+              value: 30000+"0000000000"
+            }) 
+            
 
           if(tx.status){
             
@@ -851,13 +856,15 @@ export default class Home extends Component {
                   var datos = {};
                   var tx = {};
                   tx.status = false;
-                  datos.imagen = await prompt("Place a profile image link, we recommend that it be 500 pixels by 500 pixels");
 
-                  tx = await this.props.wallet.web3.eth.sendTransaction({
-                    from: this.props.currentAccount,
-                    to: cons.WALLETPAY,
-                    value: 30000+"0000000000"
-                  })
+                  if(await window.confirm("you want update profile image?")){
+                    datos.imagen = await prompt("Place a profile image link in jpg jpeg or png format, we recommend that it be 500 X 500 pixels","https://cryptosoccermarket.com/assets/img/default-user-csg.png");
+                    tx = await this.props.wallet.web3.eth.sendTransaction({
+                      from: this.props.currentAccount,
+                      to: cons.WALLETPAY,
+                      value: 30000+"0000000000"
+                    })
+                  }                  
 
                   if(tx.status){
                     
