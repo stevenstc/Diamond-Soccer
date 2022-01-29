@@ -53,15 +53,16 @@ class App extends Component {
 
   async componentDidMount() {
 
-    await window.ethereum.request({
-      method: 'wallet_switchEthereumChain',
-      params: [{ chainId: chainId}],
-    });
-
     //TESTNET  '0x61'
     //mainet  '0x38'
 
-      if (typeof window.ethereum !== 'undefined') {           
+      if (typeof window.ethereum !== 'undefined') {    
+        
+        await window.ethereum.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: chainId}],
+        });
+        
         window.ethereum.request({ method: 'eth_requestAccounts' })
         .then((accounts) => {
           //console.log(accounts)

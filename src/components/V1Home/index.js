@@ -302,6 +302,39 @@ export default class Home extends Component {
         email: email
       })
 
+      
+      var datos = {};
+      
+        datos.email = email;
+        
+        disponible = await fetch(cons.API+"api/v1/email/disponible/?email="+datos.email);
+        disponible = Boolean(await disponible.text());
+        if( !disponible ){
+          alert("email not available please select a different one");
+          return;
+        }else{
+        
+        datos.token =  cons.SCKDTT;
+        
+        var resultado = await fetch(cons.API+"api/v1/user/update/info/"+this.props.currentAccount,
+        {
+          method: 'POST', // *GET, POST, PUT, DELETE, etc.
+          headers: {
+            'Content-Type': 'application/json'
+            // 'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: JSON.stringify(datos) // body data type must match "Content-Type" header
+        })
+        
+        if(await resultado.text() === "true"){
+          alert("Updated game data")
+        }else{
+          alert("failed to write game data")
+        }
+      }
+
+      this.update()
+
       alert("email Updated");
 
     }
@@ -1098,9 +1131,10 @@ this.update();
                   var tx = {};
                   tx.status = false;
 
-                  var cantidad = await prompt("Enter the amount of coins to withdraw to EXCHANGE");
+                  var cantidad = await prompt("Enter the amount of coins to withdraw to EXCHANGE","500");
+                  cantidad = parseInt(cantidad);
 
-                  if(cantidad >= 500 && cantidad <= 10000){
+                  if( this.state.balanceGAME-cantidad >= 0 && cantidad >= 500 && cantidad <= 10000){
                   
                     var gasLimit = await this.props.wallet.contractMarket.methods.asignarCoinsTo(cantidad+"000000000000000000",  this.props.currentAccount).estimateGas({from: cons.WALLETPAY});
                     
@@ -1128,15 +1162,26 @@ this.update();
                       })
                       if(await resultado.text() === "true"){
                         alert("Coins send to EXCHANGE")
+                        this.setState({
+                          balanceInGame: this.state.balanceGAME-cantidad
+                        })
+                        
                       }else{
                         alert("send failed")
                       }
-                    }else{
-                      alert("insuficient founds")
                     }
                     this.update()
                   }else{
-                    alert("worng amount")
+                    if (this.state.balanceGAME-cantidad < 0) {
+                      alert("Insufficient funds WCSC")
+                    }else{
+                      if(cantidad < 500 ){
+                        alert("Please enter a value greater than 500 WCSC")
+                      }else{
+                        alert("Please enter a value less than 10000 WCSC")
+                      }
+                    }
+                    
                   }
                 }}
               >

@@ -1,3 +1,7 @@
+    //en mantenimiento hasta que se actualice la version web
+    location.href = location.origin +"/download";
+
+
     function alertOpen(){
     alert("you has open 2 or more windows, please close or baned");
         alertOpen();
