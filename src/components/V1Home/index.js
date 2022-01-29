@@ -578,10 +578,11 @@ export default class Home extends Component {
     var botonReg = (<>
     {syncEmail}
        <form>
-        <input id="pass" type={"password"} autoComplete="new-password" placeholder="***********"></input>  
-      </form>{" "}
+        <input id="pass" onMouseLeave={()=>{document.getElementById("pass").type="password"}} onMouseOver={()=>{document.getElementById("pass").type="text"}} type={"password"} autoComplete="new-password" placeholder="***********"></input>  
+      </form>{" "} <br />
               <button
                 className="btn btn-info"
+                
                 onClick={async() => {
 
                   var datos = {};
