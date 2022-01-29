@@ -24,8 +24,6 @@
 
         if(parseInt(localStorage.getItem("gameOpen")) > 1){
             localStorage.setItem("gameOpen", "0")
-            canvas.style.width = "0px";
-            canvas.style.height = "0px";
             alertOpen();
 
         }

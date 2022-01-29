@@ -23,8 +23,8 @@
         }
 
         if(parseInt(localStorage.getItem("gameOpen")) > 1){
-        localStorage.setItem("gameOpen", "0")
-        alertOpen();
+            localStorage.setItem("gameOpen", "0")
+            alertOpen();
 
         }
 
