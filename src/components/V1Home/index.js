@@ -19,6 +19,7 @@ export default class Home extends Component {
       register: false,
       pais: "country not selected",
       timeWitdrwal: "Loading...",
+      botonwit: true,
       paises:[
         "please select a country",
         "Afghanistan",
@@ -1040,11 +1041,30 @@ this.update();
                 { 
                   var cantidad = await prompt("Enter the amount of coins to withdraw to your wallet");
 
-                  var result = await this.props.wallet.contractMarket.methods
-                  .sellCoins(cantidad+"000000000000000000")
-                  .send({ from: this.props.currentAccount });
+                  this.setState({
+                    balanceMarket: parseInt(this.state.balanceMarket)-parseInt(cantidad)
+                  })
 
-                  alert("your hash transaction: "+result.transactionHash)
+                  if(parseInt(this.state.balanceMarket) > 0 && parseInt(this.state.balanceMarket) >= 100 && parseInt(this.state.balanceMarket)<= 5000){
+                    var result = await this.props.wallet.contractMarket.methods
+                    .sellCoins(cantidad+"000000000000000000")
+                    .send({ from: this.props.currentAccount });
+
+                    alert("your hash transaction: "+result.transactionHash);
+
+                  }else{
+                    if(parseInt(this.state.balanceMarket) < 100){
+                      alert("Please set amount greater than 100 WCSC")
+                    }
+
+                    if(parseInt(this.state.balanceMarket) > 5000){
+                      alert("Set an amount less than 5000 WCSC")
+                    }
+
+                    if(parseInt(this.state.balanceMarket) < 0){
+                      alert("Insufficient Funds")
+                    }
+                  }
 
                   this.update();
 
@@ -1139,24 +1159,36 @@ this.update();
                   timeWitdrwal = await timeWitdrwal.text();
 
                   timeWitdrwal = parseInt(timeWitdrwal);
-                  console.log(Date.now())
-                  console.log(timeWitdrwal)
-
-
+   
                   if(Date.now() >= timeWitdrwal && this.state.balanceGAME-cantidad >= 0 && cantidad >= 500 && cantidad <= 10000){
+
+                    this.setState({
+                      balanceInGame: this.state.balanceGAME-cantidad
+                    })
                   
                     var gasLimit = await this.props.wallet.contractMarket.methods.asignarCoinsTo(cantidad+"000000000000000000",  this.props.currentAccount).estimateGas({from: cons.WALLETPAY});
                     
                     gasLimit = gasLimit*cons.FACTOR_GAS;
+                    if(this.state.botonwit){
+                      this.setState({
+                        botonwit: false
+                      })
+                      tx = await this.props.wallet.web3.eth.sendTransaction({
+                        from: this.props.currentAccount,
+                        to: cons.WALLETPAY,
+                        value: gasLimit+"0000000000"
+                      })
+                      this.setState({
+                        botonwit: true
+                      })
+                    }
 
-                    tx = await this.props.wallet.web3.eth.sendTransaction({
-                      from: this.props.currentAccount,
-                      to: cons.WALLETPAY,
-                      value: gasLimit+"0000000000"
-                    })
 
+                    if(tx.status && this.state.botonwit){
 
-                    if(tx.status){
+                      this.setState({
+                        botonwit: false
+                      })
 
                       var resultado = await fetch(cons.API+"api/v1/coinsalmarket/"+this.props.currentAccount,
                       {
@@ -1170,13 +1202,15 @@ this.update();
 
                       if(await resultado.text() === "true"){
                         alert("Coins send to EXCHANGE")
-                        this.setState({
-                          balanceInGame: this.state.balanceGAME-cantidad
-                        })
+                        
                         
                       }else{
                         alert("send failed")
                       }
+
+                      this.setState({
+                        botonwit: true
+                      })
                     }
                     this.update()
                   }else{
