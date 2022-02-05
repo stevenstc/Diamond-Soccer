@@ -1041,7 +1041,7 @@ this.update();
                 { 
                   var cantidad = await prompt("Enter the amount of coins to withdraw to your wallet");
 
-                  if(parseInt(this.state.balanceMarket)-parseInt(cantidad) > 0 && parseInt(cantidad) >= 100 && parseInt(cantidad)<= 5000){
+                  if(parseInt(this.state.balanceMarket) > 0 && parseInt(this.state.balanceMarket)-parseInt(cantidad) >= 0 && parseInt(cantidad) >= 100 && parseInt(cantidad)<= 5000){
                     
                     this.setState({
                       balanceMarket: parseInt(this.state.balanceMarket)-parseInt(cantidad)
@@ -1062,7 +1062,7 @@ this.update();
                       alert("Set an amount less than 5000 WCSC")
                     }
 
-                    if(parseInt(this.state.balanceMarket) < 0){
+                    if(parseInt(this.state.balanceMarket) <= 0){
                       alert("Insufficient Funds")
                     }
                   }
