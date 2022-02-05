@@ -1041,11 +1041,12 @@ this.update();
                 { 
                   var cantidad = await prompt("Enter the amount of coins to withdraw to your wallet");
 
-                  this.setState({
-                    balanceMarket: parseInt(this.state.balanceMarket)-parseInt(cantidad)
-                  })
+                  if(parseInt(this.state.balanceMarket)-parseInt(cantidad) > 0 && parseInt(cantidad) >= 100 && parseInt(cantidad)<= 5000){
+                    
+                    this.setState({
+                      balanceMarket: parseInt(this.state.balanceMarket)-parseInt(cantidad)
+                    })
 
-                  if(parseInt(this.state.balanceMarket) > 0 && parseInt(this.state.balanceMarket) >= 100 && parseInt(this.state.balanceMarket)<= 5000){
                     var result = await this.props.wallet.contractMarket.methods
                     .sellCoins(cantidad+"000000000000000000")
                     .send({ from: this.props.currentAccount });
@@ -1053,11 +1054,11 @@ this.update();
                     alert("your hash transaction: "+result.transactionHash);
 
                   }else{
-                    if(parseInt(this.state.balanceMarket) < 100){
+                    if(parseInt(cantidad) < 100){
                       alert("Please set amount greater than 100 WCSC")
                     }
 
-                    if(parseInt(this.state.balanceMarket) > 5000){
+                    if(parseInt(cantidad) > 5000){
                       alert("Set an amount less than 5000 WCSC")
                     }
 
