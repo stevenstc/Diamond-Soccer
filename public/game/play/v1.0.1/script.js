@@ -1,5 +1,5 @@
     //en mantenimiento hasta que se actualice la version web
-    //location.href = location.origin +"/download";
+    location.href = location.origin +"/download";
 
 
     function alertOpen(){
