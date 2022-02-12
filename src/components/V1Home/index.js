@@ -1023,12 +1023,12 @@ this.update();
             </div>
 
             <div className="col-lg-4 col-md-12  mt-2">
-            <img
+            <a href="https://bscscan.com/address/0x2846df5d668C1B4017562b7d2C1E471373912509#tokentxns"><img
                 src="assets/favicon.ico"
                 className="meta-gray"
                 width="100"
                 height="100" 
-                alt="markert info"/>
+                alt="markert info"/></a>
 
             <h3>EXCHANGE</h3>
               <span>
@@ -1054,12 +1054,12 @@ this.update();
                     alert("your hash transaction: "+result.transactionHash);
 
                   }else{
-                    if(parseInt(cantidad) < 100){
-                      alert("Please set amount greater than 100 WCSC")
+                    if(parseInt(cantidad) < 500){
+                      alert("Please set amount greater than 500 WCSC")
                     }
 
-                    if(parseInt(cantidad) > 5000){
-                      alert("Set an amount less than 5000 WCSC")
+                    if(parseInt(cantidad) > 1000){
+                      alert("Set an amount less than 1000 WCSC")
                     }
 
                     if(parseInt(this.state.balanceMarket) <= 0){
