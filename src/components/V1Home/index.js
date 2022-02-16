@@ -1039,7 +1039,16 @@ this.update();
                 className="btn btn-primary"
                 onClick={async() => 
                 { 
+
+                  var resultado = await fetch(cons.API+"api/v1/consultar/csc/exchange/"+this.props.wallet.contractMarket._address)
+                  resultado = await resultado.text()
+                  console.log(resultado);
                   var cantidad = await prompt("Enter the amount of coins to withdraw to your wallet");
+
+                  if(parseInt(cantidad) > parseInt(resultado) ){
+                    alert("Please try again later")
+                    return;
+                  }
 
                   if(parseInt(this.state.balanceMarket) > 0 && parseInt(this.state.balanceMarket)-parseInt(cantidad) >= 0 && parseInt(cantidad) >= 100 && parseInt(cantidad)<= 5000){
                     
