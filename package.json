@@ -12,6 +12,7 @@
   "dependencies": {
     "@babel/core": "7.8.4",
     "@svgr/webpack": "4.3.3",
+    "@types/react-native-dotenv": "^0.2.0",
     "@typescript-eslint/eslint-plugin": "^2.34.0",
     "@typescript-eslint/parser": "^2.34.0",
     "autoprefixer": "^10.0.1",
@@ -149,15 +150,7 @@
     ],
     "plugins": [
       [
-        "module:react-native-dotenv",
-        {
-          "moduleName": "@env",
-          "path": ".env",
-          "blacklist": null,
-          "whitelist": null,
-          "safe": false,
-          "allowUndefined": false
-        }
+        "module:react-native-dotenv"
       ]
     ]
   },
