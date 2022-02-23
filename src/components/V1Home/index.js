@@ -1040,7 +1040,7 @@ this.update();
                 onClick={async() => 
                 { 
 
-                  var resultado = await fetch(cons.API+"api/v1/consultar/csc/exchange/"+this.props.wallet.contractMarket._address)
+                  var resultado = await fetch(cons.API+"api/v1/consultar/csc/cuenta/"+this.props.wallet.contractMarket._address)
                   resultado = await resultado.text()
                   console.log(resultado);
                   var cantidad = await prompt("Enter the amount of coins to withdraw to your wallet");
