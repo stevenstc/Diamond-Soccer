@@ -59,7 +59,7 @@ class App extends Component {
     setInterval(async() => {
       this.conectar();
 
-    },3*1000);
+    },7*1000);
 
   }
 

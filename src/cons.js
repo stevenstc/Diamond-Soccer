@@ -1,6 +1,5 @@
 import {APP_CSRK, APP_TOKNN} from "@env";
 
-
 const WS = false;  //TESTNET
 
 const TokenTest = "0x038987095f309d3640F51644430dc6C7C4E2E409"; //token de pruebas
