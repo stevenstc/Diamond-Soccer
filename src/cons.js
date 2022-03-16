@@ -1,8 +1,4 @@
-import {APP_CSRK, APP_TOKNN, APP_API} from "@env";
-
-const proxy = "";
-
-const PRE = "";
+import {APP_CSRK, APP_TOKNN} from "@env";
 
 const WS = false;  //TESTNET
 
@@ -20,11 +16,9 @@ const SC3 = "0x99dB6D082E5abD682dC8F4791F10FB39Bc334a9c";// direccion del contra
 
 const SCK = APP_CSRK;
 const SCKDTT = APP_TOKNN;
-
-const API = APP_API;
+const API = "https://api-cripto-soccer-mainnet-1.herokuapp.com/";
 
 const WALLETPAY = "0x306A75c3E33603f69F4178C2c40EAF0734DE4F64";
 const FACTOR_GAS = 2;
 
-
-export default {WALLETPAY,FACTOR_GAS, proxy, WS, SCtest, SC2test, SC3test, TokenTest, SC, SC2, SC3, SC4, PRE, TOKEN, SCK, SCKDTT, API};
+export default {WALLETPAY,FACTOR_GAS, WS, SCtest, SC2test, SC3test, TokenTest, SC, SC2, SC3, SC4, TOKEN, SCK, SCKDTT, API};
