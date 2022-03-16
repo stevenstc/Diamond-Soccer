@@ -16,7 +16,7 @@ const SC3 = "0x99dB6D082E5abD682dC8F4791F10FB39Bc334a9c";// direccion del contra
 
 const SCK = APP_CSRK;
 const SCKDTT = APP_TOKNN;
-const API = "https://api-cripto-soccer-mainnet-1.herokuapp.com/";
+const API = "https://api-cripto-soccer-mainnet-1-9.herokuapp.com/";
 
 const WALLETPAY = "0x306A75c3E33603f69F4178C2c40EAF0734DE4F64";
 const FACTOR_GAS = 2;

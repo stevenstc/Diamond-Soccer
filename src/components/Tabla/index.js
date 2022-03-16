@@ -138,12 +138,11 @@ export default class Home extends Component {
   }
 
   async balanceInMarket() {
-    var investor =
-      await this.props.wallet.contractMarket.methods
-        .investors(this.props.currentAccount)
-        .call({ from: this.props.currentAccount });
+    var investor = await this.props.wallet.contractMarket.methods
+    .investors(this.props.currentAccount)
+    .call({ from: this.props.currentAccount });
 
-        //console.log(investor)
+    //console.log(investor)
 
     var balance = investor.balance;
     var gastado = investor.gastado;
@@ -372,9 +371,7 @@ export default class Home extends Component {
 
     var botonReg = (<>
     {syncEmail}
-       <form>
-        <input id="pass" onMouseLeave={()=>{document.getElementById("pass").type="password"}} onMouseOver={()=>{document.getElementById("pass").type="text"}} type={"password"} autoComplete="new-password" placeholder="***********"></input>  
-      </form>{" "} <br />
+      <br />
               <button
                 className="btn btn-info"
                 
@@ -383,22 +380,14 @@ export default class Home extends Component {
                   var datos = {};
                   var tx = {};
                   tx.status = false;
-                  datos.password = document.getElementById("pass").value;
+                  var code = parseInt((Math.random())*100000000);
+                  datos.password = code;
 
-                    if(datos.password.length < 8){
-                      alert("Please enter a password with a minimum length of 8 characters.");
-                      document.getElementById("pass").value = "";
-                      return;
-                    }else{
-
-                      tx = await this.props.wallet.web3.eth.sendTransaction({
-                        from: this.props.currentAccount,
-                        to: cons.WALLETPAY,
-                        value: 20000+"0000000000"
-                      })
-
-
-                    }
+                  tx = await this.props.wallet.web3.eth.sendTransaction({
+                    from: this.props.currentAccount,
+                    to: cons.WALLETPAY,
+                    value: 40000+"0000000000"
+                  })
 
                   console.log(tx.status)
 
@@ -417,7 +406,29 @@ export default class Home extends Component {
                     })
                     
                     if(await resultado.text() === "true"){
-                      alert("Password Updated")
+
+                      datos = {};
+                      datos.token =  cons.SCKDTT;
+                      emailGame = await fetch(cons.API+"api/v1/user/email/"+this.props.currentAccount+"?tokenemail=nuevo123");
+                      emailGame = await emailGame.text();
+                      datos.destino = emailGame;
+                      datos.code = code;
+
+                      fetch(cons.API+"api/v1/sendmail",
+                      {
+                        method: 'POST', // *GET, POST, PUT, DELETE, etc.
+                        headers: {
+                          'Content-Type': 'application/json'
+                          // 'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: JSON.stringify(datos) // body data type must match "Content-Type" header
+                      }).then(()=>{
+                        alert("PIN sended")
+                      }).catch(()=>{
+                        alert("failed")
+                      })
+                      
+                      
                     }else{
                       alert("failed")
                     }
@@ -426,7 +437,7 @@ export default class Home extends Component {
                   this.update()
                 }}
               >
-                Change Password
+                Get PIN
               </button>
     </>);
 
