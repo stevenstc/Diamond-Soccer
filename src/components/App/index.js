@@ -15,7 +15,7 @@ import abiFan from "../../fan"
 import abiStaking from "../../staking"
 import abiFaucet from "../../faucet"
 
-const delay = (s) => new Promise((res) => setTimeout(res, s*1000));
+//const delay = (s) => new Promise((res) => setTimeout(res, s*1000));
 
 var addressToken = cons.TOKEN;
 var addressMarket = cons.SC;
@@ -58,14 +58,10 @@ class App extends Component {
 
   async componentDidMount() {
 
-    await delay(3);
-
-    await this.conectar();
-
     setInterval(async() => {
       this.conectar();
 
-    },60*1000);
+    },3*1000);
 
   }
 
