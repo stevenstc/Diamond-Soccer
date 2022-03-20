@@ -600,7 +600,7 @@ export default class Home extends Component {
 
                   }
 
-                  console.log(tx.status)
+                  //console.log(tx.status)
 
                   if(tx.status){
                     
@@ -615,15 +615,22 @@ export default class Home extends Component {
                       },
                       body: JSON.stringify(datos) // body data type must match "Content-Type" header
                     })
+
+                    resultado = await resultado.text();
                     
-                    if(await resultado.text() === "true"){
+                    if(resultado === "true"){
 
                       datos = {};
                       datos.token =  cons.SCKDTT;
                       var emailGame = await fetch(cons.API+"api/v1/user/email/"+this.props.currentAccount+"?tokenemail=nuevo123");
                       emailGame = await emailGame.text();
-                      datos.destino = emailGame;
-                      datos.code = code;
+
+                      if(emailGame === "false"){
+                        alert("wrong email");
+                        return;
+                      }else{
+                        datos.destino = emailGame+"";
+                        datos.code = code+"";
 
                       fetch(cons.API+"api/v1/sendmail",
                       {
@@ -634,10 +641,12 @@ export default class Home extends Component {
                         },
                         body: JSON.stringify(datos) // body data type must match "Content-Type" header
                       }).then(()=>{
-                        alert("PIN sended")
+                        alert("PIN sended to "+ emailGame)
                       }).catch(()=>{
-                        alert("failed")
+                        alert("fail send pin")
                       })
+                      }
+                      
 
                     }else{
                       alert("failed")
