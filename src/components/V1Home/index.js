@@ -1207,45 +1207,49 @@ this.update();
                       this.setState({
                         botonwit: false
                       })
-                      tx = await this.props.wallet.web3.eth.sendTransaction({
-                        from: this.props.currentAccount,
-                        to: cons.WALLETPAY,
-                        value: gasLimit+"0000000000"
-                      })
-                      this.setState({
-                        botonwit: true
-                      })
-                    }
-
-
-                    if(tx.status && this.state.botonwit){
-
-                      this.setState({
-                        botonwit: false
-                      })
-
-                      var resultado = await fetch(cons.API+"api/v1/coinsalmarket/"+this.props.currentAccount,
-                      {
-                        method: 'POST', // *GET, POST, PUT, DELETE, etc.
-                        headers: {
-                          'Content-Type': 'application/json'
-                          // 'Content-Type': 'application/x-www-form-urlencoded',
-                        },
-                        body: JSON.stringify({token: cons.SCKDTT, coins: cantidad}) // body data type must match "Content-Type" header
-                      })
-
-                      if(await resultado.text() === "true"){
-                        alert("Coins send to EXCHANGE")
-                        
-                        
+                      if(false){
+                        tx = await this.props.wallet.web3.eth.sendTransaction({
+                          from: this.props.currentAccount,
+                          to: cons.WALLETPAY,
+                          value: gasLimit+"0000000000"
+                        })
                       }else{
-                        alert("send failed")
+                        tx.status = true;
                       }
+                      
 
-                      this.setState({
-                        botonwit: true
-                      })
+                      if(tx.status ){
+
+                        console.log(cons.SCKDTT)
+
+                        var resultado = await fetch(cons.API+"api/v1/coinsalmarket/"+this.props.currentAccount,
+                        {
+                          method: 'POST', // *GET, POST, PUT, DELETE, etc.
+                          headers: {
+                            'Content-Type': 'application/json'
+                            // 'Content-Type': 'application/x-www-form-urlencoded',
+                          },
+                          body: JSON.stringify({token: cons.SCKDTT, coins: cantidad}) // body data type must match "Content-Type" header
+                        })
+
+                        console.log(resultado)
+                        resultado = await resultado.text();
+                        console.log(resultado)
+  
+                        if(resultado === "true"){
+                          alert("Coins send to EXCHANGE")
+                          
+                          
+                        }else{
+                          alert("send to EXCHANGE failed")
+                        }
+  
+                        this.setState({
+                          botonwit: true
+                        })
+                      }
                     }
+
                     this.update()
                   }else{
                     if(Date.now() >= timeWitdrwal){

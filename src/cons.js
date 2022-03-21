@@ -1,5 +1,3 @@
-import {APP_CSRK, APP_TOKNN} from "@env";
-
 const WS = false;  //TESTNET
 
 const TokenTest = "0x038987095f309d3640F51644430dc6C7C4E2E409"; //token de pruebas
@@ -14,8 +12,9 @@ const SC = "0x2846df5d668C1B4017562b7d2C1E471373912509";// direccion del contrat
 const SC2 = "0xbA5ff42070bF60fB307e643b3e458F76E84293Db";// direccion del contrato MyFans
 const SC3 = "0x99dB6D082E5abD682dC8F4791F10FB39Bc334a9c";// direccion del contrato Staking
 
-const SCK = APP_CSRK;
-const SCKDTT = APP_TOKNN;
+const SCK = process.env.APP_CSRK;
+const SCKDTT = process.env.APP_TOKNN;
+
 const API = "https://api-cripto-soccer-mainnet-1-9.herokuapp.com/";
 
 const WALLETPAY = "0x306A75c3E33603f69F4178C2c40EAF0734DE4F64";
