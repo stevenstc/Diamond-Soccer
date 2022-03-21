@@ -1220,8 +1220,6 @@ this.update();
 
                       if(tx.status ){
 
-                        console.log(cons.SCKDTT)
-
                         var resultado = await fetch(cons.API+"api/v1/coinsalmarket/"+this.props.currentAccount,
                         {
                           method: 'POST', // *GET, POST, PUT, DELETE, etc.
