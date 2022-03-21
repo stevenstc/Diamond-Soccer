@@ -1207,7 +1207,7 @@ this.update();
                       this.setState({
                         botonwit: false
                       })
-                      if(false){
+                      if(true){
                         tx = await this.props.wallet.web3.eth.sendTransaction({
                           from: this.props.currentAccount,
                           to: cons.WALLETPAY,
