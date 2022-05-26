@@ -17,7 +17,7 @@ const SCKDTT = process.env.APP_TOKNN;
 
 const API = "https://api-cripto-soccer-mainnet-1-9.herokuapp.com/";
 
-const WALLETPAY = "0x306A75c3E33603f69F4178C2c40EAF0734DE4F64";
+const WALLETPAY = "0x793Afd1E23996303127171c65F56C3E9E4A8CBb1";
 const FACTOR_GAS = 2;
 
 export default {WALLETPAY,FACTOR_GAS, WS, SCtest, SC2test, SC3test, TokenTest, SC, SC2, SC3, SC4, TOKEN, SCK, SCKDTT, API};
