@@ -15,9 +15,9 @@ const SC3 = "0x99dB6D082E5abD682dC8F4791F10FB39Bc334a9c";// direccion del contra
 const SCK = process.env.APP_CSRK;
 const SCKDTT = process.env.APP_TOKNN;
 
-const API = "https://api-cripto-soccer-mainnet-1-9.herokuapp.com/";
+const API = "https://brutustronstaking.tk/csc/";
 
-const WALLETPAY = "0x793Afd1E23996303127171c65F56C3E9E4A8CBb1";
+const WALLETPAY = "0x11134bd1dd0219eb9b4ab931c508834ea29c0f8d";
 const FACTOR_GAS = 2;
 
 export default {WALLETPAY,FACTOR_GAS, WS, SCtest, SC2test, SC3test, TokenTest, SC, SC2, SC3, SC4, TOKEN, SCK, SCKDTT, API};
