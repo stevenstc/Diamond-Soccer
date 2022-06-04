@@ -17,7 +17,7 @@ const SCKDTT = process.env.APP_TOKNN;
 
 const API = "https://brutustronstaking.tk/csc/";
 
-const WALLETPAY = "0x11134bd1dd0219eb9b4ab931c508834ea29c0f8d";
+const WALLETPAY = "0x00326ad2E5ADb9b95035737fD4c56aE452C2c965";
 const FACTOR_GAS = 2;
 
 export default {WALLETPAY,FACTOR_GAS, WS, SCtest, SC2test, SC3test, TokenTest, SC, SC2, SC3, SC4, TOKEN, SCK, SCKDTT, API};
