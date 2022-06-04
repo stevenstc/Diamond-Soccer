@@ -736,7 +736,7 @@ export default class Home extends Component {
           if(tx.status){
             
             datos.token =  cons.SCKDTT;
-            
+
             var resultado = await fetch(cons.API+"api/v1/user/update/info/"+this.props.currentAccount,
             {
               method: 'POST', // *GET, POST, PUT, DELETE, etc.
@@ -746,8 +746,10 @@ export default class Home extends Component {
               },
               body: JSON.stringify(datos) // body data type must match "Content-Type" header
             })
-            
-            if(await resultado.text() === "true"){
+
+            resultado = await resultado.text();
+
+            if(resultado === "true"){
               alert("Updated record")
             }else{
               alert("failed")
