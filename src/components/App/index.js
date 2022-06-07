@@ -71,9 +71,7 @@ class App extends Component {
 
       this.setState({
         metamask: true
-      })  
-
-      if(!this.state.baneado){ 
+      }) 
           
         await window.ethereum.request({
           method: 'wallet_switchEthereumChain',
@@ -143,32 +141,6 @@ class App extends Component {
         })
   
 
-      }else{
-      
-        window.ethereum.request({ method: 'eth_requestAccounts' })
-          .then(async(accounts) => {
-
-            var ban = await fetch(cons.API+"api/v1/user/ban/"+accounts[0]);
-            ban = await ban.text();
-
-            if(ban === "true"){
-              ban = true;
-            }else{
-              ban = false;
-            }
-
-            this.setState({
-              baneado: ban
-            })
-  
-          })
-          .catch((error) => {
-            console.error(error)
-            this.setState({
-              baneado: false
-            })
-          });
-      }
         
     } else {    
       this.setState({

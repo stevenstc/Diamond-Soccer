@@ -26,15 +26,15 @@ export default class Market extends Component {
 
   async componentDidMount() {
 
-    await this.update();
+    this.update();
 
   }
 
   async update() {
 
-    await this.balance();
-    await this.inventario();
-    await this.items();
+    this.balance();
+    this.inventario();
+    this.items();
 
   }
 

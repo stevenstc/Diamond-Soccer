@@ -216,7 +216,8 @@ export default class Home extends Component {
         "Zambia",
         "Zimbabwe"
       ],
-      imagenLink: "assets/img/default-user-csg.png"
+      imagenLink: "assets/img/default-user-csg.png",
+      balanceExchange: "loading..."
     }
 
     this.balance = this.balance.bind(this);
@@ -230,25 +231,22 @@ export default class Home extends Component {
 
   async componentDidMount() {
 
-    await this.update();
-    /*
+    this.update();
+    
 
     setInterval(async() => {
-      this.balanceInGame();
-      this.balanceInMarket();
-    },7*1000);*/
+      this.update();
+    },15*1000);
     
   }
 
   async update() {
-     this.balanceInGame();
-     this.balance();
-     this.balanceInMarket();
-     this.inventario();
+    this.balanceInGame();
+    this.balance();
+    this.balanceInMarket();
+    this.inventario();
     
   }
-
-
 
   async balance() {
     var balance =
@@ -374,9 +372,14 @@ export default class Home extends Component {
 
     //console.log(balance)
 
+    var resultado = await fetch(cons.API+"api/v1/consultar/csc/cuenta/"+this.props.wallet.contractMarket._address)
+    resultado = await resultado.text()
+    resultado = parseFloat(resultado)
+
     this.setState({
       balanceMarket: balance,
-      email: email
+      email: email,
+      balanceExchange: resultado
     });
   }
 
@@ -1049,6 +1052,7 @@ this.update();
             </div>
 
             <div className="col-lg-4 col-md-12  mt-2">
+            
             <a href="https://bscscan.com/address/0x2846df5d668C1B4017562b7d2C1E471373912509#tokentxns"><img
                 src="assets/favicon.ico"
                 className="meta-gray"
@@ -1056,7 +1060,7 @@ this.update();
                 height="100" 
                 alt="markert info"/></a>
 
-            <h3>EXCHANGE</h3>
+            <h3>EXCHANGE <br></br>{this.state.balanceExchange +" CSC"}</h3>
               <span>
                 WCSC: {this.state.balanceMarket}
               </span>
