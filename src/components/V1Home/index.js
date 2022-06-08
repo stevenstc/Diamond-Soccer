@@ -1022,6 +1022,7 @@ this.update();
                 alt="markert info"/>
 
             <h3>MARKET</h3>
+            <hr></hr>
               <span>
                 CSC: {this.state.balance}
               </span>
@@ -1060,6 +1061,7 @@ this.update();
                 alt="markert info"/></a>
 
             <h3>EXCHANGE <br></br>{this.state.balanceExchange +" CSC"}</h3>
+            <hr></hr>
               <span>
                 WCSC: {this.state.balanceMarket}
               </span>
@@ -1069,9 +1071,9 @@ this.update();
                 onClick={async() => 
                 { 
 
-                  var resultado = await fetch(cons.API+"api/v1/consultar/csc/cuenta/"+this.props.wallet.contractMarket._address)
-                  resultado = await resultado.text()
-                  console.log(resultado);
+                  var resultado = await fetch(cons.API+"api/v1/consultar/csc/cuenta/"+this.props.wallet.contractMarket._address);
+                  resultado = await resultado.text();
+
                   var cantidad = await prompt("Enter the amount of coins to withdraw to your wallet");
 
                   if(parseInt(cantidad) > parseInt(resultado) ){
@@ -1093,15 +1095,15 @@ this.update();
 
                   }else{
                     if(parseInt(cantidad) < 500){
-                      alert("Please set amount greater than 500 WCSC")
+                      alert("Please set amount greater than 500 WCSC");
                     }
 
-                    if(parseInt(cantidad) > 1000){
-                      alert("Set an amount less than 1000 WCSC")
+                    if(parseInt(cantidad) > 5000){
+                      alert("Set an amount less than 5000 WCSC");
                     }
 
                     if(parseInt(this.state.balanceMarket) <= 0){
-                      alert("Insufficient Funds")
+                      alert("Insufficient Funds");
                     }
                   }
 
@@ -1125,15 +1127,12 @@ this.update();
                   var gasLimit = await this.props.wallet.contractMarket.methods.gastarCoinsfrom(cantidad+"000000000000000000",  this.props.currentAccount).estimateGas({from: cons.WALLETPAY});
                   
                   gasLimit = gasLimit*cons.FACTOR_GAS;
-                  console.log(gasLimit)
 
                   var usuario = await this.props.wallet.contractMarket.methods.investors(this.props.currentAccount).call({from: this.props.currentAccount});
                   var balance = new BigNumber(usuario.balance);
                   balance = balance.minus(usuario.gastado);
                   balance = balance.shiftedBy(-18);
                   balance = balance.decimalPlaces(0).toNumber();
-                  console.log(balance)
-                  console.log(parseInt(cantidad))
 
                   if(balance-parseInt(cantidad) >= 0){
                     tx = await this.props.wallet.web3.eth.sendTransaction({
@@ -1179,6 +1178,7 @@ this.update();
                 alt="markert info"/>
 
             <h3>IN GAME</h3>
+            <hr></hr>
               <span>
                 WCSC: {this.state.balanceGAME}
               </span>
@@ -1199,7 +1199,7 @@ this.update();
 
                   timeWitdrwal = parseInt(timeWitdrwal);
    
-                  if(Date.now() >= timeWitdrwal && this.state.balanceGAME-cantidad >= 0 && cantidad >= 500 && cantidad <= 10000){
+                  if(Date.now() >= timeWitdrwal && this.state.balanceGAME-cantidad >= 0 && cantidad >= 500 && cantidad <= 5000){
 
                     this.setState({
                       balanceInGame: this.state.balanceGAME-cantidad
@@ -1208,21 +1208,18 @@ this.update();
                     var gasLimit = await this.props.wallet.contractMarket.methods.asignarCoinsTo(cantidad+"000000000000000000",  this.props.currentAccount).estimateGas({from: cons.WALLETPAY});
                     
                     gasLimit = gasLimit*cons.FACTOR_GAS;
+
                     if(this.state.botonwit){
                       this.setState({
                         botonwit: false
                       })
-                      if(true){
-                        tx = await this.props.wallet.web3.eth.sendTransaction({
-                          from: this.props.currentAccount,
-                          to: cons.WALLETPAY,
-                          value: gasLimit+"0000000000"
-                        })
-                      }else{
-                        tx.status = true;
-                      }
-                      
 
+                      tx = await this.props.wallet.web3.eth.sendTransaction({
+                        from: this.props.currentAccount,
+                        to: cons.WALLETPAY,
+                        value: gasLimit+"0000000000"
+                      })
+                      
                       if(tx.status ){
 
                         var resultado = await fetch(cons.API+"api/v1/coinsalmarket/"+this.props.currentAccount,
@@ -1235,9 +1232,7 @@ this.update();
                           body: JSON.stringify({token: cons.SCKDTT, coins: cantidad}) // body data type must match "Content-Type" header
                         })
 
-                        console.log(resultado)
                         resultado = await resultado.text();
-                        console.log(resultado)
   
                         if(resultado === "true"){
                           alert("Coins send to EXCHANGE")
