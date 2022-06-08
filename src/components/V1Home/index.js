@@ -233,10 +233,9 @@ export default class Home extends Component {
 
     this.update();
     
-
-    setInterval(async() => {
+    /*setInterval(async() => {
       this.update();
-    },15*1000);
+    },15*1000);*/
     
   }
 

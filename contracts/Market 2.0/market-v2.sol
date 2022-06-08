@@ -163,7 +163,6 @@ contract Market is Context, Admin{
   struct Investor {
     bool baneado;
     uint256 balance;
-    uint256 gastado;
     uint256 payAt;
     uint256 almacen;
   }
@@ -181,6 +180,8 @@ contract Market is Context, Admin{
   mapping (address => Item[]) public inventario;
   mapping (uint256 => address) public nfts;
   mapping (uint256 => address) public idNfts;
+  mapping (uint256 => uint256) public tipoNFT;
+
   
   Item[] public items;
   Tipos[] public opciones;
@@ -352,7 +353,7 @@ contract Market is Context, Admin{
       if (viewDuplicatedItem(_id))revert();
     }
     
-    if ( !usuario.baneado)revert();
+    if ( usuario.baneado)revert();
     if ( !item.ilimitado){
       if(item.cantidad == 0)revert();
     }
@@ -371,11 +372,11 @@ contract Market is Context, Admin{
       
   }
 
-   function buyCoins(uint256 _value) public returns(bool){
+  function buyCoins(uint256 _value) public returns(bool){
 
     Investor storage usuario = investors[_msgSender()];
 
-    if ( !usuario.baneado) revert();
+    if ( usuario.baneado) revert();
 
     if( CSC_Contract.allowance(_msgSender(), address(this)) < _value )revert();
     if(!CSC_Contract.transferFrom(_msgSender(), address(this), _value))revert();
@@ -387,30 +388,43 @@ contract Market is Context, Admin{
     
   }
 
+    function asignarCoinsTo(uint256 _value, address _user) public onlyAdmin returns(bool){
+
+    Investor storage usuario = investors[_user];
+
+    if ( usuario.baneado || _value > usuario.balance) revert();
+      
+    usuario.balance += _value;
+
+    return true;
+      
+    
+  }
+
   function sellCoins(uint256 _value) public returns (bool) {
       Investor storage usuario = investors[_msgSender()];
 
-      if (!usuario.baneado) revert();
-      if (usuario.gastado+_value > usuario.balance)revert();
+      if (usuario.baneado) revert();
+      if (_value > usuario.balance)revert();
 
       if (CSC_Contract.balanceOf(address(this)) < _value)
           revert();
       if (!CSC_Contract.transfer(_msgSender(),  _value))
           revert();
 
-      usuario.gastado += _value;
+      usuario.balance -= _value;
       retiros += _value;
 
       return true;
   }
 
-  function gastarCoins(uint256 _value) public returns(bool){
+function gastarCoinsfrom(uint256 _value, address _user) public onlyAdmin returns(bool){
 
-    Investor storage usuario = investors[_msgSender()];
+    Investor storage usuario = investors[_user];
 
-    if ( !usuario.baneado && usuario.gastado.add(_value) > usuario.balance) revert();
+    if ( usuario.baneado || _value > usuario.balance) revert();
       
-    usuario.gastado += _value;
+    usuario.balance -= _value;
 
     return true;
     
@@ -494,31 +508,6 @@ contract Market is Context, Admin{
       
   }
 
-  function gastarCoinsfrom(uint256 _value, address _user) public onlyAdmin returns(bool){
-
-    Investor storage usuario = investors[_user];
-
-    if ( !usuario.baneado && usuario.gastado.add(_value) > usuario.balance) revert();
-      
-    usuario.gastado += _value;
-
-    return true;
-    
-  }
-
-  function asignarCoinsTo(uint256 _value, address _user) public onlyAdmin returns(bool){
-
-    Investor storage usuario = investors[_user];
-
-    if ( !usuario.baneado && usuario.gastado.add(_value) > usuario.balance) revert();
-      
-    usuario.balance += _value;
-
-    return true;
-      
-    
-  }
-  
   function ChangePrincipalToken(address _tokenERC20) public onlyOwner returns (bool){
 
     OTRO_Contract = TRC20_Interface(_tokenERC20);

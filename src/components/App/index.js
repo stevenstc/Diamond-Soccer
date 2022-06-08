@@ -58,6 +58,8 @@ class App extends Component {
 
   async componentDidMount() {
 
+    //this.conectar();
+
     setInterval(async() => {
       this.conectar();
 
