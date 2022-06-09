@@ -1,5 +1,4 @@
 pragma solidity ^0.5.15;
-
 // SPDX-License-Identifier: Apache-2.0 
 
 library SafeMath {
@@ -163,12 +162,12 @@ contract MinterRole is Context {
     }
 }
 
-interface ITRC165 {
+interface IBEP165 {
     function supportsInterface(bytes4 interfaceId) external view returns (bool);
 }
 
 
-contract ITRC721 is ITRC165 {
+contract IBEP721 is IBEP165 {
     event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
     event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId);
     event ApprovalForAll(address indexed owner, address indexed operator, bool approved);
@@ -185,26 +184,26 @@ contract ITRC721 is ITRC165 {
 }
 
 
-contract ITRC721Metadata is ITRC721 {
+contract IBEP721Metadata is IBEP721 {
     function name() external view returns (string memory);
     function symbol() external view returns (string memory);
     function tokenURI(uint256 tokenId) external view returns (string memory);
 }
 
-contract ITRC721Receiver {
+contract IBEP721Receiver {
 
-    function onTRC721Received(address operator, address from, uint256 tokenId, bytes memory data)
+    function onBEP721Received(address operator, address from, uint256 tokenId, bytes memory data)
     public returns (bytes4);
 }
 
-contract TRC165 is ITRC165 {
+contract BEP165 is IBEP165 {
 
-    bytes4 private constant _INTERFACE_ID_TRC165 = 0x01ffc9a7;
+    bytes4 private constant _INTERFACE_ID_BEP165 = 0x01ffc9a7;
 
     mapping(bytes4 => bool) private _supportedInterfaces;
 
     constructor () internal {
-        _registerInterface(_INTERFACE_ID_TRC165);
+        _registerInterface(_INTERFACE_ID_BEP165);
     }
 
     function supportsInterface(bytes4 interfaceId) external view returns (bool) {
@@ -213,22 +212,22 @@ contract TRC165 is ITRC165 {
 
 
     function _registerInterface(bytes4 interfaceId) internal {
-        require(interfaceId != 0xffffffff, "TRC165: invalid interface id");
+        require(interfaceId != 0xffffffff, "BEP165: invalid interface id");
         _supportedInterfaces[interfaceId] = true;
     }
 }
 
 
-contract TRC721 is Context, TRC165, ITRC721 {
+contract BEP721 is Context, BEP165, IBEP721 {
     using SafeMath for uint256;
     using Address for address;
     using Counters for Counters.Counter;
 
-    // Equals to `bytes4(keccak256("onTRC721Received(address,address,uint256,bytes)"))`
-    // which can be also obtained as `ITRC721Receiver(0).onTRC721Received.selector`
+    // Equals to `bytes4(keccak256("onBEP721Received(address,address,uint256,bytes)"))`
+    // which can be also obtained as `IBEP721Receiver(0).onBEP721Received.selector`
     //
-    // NOTE: TRC721 uses 0x150b7a02, TRC721 uses 0x5175f878.
-    bytes4 private constant _TRC721_RECEIVED = 0x5175f878;
+    // NOTE: BEP721 uses 0x150b7a02, BEP721 uses 0x5175f878.
+    bytes4 private constant _BEP721_RECEIVED = 0x5175f878;
 
     // Mapping from token ID to owner
     mapping (uint256 => address) private _tokenOwner;
@@ -256,32 +255,32 @@ contract TRC721 is Context, TRC165, ITRC721 {
      *     => 0x70a08231 ^ 0x6352211e ^ 0x095ea7b3 ^ 0x081812fc ^
      *        0xa22cb465 ^ 0xe985e9c ^ 0x23b872dd ^ 0x42842e0e ^ 0xb88d4fde == 0x80ac58cd
      */
-    bytes4 private constant _INTERFACE_ID_TRC721 = 0x80ac58cd;
+    bytes4 private constant _INTERFACE_ID_BEP721 = 0x80ac58cd;
 
     constructor () public {
-        // register the supported interfaces to conform to TRC721 via TRC165
-        _registerInterface(_INTERFACE_ID_TRC721);
+        // register the supported interfaces to conform to BEP721 via BEP165
+        _registerInterface(_INTERFACE_ID_BEP721);
     }
 
     function balanceOf(address owner) public view returns (uint256) {
-        require(owner != address(0), "TRC721: balance query for the zero address");
+        require(owner != address(0), "BEP721: balance query for the zero address");
 
         return _ownedTokensCount[owner].current();
     }
 
     function ownerOf(uint256 tokenId) public view returns (address) {
         address owner = _tokenOwner[tokenId];
-        require(owner != address(0), "TRC721: owner query for nonexistent token");
+        require(owner != address(0), "BEP721: owner query for nonexistent token");
 
         return owner;
     }
 
     function approve(address to, uint256 tokenId) public {
         address owner = ownerOf(tokenId);
-        require(to != owner, "TRC721: approval to current owner");
+        require(to != owner, "BEP721: approval to current owner");
 
         require(_msgSender() == owner || isApprovedForAll(owner, _msgSender()),
-            "TRC721: approve caller is not owner nor approved for all"
+            "BEP721: approve caller is not owner nor approved for all"
         );
 
         _tokenApprovals[tokenId] = to;
@@ -289,13 +288,13 @@ contract TRC721 is Context, TRC165, ITRC721 {
     }
 
     function getApproved(uint256 tokenId) public view returns (address) {
-        require(_exists(tokenId), "TRC721: approved query for nonexistent token");
+        require(_exists(tokenId), "BEP721: approved query for nonexistent token");
 
         return _tokenApprovals[tokenId];
     }
 
     function setApprovalForAll(address to, bool approved) public {
-        require(to != _msgSender(), "TRC721: approve to caller");
+        require(to != _msgSender(), "BEP721: approve to caller");
 
         _operatorApprovals[_msgSender()][to] = approved;
         emit ApprovalForAll(_msgSender(), to, approved);
@@ -307,7 +306,7 @@ contract TRC721 is Context, TRC165, ITRC721 {
 
     function transferFrom(address from, address to, uint256 tokenId) public {
         //solhint-disable-next-line max-line-length
-        require(_isApprovedOrOwner(_msgSender(), tokenId), "TRC721: transfer caller is not owner nor approved");
+        require(_isApprovedOrOwner(_msgSender(), tokenId), "BEP721: transfer caller is not owner nor approved");
 
         _transferFrom(from, to, tokenId);
     }
@@ -317,13 +316,13 @@ contract TRC721 is Context, TRC165, ITRC721 {
     }
 
     function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory _data) public {
-        require(_isApprovedOrOwner(_msgSender(), tokenId), "TRC721: transfer caller is not owner nor approved");
+        require(_isApprovedOrOwner(_msgSender(), tokenId), "BEP721: transfer caller is not owner nor approved");
         _safeTransferFrom(from, to, tokenId, _data);
     }
 
     function _safeTransferFrom(address from, address to, uint256 tokenId, bytes memory _data) internal {
         _transferFrom(from, to, tokenId);
-        require(_checkOnTRC721Received(from, to, tokenId, _data), "TRC721: transfer to non TRC721Receiver implementer");
+        require(_checkOnBEP721Received(from, to, tokenId, _data), "BEP721: transfer to non BEP721Receiver implementer");
     }
 
     function _exists(uint256 tokenId) internal view returns (bool) {
@@ -332,7 +331,7 @@ contract TRC721 is Context, TRC165, ITRC721 {
     }
 
     function _isApprovedOrOwner(address spender, uint256 tokenId) internal view returns (bool) {
-        require(_exists(tokenId), "TRC721: operator query for nonexistent token");
+        require(_exists(tokenId), "BEP721: operator query for nonexistent token");
         address owner = ownerOf(tokenId);
         return (spender == owner || getApproved(tokenId) == spender || isApprovedForAll(owner, spender));
     }
@@ -343,12 +342,12 @@ contract TRC721 is Context, TRC165, ITRC721 {
 
     function _safeMint(address to, uint256 tokenId, bytes memory _data) internal {
         _mint(to, tokenId);
-        require(_checkOnTRC721Received(address(0), to, tokenId, _data), "TRC721: transfer to non TRC721Receiver implementer");
+        require(_checkOnBEP721Received(address(0), to, tokenId, _data), "BEP721: transfer to non BEP721Receiver implementer");
     }
 
     function _mint(address to, uint256 tokenId) internal {
-        require(to != address(0), "TRC721: mint to the zero address");
-        require(!_exists(tokenId), "TRC721: token already minted");
+        require(to != address(0), "BEP721: mint to the zero address");
+        require(!_exists(tokenId), "BEP721: token already minted");
 
         _tokenOwner[tokenId] = to;
         _ownedTokensCount[to].increment();
@@ -357,7 +356,7 @@ contract TRC721 is Context, TRC165, ITRC721 {
     }
 
     function _burn(address owner, uint256 tokenId) internal {
-        require(ownerOf(tokenId) == owner, "TRC721: burn of token that is not own");
+        require(ownerOf(tokenId) == owner, "BEP721: burn of token that is not own");
 
         _clearApproval(tokenId);
 
@@ -374,8 +373,8 @@ contract TRC721 is Context, TRC165, ITRC721 {
 
 
     function _transferFrom(address from, address to, uint256 tokenId) internal {
-        require(ownerOf(tokenId) == from, "TRC721: transfer of token that is not own");
-        require(to != address(0), "TRC721: transfer to the zero address");
+        require(ownerOf(tokenId) == from, "BEP721: transfer of token that is not own");
+        require(to != address(0), "BEP721: transfer to the zero address");
 
         _clearApproval(tokenId);
 
@@ -396,7 +395,7 @@ contract TRC721 is Context, TRC165, ITRC721 {
         return (size > 0);
     }
     
-    function _checkOnTRC721Received(address from, address to, uint256 tokenId, bytes memory _data)
+    function _checkOnBEP721Received(address from, address to, uint256 tokenId, bytes memory _data)
         internal returns (bool)
     {
         if (!isContract(to)) {
@@ -404,7 +403,7 @@ contract TRC721 is Context, TRC165, ITRC721 {
         }
         // solhint-disable-next-line avoid-low-level-calls
         (bool success, bytes memory returndata) = to.call(abi.encodeWithSelector(
-            ITRC721Receiver(to).onTRC721Received.selector,
+            IBEP721Receiver(to).onBEP721Received.selector,
             _msgSender(),
             from,
             tokenId,
@@ -418,11 +417,11 @@ contract TRC721 is Context, TRC165, ITRC721 {
                     revert(add(32, returndata), returndata_size)
                 }
             } else {
-                revert("TRC721: transfer to non TRC721Receiver implementer");
+                revert("BEP721: transfer to non BEP721Receiver implementer");
             }
         } else {
             bytes4 retval = abi.decode(returndata, (bytes4));
-            return (retval == _TRC721_RECEIVED);
+            return (retval == _BEP721_RECEIVED);
         }
     }
 
@@ -434,7 +433,7 @@ contract TRC721 is Context, TRC165, ITRC721 {
 }
 
 
-contract TRC721Metadata is Context, TRC165, TRC721, ITRC721Metadata {
+contract BEP721Metadata is Context, BEP165, BEP721, IBEP721Metadata {
     // Token name
     string private _name;
 
@@ -454,7 +453,7 @@ contract TRC721Metadata is Context, TRC165, TRC721, ITRC721Metadata {
      *
      *     => 0x06fdde03 ^ 0x95d89b41 ^ 0xc87b56dd == 0x5b5e139f
      */
-    bytes4 private constant _INTERFACE_ID_TRC721_METADATA = 0x5b5e139f;
+    bytes4 private constant _INTERFACE_ID_BEP721_METADATA = 0x5b5e139f;
 
 
     constructor (string memory name, string memory symbol, string memory baseURI) public {
@@ -462,7 +461,7 @@ contract TRC721Metadata is Context, TRC165, TRC721, ITRC721Metadata {
         _symbol = symbol;
         _baseURI = baseURI;
 
-        _registerInterface(_INTERFACE_ID_TRC721_METADATA);
+        _registerInterface(_INTERFACE_ID_BEP721_METADATA);
     }
 
 
@@ -475,7 +474,7 @@ contract TRC721Metadata is Context, TRC165, TRC721, ITRC721Metadata {
     }
 
     function tokenURI(uint256 tokenId) external view returns (string memory) {
-        require(_exists(tokenId), "TRC721Metadata: URI query for nonexistent token");
+        require(_exists(tokenId), "BEP721Metadata: URI query for nonexistent token");
 
         string memory _tokenURI = _tokenURIs[tokenId];
 
@@ -489,7 +488,7 @@ contract TRC721Metadata is Context, TRC165, TRC721, ITRC721Metadata {
     }
 
     function _setTokenURI(uint256 tokenId, string memory _tokenURI) internal {
-        require(_exists(tokenId), "TRC721Metadata: URI set of nonexistent token");
+        require(_exists(tokenId), "BEP721Metadata: URI set of nonexistent token");
         _tokenURIs[tokenId] = _tokenURI;
     }
 
@@ -511,7 +510,7 @@ contract TRC721Metadata is Context, TRC165, TRC721, ITRC721Metadata {
     }
 }
 
-contract TRC721MetadataMintable is TRC721, TRC721Metadata, MinterRole {
+contract BEP721MetadataMintable is BEP721, BEP721Metadata, MinterRole {
 
     function updateBaseURI(string memory baseURI) public onlyMinter returns(bool){
         _setBaseURI(baseURI);
@@ -536,7 +535,7 @@ contract TRC721MetadataMintable is TRC721, TRC721Metadata, MinterRole {
 }
 
 
-contract TRC721Mintable is TRC721, MinterRole {
+contract BEP721Mintable is BEP721, MinterRole {
 
     function mint(address to, uint256 tokenId) public onlyMinter returns (bool) {
         _mint(to, tokenId);
@@ -555,13 +554,13 @@ contract TRC721Mintable is TRC721, MinterRole {
 }
 
 
-contract ITRC721Enumerable is ITRC721 {
+contract IBEP721Enumerable is IBEP721 {
     function totalSupply() public view returns (uint256);
     function tokenOfOwnerByIndex(address owner, uint256 index) public view returns (uint256 tokenId);
     function tokenByIndex(uint256 index) public view returns (uint256);
 }
 
-contract TRC721Enumerable is Context, TRC165, TRC721, ITRC721Enumerable {
+contract BEP721Enumerable is Context, BEP165, BEP721, IBEP721Enumerable {
     // Mapping from owner to list of owned token IDs
     mapping(address => uint256[]) private _ownedTokens;
 
@@ -581,19 +580,19 @@ contract TRC721Enumerable is Context, TRC165, TRC721, ITRC721Enumerable {
      *
      *     => 0x18160ddd ^ 0x2f745c59 ^ 0x4f6ccce7 == 0x780e9d63
      */
-    bytes4 private constant _INTERFACE_ID_TRC721_ENUMERABLE = 0x780e9d63;
+    bytes4 private constant _INTERFACE_ID_BEP721_ENUMERABLE = 0x780e9d63;
 
     /**
      * @dev Constructor function.
      */
     constructor () public {
-        // register the supported interface to conform to TRC721Enumerable via TRC165
-        _registerInterface(_INTERFACE_ID_TRC721_ENUMERABLE);
+        // register the supported interface to conform to BEP721Enumerable via BEP165
+        _registerInterface(_INTERFACE_ID_BEP721_ENUMERABLE);
     }
 
  
     function tokenOfOwnerByIndex(address owner, uint256 index) public view returns (uint256) {
-        require(index < balanceOf(owner), "TRC721Enumerable: owner index out of bounds");
+        require(index < balanceOf(owner), "BEP721Enumerable: owner index out of bounds");
         return _ownedTokens[owner][index];
     }
 
@@ -603,7 +602,7 @@ contract TRC721Enumerable is Context, TRC165, TRC721, ITRC721Enumerable {
 
 
     function tokenByIndex(uint256 index) public view returns (uint256) {
-        require(index < totalSupply(), "TRC721Enumerable: global index out of bounds");
+        require(index < totalSupply(), "BEP721Enumerable: global index out of bounds");
         return _allTokens[index];
     }
 
@@ -679,8 +678,8 @@ contract TRC721Enumerable is Context, TRC165, TRC721, ITRC721Enumerable {
 }
 
 
-contract TRC721Token is TRC721, TRC721Enumerable, TRC721MetadataMintable {
-    constructor() public TRC721Metadata("CryptoSoccer Game Assets", "CS-GA", "") {
+contract BEP721Token is BEP721, BEP721Enumerable, BEP721MetadataMintable {
+    constructor() public BEP721Metadata("CryptoSoccer Game Assets", "CS-GA", "") {
 
     }
 }

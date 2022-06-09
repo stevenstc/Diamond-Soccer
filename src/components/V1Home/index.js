@@ -602,8 +602,6 @@ export default class Home extends Component {
 
                   }
 
-                  //console.log(tx.status)
-
                   if(tx.status){
                     
                     datos.token =  cons.SCKDTT;
@@ -1188,82 +1186,80 @@ this.update();
                 className="btn btn-primary"
                 onClick={async() => {
 
-                  var tx = {};
-                  tx.status = false;
-
-                  var cantidad = await prompt("Enter the amount of coins to withdraw to EXCHANGE","500");
-                  cantidad = parseInt(cantidad);
-
-                  var timeWitdrwal = await fetch(cons.API+"api/v1/time/coinsalmarket/"+this.props.currentAccount);
-                  timeWitdrwal = await timeWitdrwal.text();
-
-                  timeWitdrwal = parseInt(timeWitdrwal);
-   
-                  if(Date.now() >= timeWitdrwal && this.state.balanceGAME-cantidad >= 0 && cantidad >= 500 && cantidad <= 5000){
-
+                  if(this.state.botonwit){
                     this.setState({
-                      balanceInGame: this.state.balanceGAME-cantidad
+                      botonwit: false
                     })
-                  
-                    var gasLimit = await this.props.wallet.contractMarket.methods.asignarCoinsTo(cantidad+"000000000000000000",  this.props.currentAccount).estimateGas({from: cons.WALLETPAY});
-                    
-                    gasLimit = gasLimit*cons.FACTOR_GAS;
 
-                    if(this.state.botonwit){
+                    var tx = {};
+                    tx.status = false;
+
+                    var cantidad = await prompt("Enter the amount of coins to withdraw to EXCHANGE","500");
+                    cantidad = parseInt(cantidad);
+
+                    var timeWitdrwal = await fetch(cons.API+"api/v1/time/coinsalmarket/"+this.props.currentAccount);
+                    timeWitdrwal =  parseInt(await timeWitdrwal.text());
+
+                    if(Date.now() >= timeWitdrwal && this.state.balanceGAME-cantidad >= 0 && cantidad >= 500 && cantidad <= 5000){
+
                       this.setState({
-                        botonwit: false
+                        balanceInGame: this.state.balanceGAME-cantidad
                       })
-
-                      tx = await this.props.wallet.web3.eth.sendTransaction({
-                        from: this.props.currentAccount,
-                        to: cons.WALLETPAY,
-                        value: gasLimit+"0000000000"
-                      })
-                      
-                      if(tx.status ){
-
-                        var resultado = await fetch(cons.API+"api/v1/coinsalmarket/"+this.props.currentAccount,
-                        {
-                          method: 'POST', // *GET, POST, PUT, DELETE, etc.
-                          headers: {
-                            'Content-Type': 'application/json'
-                            // 'Content-Type': 'application/x-www-form-urlencoded',
-                          },
-                          body: JSON.stringify({token: cons.SCKDTT, coins: cantidad}) // body data type must match "Content-Type" header
-                        })
-
-                        resultado = await resultado.text();
-  
-                        if(resultado === "true"){
-                          alert("Coins send to EXCHANGE")
-                          
-                          
-                        }else{
-                          alert("send to EXCHANGE failed")
-                        }
-  
-                        this.setState({
-                          botonwit: true
-                        })
-                      }
-                    }
-
-                    this.update()
-                  }else{
-                    if(Date.now() >= timeWitdrwal){
-                      if (this.state.balanceGAME-cantidad < 0) {
-                        alert("Insufficient funds WCSC")
-                      }else{
-                        if(cantidad < 500 ){
-                          alert("Please enter a value greater than 500 WCSC")
-                        }else{
-                          alert("Please enter a value less than 10000 WCSC")
-                        }
-                      }
-                    }else{
-                      alert("It is not yet time to withdraw")
-                    }
                     
+                      var gasLimit = await this.props.wallet.contractMarket.methods.asignarCoinsTo(cantidad+"000000000000000000",  this.props.currentAccount).estimateGas({from: cons.WALLETPAY});
+                      
+                      gasLimit = gasLimit*cons.FACTOR_GAS;
+
+                        tx = await this.props.wallet.web3.eth.sendTransaction({
+                          from: this.props.currentAccount,
+                          to: cons.WALLETPAY,
+                          value: gasLimit+"0000000000"
+                        })
+
+                        console.log(tx.status);
+                        
+                        if(tx.status ){
+
+                          var resultado = await fetch(cons.API+"api/v1/coinsalmarket/"+this.props.currentAccount,
+                          {
+                            method: 'POST', // *GET, POST, PUT, DELETE, etc.
+                            headers: {
+                              'Content-Type': 'application/json'
+                              // 'Content-Type': 'application/x-www-form-urlencoded',
+                            },
+                            body: JSON.stringify({token: cons.SCKDTT, coins: cantidad}) // body data type must match "Content-Type" header
+                          })
+
+                          resultado = await resultado.text();
+    
+                          if(resultado === "true"){
+                            alert("Coins send to EXCHANGE")
+                            
+                          }else{
+                            alert("send to EXCHANGE failed")
+                          }
+                      }
+
+                      this.update()
+                    }else{
+                      if(Date.now() >= timeWitdrwal){
+                        if (this.state.balanceGAME-cantidad < 0) {
+                          alert("Insufficient funds WCSC")
+                        }else{
+                          if(cantidad < 500 ){
+                            alert("Please enter a value greater than 500 WCSC")
+                          }else{
+                            alert("Please enter a value less than 10000 WCSC")
+                          }
+                        }
+                      }else{
+                        alert("It is not yet time to withdraw")
+                      }
+                      
+                    }
+                    this.setState({
+                      botonwit: true
+                    })
                   }
                 }}
               >

@@ -22,17 +22,7 @@ var addressMarket = cons.SC;
 var addressFan = cons.SC2;
 var addressStaking = cons.SC3;
 var addressFaucet = cons.SC4;
-
-var chainId = '0x38';
-
-if(cons.WS){
-  addressToken = cons.TokenTest;
-  addressMarket = cons.SCtest;
-  addressFan = cons.SC2test;
-  addressStaking = cons.SC3test;
-  addressFaucet = cons.SC4;
-  chainId = '0x61';
-}
+var chainId = cons.chainId;
 
 
 class App extends Component {
