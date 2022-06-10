@@ -1,8 +1,8 @@
 {
   "title": "Team Epic",
   "name": "Japón",
-  "image": "https://cryptosoccermarket.com/nft/teams/epic/t4-japon/img",
-  "fileUrl": "https://cryptosoccermarket.com/nft/teams/epic/t4-japon/img",
+  "image": "https://cryptosoccermarket.com/nft/teams/epic/t4-japon/img.png",
+  "fileUrl": "https://cryptosoccermarket.com/nft/teams/epic/t4-japon/img.png",
   "description": "CryptoSoccer Game Asset",
   "externalLink": "https://cryptosoccermarket.com/",
   "attributes": [
@@ -22,7 +22,7 @@
     },
     "image":{
       "type": "string",
-      "description": "https://cryptosoccermarket.com/nft/teams/epic/t4-japon/img"
+      "description": "https://cryptosoccermarket.com/nft/teams/epic/t4-japon/img.png"
     },
     "created_at": {
       "type": "datetime",
