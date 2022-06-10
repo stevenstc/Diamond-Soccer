@@ -22,7 +22,7 @@
     },
     "image":{
       "type": "string",
-      "description": "https://cryptosoccermarket.com/nft/teams/epic/t4-japon/img"
+      "description": "https://cryptosoccermarket.com/nft/teams/epic/t4-japon/img.png"
     },
     "created_at": {
       "type": "datetime",
