@@ -1,11 +1,12 @@
 var TOKEN = "0xF0fB4a5ACf1B1126A991ee189408b112028D7A63";
-var SC = "0x2846df5d668C1B4017562b7d2C1E471373912509";// direccion del contrato Market
-var SC2 = "0xbA5ff42070bF60fB307e643b3e458F76E84293Db";// direccion del contrato MyFans
-var SC3 = "0x99dB6D082E5abD682dC8F4791F10FB39Bc334a9c";// direccion del contrato Staking
+var SC = "0x2846df5d668C1B4017562b7d2C1E471373912509";// Market
+var SC2 = "0xbA5ff42070bF60fB307e643b3e458F76E84293Db";// MyFans
+var SC3 = "0x99dB6D082E5abD682dC8F4791F10FB39Bc334a9c";// Staking
 
-const SC4 = "0xe5578751439d52cf9958c4cf1A91eeb3b11F854C";// direccion del contrato Faucet Testent
+const SC4 = "0xe5578751439d52cf9958c4cf1A91eeb3b11F854C";// Faucet Testent
 
-var SC5 = "0x99dB6D082E5abD682dC8F4791F10FB39Bc334a9c";// direccion del contrato Market V2
+var SC5 = "0x99dB6D082E5abD682dC8F4791F10FB39Bc334a9c";// Market V2
+var SC6 = "0xf0218bbd50ddf065b7a43862fd9e27ee1925c050";// Token NFT
 
 
 var chainId = '0x38';
@@ -24,7 +25,8 @@ if(TESTNET){
     SC = "0xfF7009EF7eF85447F6A5b3f835C81ADd60a321C9";// contrato test market
     SC2 = "0xC4cC639697DBA2802386386279927C5b894Ec7a7";// contrado test fan youtuber
     SC3 = "0xebCC8F716087B6Bd4AF31759B8F7041ebEC5E820";// contrado test Staking
-    SC5 = "0x99dB6D082E5abD682dC8F4791F10FB39Bc334a9c";
+    SC5 = "0x99dB6D082E5abD682dC8F4791F10FB39Bc334a9c"; // Market V2
+    SC = "0xf0218bbd50ddf065b7a43862fd9e27ee1925c050"; // NFT
     chainId = '0x61';
     API = "https://brutustronstaking.tk/csc-testnet/";
     WALLETPAY = "0x0c4c6519E8B6e4D9c99b09a3Cda475638c930b00";
@@ -32,6 +34,4 @@ if(TESTNET){
 
 const FACTOR_GAS = 2;
 
-//apoyo moral
-
-export default {WALLETPAY,FACTOR_GAS, SC, SC2, SC3, SC4, SC5, TOKEN, SCK, SCKDTT, API, chainId};
+export default {WALLETPAY, FACTOR_GAS, SC, SC2, SC3, SC4, SC5, SC6, TOKEN, SCK, SCKDTT, API, chainId};
