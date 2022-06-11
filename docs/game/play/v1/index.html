@@ -3,13 +3,21 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Unity WebGL Player | Crypto Soccer</title>
-    <link rel="shortcut icon" href="TemplateData/favicon.ico">
+    <title>Unity WebGL Player | CryptSoccer</title>
+    <meta property="og:title" content="Play Crypto Soccer v1" />
+      <meta property="og:description" content="First blockchain soccer game where you can receive daily rewards for completing missions and compete with users from all over the world in multiple game options such as leagues, duels and tournaments with unlimited winnings." />
+      <meta property="og:type" content="game" />
+      <meta property="og:url" content="https://cryptosoccermarket.com/" />
+      <meta property="og:image" content="https://cryptosoccermarket.com/assets/img/logo.png" />
+
+    <link rel="shortcut icon" href="https://cryptosoccermarket.com/assets/img/logo-cuadrado.png">
     <link rel="stylesheet" href="TemplateData/style.css">
+    <script src="script.js"></script>
+
   </head>
   <body>
-    <div id="unity-container" class="unity-desktop">
-      <canvas id="unity-canvas" width=960 height=600></canvas>
+    <div id="unity-container" style ="width:100%;height:100%">
+      <canvas id="unity-canvas" width=auto height=auto"></canvas>
       <div id="unity-loading-bar">
         <div id="unity-logo"></div>
         <div id="unity-progress-bar-empty">
@@ -19,23 +27,23 @@
       <div id="unity-mobile-warning">
         WebGL builds are not supported on mobile devices.
       </div>
-      <div id="unity-footer">
+      <!--<div id="unity-footer">
         <div id="unity-webgl-logo"></div>
         <div id="unity-fullscreen-button"></div>
-        <div id="unity-build-title">Crypto Soccer</div>
-      </div>
+        <div id="unity-build-title">CryptSoccer</div>
+      </div>-->
     </div>
     <script>
       var buildUrl = "Build";
-      var loaderUrl = buildUrl + "/Crypto Soccer Web xxxxMainet.loader.js";
+      var loaderUrl = buildUrl + "/CrypWebSocc.loader.js";
       var config = {
-        dataUrl: buildUrl + "/Crypto Soccer Web xxxxMainet.data",
-        frameworkUrl: buildUrl + "/Crypto Soccer Web xxxxMainet.framework.js",
-        codeUrl: buildUrl + "/Crypto Soccer Web xxxxMainet.wasm",
+        dataUrl: buildUrl + "/CrypWebSocc.data",
+        frameworkUrl: buildUrl + "/CrypWebSocc.framework.js",
+        codeUrl: buildUrl + "/CrypWebSocc.wasm",
         streamingAssetsUrl: "StreamingAssets",
         companyName: "Elements Latino",
-        productName: "Crypto Soccer",
-        productVersion: "1.0.1.5",
+        productName: "CryptSoccer",
+        productVersion: "1.0.1.10",
       };
 
       var container = document.querySelector("#unity-container");
@@ -62,8 +70,8 @@
           mobileWarning.style.display = "none";
         }, 5000);
       } else {
-        canvas.style.width = "960px";
-        canvas.style.height = "600px";
+        canvas.style.width = "100%";
+        canvas.style.height = "100%";
       }
       loadingBar.style.display = "block";
 
@@ -74,9 +82,9 @@
           progressBarFull.style.width = 100 * progress + "%";
         }).then((unityInstance) => {
           loadingBar.style.display = "none";
-          fullscreenButton.onclick = () => {
-            unityInstance.SetFullscreen(1);
-          };
+          //<!--fullscreenButton.onclick = () => {-->
+            //<!--unityInstance.SetFullscreen(1);-->
+          //<!--};-->
         }).catch((message) => {
           alert(message);
         });
