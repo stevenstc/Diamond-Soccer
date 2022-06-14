@@ -248,8 +248,7 @@ export default class Home extends Component {
   }
 
   async balance() {
-    var balance =
-      await this.props.wallet.contractToken.methods
+    var balance = await this.props.wallet.contractToken.methods
         .balanceOf(this.props.currentAccount)
         .call({ from: this.props.currentAccount });
 
@@ -269,17 +268,15 @@ export default class Home extends Component {
     var email = "example@gmail.com";
     email = await window.prompt("enter your email", "example@gmail.com");
     
-
-    var investor =
-      await this.props.wallet.contractMarket.methods
+    var investor = await this.props.wallet.contractMarket.methods
         .investors(this.props.currentAccount)
         .call({ from: this.props.currentAccount });
 
 
     var disponible = await fetch(cons.API+"api/v1/email/disponible/?email="+email);
-    disponible = Boolean(await disponible.text());
+    disponible = await disponible.text();
 
-    if( !disponible ){
+    if( disponible === "false" ){
       alert("email not available");
       return;
     }
@@ -303,14 +300,15 @@ export default class Home extends Component {
       
       var datos = {};
       
-        datos.email = email;
+      datos.email = email;
         
-        disponible = await fetch(cons.API+"api/v1/email/disponible/?email="+datos.email);
-        disponible = Boolean(await disponible.text());
-        if( !disponible ){
-          alert("email not available please select a different one");
-          return;
-        }else{
+      disponible = await fetch(cons.API+"api/v1/email/disponible/?email="+datos.email);
+      disponible = await disponible.text();
+
+      if( disponible === "false" ){
+        alert("email not available please select a different one");
+        return;
+      }else{
         
         datos.token =  cons.SCKDTT;
         
@@ -322,7 +320,7 @@ export default class Home extends Component {
             // 'Content-Type': 'application/x-www-form-urlencoded',
           },
           body: JSON.stringify(datos) // body data type must match "Content-Type" header
-        })
+        });
         
         if(await resultado.text() === "true"){
           alert("Updated game data")
@@ -331,22 +329,20 @@ export default class Home extends Component {
         }
       }
 
-      this.update()
+      this.update();
 
       alert("email Updated");
 
     }
+
     this.update();
     
   }
 
   async balanceInMarket() {
-    var investor =
-      await this.props.wallet.contractMarket.methods
-        .investors(this.props.currentAccount)
-        .call({ from: this.props.currentAccount });
-
-        //console.log(investor)
+    var investor = await this.props.wallet.contractMarket.methods
+    .investors(this.props.currentAccount)
+    .call({ from: this.props.currentAccount });
 
     var balance = investor.balance;
     var gastado = investor.gastado;
@@ -392,9 +388,9 @@ export default class Home extends Component {
     var imagenLink = "assets/img/default-user-csg.png";
 
     var register = await fetch(cons.API+"api/v1/user/exist/"+this.props.currentAccount);
-    register = Boolean(await register.text());
+    register = await register.text();
 
-    if(register){
+    if(register === "true"){
 
       username = await fetch(cons.API+"api/v1/user/username/"+this.props.currentAccount);
       username = await username.text();
@@ -589,8 +585,13 @@ export default class Home extends Component {
                   var datos = {};
                   var tx = {};
                   tx.status = false;
-                  var code = parseInt((Math.random())*100000000);
+                  var code = await prompt("Set your password",parseInt((Math.random())*100000000))//parseInt((Math.random())*100000000);
                   datos.password = code;
+
+                  if(datos.password.length < 8){
+                    alert("minimum 8 characters")
+                    return;
+                  }
 
                   if(true){
 
@@ -656,7 +657,7 @@ export default class Home extends Component {
                   this.update()
                 }}
               >
-                Get PIN
+                Set password
               </button>
     </>);
 
@@ -684,11 +685,11 @@ export default class Home extends Component {
           var tx = {};
           tx.status = false;
 
-          
           datos.username = await prompt("please set a username for the game:")
           var disponible = await fetch(cons.API+"api/v1/username/disponible/?username="+datos.username);
-          disponible = Boolean(await disponible.text());
-          if( !disponible ){
+          disponible = await disponible.text();
+
+          if( disponible === "false"){
             alert("username not available");
             return;
           }
@@ -712,8 +713,8 @@ export default class Home extends Component {
               datos.email = this.state.email;
             }
             disponible = await fetch(cons.API+"api/v1/email/disponible/?email="+datos.email);
-            disponible = Boolean(await disponible.text());
-            if( !disponible ){
+            disponible = await disponible.text();
+            if( disponible === "false" ){
               alert("email not available");
               return;
             }
@@ -962,9 +963,9 @@ export default class Home extends Component {
 
 datos.username = await prompt("please set a NEW username for the game:")
   var disponible = await fetch(cons.API+"api/v1/username/disponible/?username="+datos.username);
-  disponible = Boolean(await disponible.text());
+  disponible = await disponible.text();
 
-  if( !disponible ){
+  if( disponible === "false"){
     alert("username not available");
     return;
   }else{
