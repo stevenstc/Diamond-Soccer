@@ -657,7 +657,7 @@ export default class Home extends Component {
                   this.update()
                 }}
               >
-                Set password
+                Set new password
               </button>
     </>);
 
@@ -772,78 +772,40 @@ export default class Home extends Component {
 
     return (
       <>
-        <header className="masthead text-center text-white">
-          <div className="masthead-content">
-            <div className="container px-5">
-              
+
+      <div className="site-section pt-0 feature-blocks-1" data-aos="fade" data-aos-delay="100">
+            <div className="container">
               <div className="row">
-                <div className="col-lg-12 col-md-12 p-4 text-center">
-                  <h2 className=" pb-4">Coin Packs</h2>
-                </div>
-
-                <div className="col-lg-4 col-md-12 p-4 text-center monedas">
-                  <h2 className=" pb-4">100 WCSC</h2>
-                  <img
-                    className=" pb-4"
-                    src="assets/img/01.png"
-                    width="100%"
-                    alt=""
-                  />
-                  <div
-                    className="position-relative btn-monedas"
-                    onClick={() => this.buyCoins(100)}
-                  >
-                    <span className="position-absolute top-50 end-0 translate-middle-y p-5">
-                      BUY
-                    </span>
+                <div className="col-md-6 col-lg-4" >
+                  <div className="p-3 p-md-5 feature-block-1 mb-5 mb-lg-0 bg" style={{"background-image": "url('assets/img/01.png')"}}>
+                    <div className="text">
+                      <h2 className="h5 text-white">100 WCSC</h2>
+                      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Eos repellat autem illum nostrum sit distinctio!</p>
+                      <p className="mb-0" onClick={() => this.buyCoins(100)}><div className="btn btn-primary btn-sm px-4 py-2 rounded-0">Buy</div></p>
+                    </div>
                   </div>
                 </div>
-
-                <div 
-                  className="col-lg-4 col-md-12 p-4 monedas"
-                  onClick={() => this.buyCoins(500)}
-                
-                >
-                  
-                  <h2 className=" pb-4">500 WCSC</h2>
-                  <img
-                    className=" pb-4"
-                    src="assets/img/02.png"
-                    width="100%"
-                    alt=""
-                  />
-                  <div
-                    className="position-relative btn-monedas"
-                  >
-                    <span className="position-absolute top-50 end-0 translate-middle-y p-5">
-                      BUY
-                    </span>
+                <div className="col-md-6 col-lg-4">
+                  <div className="p-3 p-md-5 feature-block-1 mb-5 mb-lg-0 bg" style={{"background-image": "url('assets/img/02.png')"}}>
+                    <div className="text">
+                      <h2 className="h5 text-white">500 WCSC</h2>
+                      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Eos repellat autem illum nostrum sit distinctio!</p>
+                      <p className="mb-0" onClick={() => this.buyCoins(500)}><div className="btn btn-primary btn-sm px-4 py-2 rounded-0">Buy</div></p>
+                    </div>
                   </div>
                 </div>
-
-                <div 
-                  className="col-lg-4 col-md-12 p-4 monedas"
-                  onClick={() => this.buyCoins(1000)}
-                >
-                  <h2 className=" pb-4">1000 WCSC</h2>
-                  <img
-                    className=" pb-4"
-                    src="assets/img/03.png"
-                    width="100%"
-                    alt=""
-                  />
-                  <div
-                    className="position-relative btn-monedas"
-                  >
-                    <span className="position-absolute top-50 end-0 translate-middle-y p-5">
-                      BUY
-                    </span>
+                <div className="col-md-6 col-lg-4">
+                  <div className="p-3 p-md-5 feature-block-1 mb-5 mb-lg-0 bg" style={{"background-image": "url('assets/img/03.png')"}}>
+                    <div className="text">
+                      <h2 className="h5 text-white">100 WCSC</h2>
+                      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Eos repellat autem illum nostrum sit distinctio!</p>
+                      <p className="mb-0" onClick={() => this.buyCoins(1000)}><div className="btn btn-primary btn-sm px-4 py-2 rounded-0">Buy</div></p>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </header>
 
         <div className="container mt-3 mb-3">
           <div className="row text-center">
@@ -1028,7 +990,7 @@ this.update();
               <br/><br/>
               
               <button
-                className="btn btn-primary"
+                className="btn btn-success"
                 onClick={async() => 
                 { 
                   
@@ -1061,7 +1023,7 @@ this.update();
 
             <h3>EXCHANGE <br></br>{this.state.balanceExchange +" CSC"}</h3>
             <hr></hr>
-              <span>
+              <span title={"liquidity"}>
                 WCSC: {this.state.balanceMarket}
               </span>
               <br/><br/>
@@ -1115,7 +1077,7 @@ this.update();
               </button>
               <br/><br/>
               <button
-                className="btn btn-primary"
+                className="btn btn-success"
                 onClick={async() => {
 
                   var tx = {};

@@ -146,6 +146,10 @@ contract Market is Context, Admin{
   uint256 public MIN_CSC = 500 * 10**18;
   uint256 public MAX_CSC = 10000 * 10**18;
 
+  uint256 public PRINT_NFT_CSC = 100 * 10**18;
+  uint256 public COMISION_NFT_CSC = 100 * 10**18;
+  uint256 public QUEMA_NFT_CSC = 100 * 10**18;
+
   uint256 public TIME_CLAIM = 7 * 86400;
   
   ITRC721 TRC721_Contract = ITRC721(tokenTRC721);
