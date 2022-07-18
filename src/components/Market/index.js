@@ -8,7 +8,7 @@ export default class Market extends Component {
     this.state = {
       loading: false,
       inventario: [],
-      itemsYoutube: [(
+      itemsMarket: [(
         <div className="col-lg-12 p-3 mb-5 text-center monedas position-relative" key={`items-0`}>
           <h2 className=" pb-2">Loading... please wait</h2>
         </div>
@@ -44,12 +44,7 @@ export default class Market extends Component {
         .balanceOf(this.props.currentAccount)
         .call({ from: this.props.currentAccount });
 
-    balance = new BigNumber(balance);
-    balance = balance.shiftedBy(-18);
-    balance = balance.decimalPlaces(6)
-    balance = balance.toString();
-
-    //console.log(balance)
+    balance = new BigNumber(balance).shiftedBy(-18).toString(10);
 
     this.setState({
       balance: balance
@@ -59,33 +54,26 @@ export default class Market extends Component {
 
   async buyItem(id){
 
-    console.log("ento a comprar un bendito item")
+    console.log("ento a comprar un item")
 
     var aprovado = await this.props.wallet.contractToken.methods
-      .allowance(this.props.currentAccount, this.props.wallet.contractMarket._address)
+      .allowance(this.props.currentAccount, this.props.wallet.contractInventario._address)
       .call({ from: this.props.currentAccount });
 
-    aprovado = new BigNumber(aprovado);
-    aprovado = aprovado.shiftedBy(-18);
-    aprovado = aprovado.decimalPlaces(2).toNumber();
+    aprovado = new BigNumber(aprovado).shiftedBy(-18).decimalPlaces(2).toNumber(10);
 
     /*
-
     var balance = await this.props.wallet.contractToken.methods
     .balanceOf(this.props.currentAccount)
     .call({ from: this.props.currentAccount });
 
-    balance = new BigNumber(balance);
-    balance = balance.shiftedBy(-18);
-    balance = balance.decimalPlaces(0).toNumber();
+    balance = new BigNumber(balance).shiftedBy(-18).decimalPlaces(0).toNumber();
     */
-
-    console.log(aprovado);
 
     if(aprovado > 0){
 
-        var result = await this.props.wallet.contractMarket.methods
-          .buyItem(id)
+        var result = await this.props.wallet.contractInventario.methods
+          .buyItemsGame(id)
           .send({ from: this.props.currentAccount });
 
         if(result){
@@ -94,7 +82,7 @@ export default class Market extends Component {
     }else{
         alert("insuficient aproved balance")
       await this.props.wallet.contractToken.methods
-      .approve(this.props.wallet.contractMarket._address, "115792089237316195423570985008687907853269984665640564039457584007913129639935")
+      .approve(this.props.wallet.contractInventario._address, "115792089237316195423570985008687907853269984665640564039457584007913129639935")
       .send({ from: this.props.currentAccount });
       }
 
@@ -163,16 +151,20 @@ export default class Market extends Component {
         loading: true
       });
 
-      var itemsYoutube = [];
+      var itemsMarket = [];
       var listItems = [];
 
-      var result = await this.props.wallet.contractMarket.methods.largoItems().call({ from: this.props.currentAccount });
-        //console.log(result)
-        //{filter:"grayscale(100%)"}
+      var _items = await this.props.wallet.contractInventario.methods
+      .verItemsMarket()
+      .call({ from: this.props.currentAccount });
 
-      for (let index = 0; index < result; index++) {
+      console.log(_items)
 
-        var item = await this.props.wallet.contractMarket.methods.items(index).call({ from: this.props.currentAccount });
+      //{filter:"grayscale(100%)"}
+
+      for (let index = 0; index < _items[0].length; index++) {
+
+        var item = {ilimitado: _items[1][index]};
         if(item.ilimitado || parseInt(item.cantidad) > 0){
           var eliminated = {};
         }else{
@@ -180,12 +172,12 @@ export default class Market extends Component {
         }
         listItems[index]= item;
         //console.log(item)
-        itemsYoutube[index] = (
+        itemsMarket[index] = (
             <div className="col-lg-3 col-md-6 p-3 mb-5 text-center monedas position-relative border" key={`items-${index}`}>
-              <h2 className=" pb-2"> Item #{index+1}</h2>
+              <h2 className=" pb-2"> {(_items[0][index]).replace(/-/g," ").replace("comun", "common").replace("formacion","formation").replace("epico","epic").replace("legendario","legendary")}</h2>
               <img
                 className=" pb-2"
-                src={"assets/img/" + item.nombre + ".png"}
+                src={"assets/img/" + _items[0][index] + ".png"}
                 style={eliminated} 
                 width="100%"
                 alt=""
@@ -194,8 +186,6 @@ export default class Market extends Component {
               <h2 className="centradoFan">
                 <b></b>
               </h2>
-
-              <h2 className=" pb-2">{item.tipo}</h2>
               
               <div className="position-relative">
                 <button className="btn btn-success" onClick={() => {
@@ -206,7 +196,7 @@ export default class Market extends Component {
                   }
                   
                 }}>
-                  Buy for {item.valor/10**18} CSC
+                  Buy for {new BigNumber(_items[3][index]).shiftedBy(-18).toString(10)} CSC
                 </button>
               </div>
             </div>
@@ -215,7 +205,7 @@ export default class Market extends Component {
       }
 
       this.setState({
-        itemsYoutube: itemsYoutube,
+        itemsMarket: itemsMarket,
         loading: false
       });
     }
@@ -225,23 +215,22 @@ export default class Market extends Component {
 
   async inventario() {
 
-    var result = await this.props.wallet.contractMarket.methods
-      .largoInventario(this.props.currentAccount)
+    var result = await this.props.wallet.contractInventario.methods
+      .verInventario(this.props.currentAccount)
+      .call({ from: this.props.currentAccount });
+
+    var nombres_items = await this.props.wallet.contractInventario.methods
+      .verItemsMarket()
       .call({ from: this.props.currentAccount });
 
       var inventario = []
 
-    for (let index = 0; index < result; index++) {
-      var item = await this.props.wallet.contractMarket.methods
-        .inventario(this.props.currentAccount, index)
-        .call({ from: this.props.currentAccount });
-
-        //console.log(item)
+    for (let index = 0; index < result.length; index++) {
 
         inventario[index] = (
 
           <div className="col-md-3 p-1" key={`itemsTeam-${index}`}>
-            <img className="pb-4" src={"assets/img/" + item.nombre + ".png"} width="100%" alt={"team-"+item.nombre} />
+            <img className="pb-4" src={"assets/img/" + nombres_items[0][index] + ".png"} width="100%" alt={"team-"+nombres_items[0][index]} />
           </div>
 
         )
@@ -269,7 +258,7 @@ export default class Market extends Component {
               <h2 className=" pb-4">Items</h2>
             </div>
 
-            {this.state.itemsYoutube}
+            {this.state.itemsMarket}
 
           </div>
         </div>

@@ -1,9 +1,6 @@
 import React, { Component } from "react";
 import cons from "../../cons"
 const BigNumber = require('bignumber.js');
-const Cryptr = require('cryptr');
-
-const cryptr = new Cryptr(cons.SCK);
 
 export default class Home extends Component {
   constructor(props) {
@@ -224,6 +221,7 @@ export default class Home extends Component {
     this.balanceInMarket = this.balanceInMarket.bind(this);
     this.balanceInGame = this.balanceInGame.bind(this);
     this.inventario = this.inventario.bind(this);
+    this.inventarioV2 = this.inventarioV2.bind(this);
     this.updateEmail = this.updateEmail.bind(this);
     this.update = this.update.bind(this);
 
@@ -244,6 +242,8 @@ export default class Home extends Component {
     this.balance();
     this.balanceInMarket();
     this.inventario();
+    this.inventarioV2();
+
     
   }
 
@@ -252,10 +252,7 @@ export default class Home extends Component {
         .balanceOf(this.props.currentAccount)
         .call({ from: this.props.currentAccount });
 
-    balance = new BigNumber(balance);
-    balance = balance.shiftedBy(-18);
-    balance = balance.decimalPlaces(6)
-    balance = balance.toString();
+    balance = new BigNumber(balance).shiftedBy(-18).toString(10);
 
     //console.log(balance)
 
@@ -267,11 +264,6 @@ export default class Home extends Component {
   async updateEmail() {
     var email = "example@gmail.com";
     email = await window.prompt("enter your email", "example@gmail.com");
-    
-    var investor = await this.props.wallet.contractMarket.methods
-        .investors(this.props.currentAccount)
-        .call({ from: this.props.currentAccount });
-
 
     var disponible = await fetch(cons.API+"api/v1/email/disponible/?email="+email);
     disponible = await disponible.text();
@@ -282,21 +274,10 @@ export default class Home extends Component {
     }
 
     if(window.confirm("is correct?: "+email)){
-      const encryptedString = cryptr.encrypt(email);
-      if (investor.registered) {
-        await this.props.wallet.contractMarket.methods
-          .updateRegistro(encryptedString)
-          .send({ from: this.props.currentAccount });
-      }else{
-        await this.props.wallet.contractMarket.methods
-          .registro(encryptedString)
-          .send({ from: this.props.currentAccount });
-      }
-
+ 
       this.setState({
         email: email
       })
-
       
       var datos = {};
       
@@ -340,40 +321,22 @@ export default class Home extends Component {
   }
 
   async balanceInMarket() {
-    var investor = await this.props.wallet.contractMarket.methods
+    var investor = await this.props.wallet.contractExchange.methods
     .investors(this.props.currentAccount)
     .call({ from: this.props.currentAccount });
 
     var balance = investor.balance;
-    var gastado = investor.gastado;
-    var email = investor.correo;
-
-    //console.log(email.length);
-
-
-    if (email === "" || email.length < 100) {
-      email = "Please update your email";
-    }else{
-      email = cryptr.decrypt(investor.correo)
-      
-    }
-
-    balance = new BigNumber(balance);
-    gastado = new BigNumber(gastado);
-    balance = balance.minus(gastado);
-    balance = balance.shiftedBy(-18);
-    balance = balance.decimalPlaces(6)
-    balance = balance.toString();
+  
+    balance = new BigNumber(balance).shiftedBy(-18).toString(10);
 
     //console.log(balance)
 
-    var resultado = await fetch(cons.API+"api/v1/consultar/csc/cuenta/"+this.props.wallet.contractMarket._address)
+    var resultado = await fetch(cons.API+"api/v1/consultar/csc/cuenta/"+this.props.wallet.contractExchange._address)
     resultado = await resultado.text()
     resultado = parseFloat(resultado)
 
     this.setState({
       balanceMarket: balance,
-      email: email,
       balanceExchange: resultado
     });
   }
@@ -442,32 +405,25 @@ export default class Home extends Component {
   async buyCoins(amount){
 
     var aprovado = await this.props.wallet.contractToken.methods
-      .allowance(this.props.currentAccount, this.props.wallet.contractMarket._address)
+      .allowance(this.props.currentAccount, this.props.wallet.contractExchange._address)
       .call({ from: this.props.currentAccount });
 
-    aprovado = new BigNumber(aprovado);
-    aprovado = aprovado.shiftedBy(-18);
-    aprovado = aprovado.decimalPlaces(2).toNumber();
+    aprovado = new BigNumber(aprovado).shiftedBy(-18).decimalPlaces(2).toNumber();
 
     var balance = await this.props.wallet.contractToken.methods
     .balanceOf(this.props.currentAccount)
     .call({ from: this.props.currentAccount });
 
-    balance = new BigNumber(balance);
-    balance = balance.shiftedBy(-18);
-    balance = balance.decimalPlaces(2).toNumber();
+    balance = new BigNumber(balance).shiftedBy(-18).decimalPlaces(2).toNumber();
 
-    var compra;
-    compra = amount+"000000000000000000";
-    amount = new BigNumber(amount);
-
-    amount = amount.decimalPlaces(2).toNumber();
+    var compra = amount+"000000000000000000";
+    amount = new BigNumber(amount).decimalPlaces(2).toNumber();
 
     if(aprovado > 0){
 
       if (balance>=amount) {
 
-        var result = await this.props.wallet.contractMarket.methods
+        var result = await this.props.wallet.contractExchange.methods
         .buyCoins(compra)
         .send({ from: this.props.currentAccount });
   
@@ -482,7 +438,7 @@ export default class Home extends Component {
     }else{
       alert("insuficient aproved balance")
       await this.props.wallet.contractToken.methods
-      .approve(this.props.wallet.contractMarket._address, "115792089237316195423570985008687907853269984665640564039457584007913129639935")
+      .approve(this.props.wallet.contractExchange._address, "115792089237316195423570985008687907853269984665640564039457584007913129639935")
       .send({ from: this.props.currentAccount });
 
     }
@@ -492,32 +448,141 @@ export default class Home extends Component {
     
   }
 
- 
-
   async inventario() {
 
-    var result = await this.props.wallet.contractMarket.methods
-      .largoInventario(this.props.currentAccount)
-      .call({ from: this.props.currentAccount });
+    var result = await this.props.wallet.contractInventario.methods
+    .verInventario(this.props.currentAccount)
+    .call({ from: this.props.currentAccount });
+
+    var nombres_items = await this.props.wallet.contractInventario.methods
+    .verItemsMarket()
+    .call({ from: this.props.currentAccount });
+
+
+    if(result.length > 0){
 
       var inventario = []
 
-    for (let index = 0; index < result; index++) {
-      var item = await this.props.wallet.contractMarket.methods
-        .inventario(this.props.currentAccount, index)
-        .call({ from: this.props.currentAccount });
+      for (let index = 0; index < result.length; index++) {
+
+          inventario[index] = (
+
+            <div className="col-md-3 p-1" key={`itemsTeam-${index}`}>
+              <img className="pb-4" src={"assets/img/" + nombres_items[0][result[index]] + ".png"} width="100%" alt={"team-"+nombres_items[0][result[index]]} />
+              <button className="btn btn-danger" onClick={async()=>{
+
+                var aprovado = await this.props.wallet.contractToken.methods
+                .allowance(this.props.currentAccount, this.props.wallet.contractInventario._address)
+                .call({ from: this.props.currentAccount });
+
+                aprovado = new BigNumber(aprovado).shiftedBy(-18).decimalPlaces(2).toNumber();
+
+                if(aprovado <= 0){
+
+                  alert("insuficient aproved balance")
+                  await this.props.wallet.contractToken.methods
+                  .approve(this.props.wallet.contractInventario._address, "115792089237316195423570985008687907853269984665640564039457584007913129639935")
+                  .send({ from: this.props.currentAccount });
+
+                }
+
+
+                var price = prompt("set price",5000)
+                price = new BigNumber(price).shiftedBy(18).toString(10);
+                await this.props.wallet.contractInventario.methods
+                .SellItemFromMarket( index,this.props.wallet.contractToken._address, price)
+                .send({ from: this.props.currentAccount })
+                this.update();
+                }}>Sell item</button>
+            </div>
+
+          )
+      }
+
+    }else{
+
+      var largoInventario = await this.props.wallet.contractMarket.methods
+      .largoInventario(this.props.currentAccount)
+      .call({ from: this.props.currentAccount });
+
+      var migrado = await this.props.wallet.contractInventario.methods
+      .migrado(this.props.currentAccount)
+      .call({ from: this.props.currentAccount });
+
+      if(largoInventario > 0 && !migrado){
+
+        var old_inventario = [];
+
+        for (let index = 0; index < largoInventario; index++) {
+          const temp = await this.props.wallet.contractMarket.methods
+          .inventario(this.props.currentAccount,index)
+          .call({ from: this.props.currentAccount });
+
+          if(nombres_items[0].indexOf(temp.nombre) !== -1){
+            old_inventario[index] = nombres_items[0].indexOf(temp.nombre);  
+
+          }
+
+        }
+
+        inventario = (
+          <><button className="btn btn-warning" onClick={async()=>{
+            if(old_inventario.length > 0){
+              await this.props.wallet.contractInventario.methods
+              .migrar(old_inventario)
+              .send({ from: this.props.currentAccount });
+
+            }else{
+              alert("try again latter");
+            }
+            this.update();
+            
+        }}>Migrate teams to V2</button>
+          </>
+        )
+      }
+     
+    }
+
+    this.setState({
+      inventario: inventario
+    })
+  }
+
+  async inventarioV2() {
+
+    var result = await this.props.wallet.contractInventario.methods
+    .verMarket(this.props.currentAccount)
+    .call({ from: this.props.currentAccount });
+
+    var nombres_items = await this.props.wallet.contractInventario.methods
+    .verItemsMarket()
+    .call({ from: this.props.currentAccount });
+
+    var inventario = []
+
+    for (let index = 0; index < result[0].length; index++) {
 
         inventario[index] = (
 
-          <div className="col-lg-3 col-md-6 p-1" key={`itemsTeam-${index}`}>
-            <img className="pb-4" src={"assets/img/" + item.nombre + ".png"} width="100%" alt={"team "+item.nombre} />
+          <div className="col-md-3 p-1" key={`itemsTeam-${index}`}>
+            <img className="pb-4" src={"assets/img/" + nombres_items[0][result[0][index]] + ".png"} width="100%" alt={"team-"+nombres_items[0][result[0][index]]} />
+            <p>Price: {new BigNumber(result[1][index]).shiftedBy(-18).toString(10)} CSC</p>
+            <button className="btn btn-warning" onClick={async()=>{
+              
+              await this.props.wallet.contractInventario.methods
+              .buyItemFromMarket(this.props.currentAccount, index)
+              .send({ from: this.props.currentAccount });
+
+              this.update();
+            }}>Back to inventory</button>
           </div>
 
         )
     }
 
     this.setState({
-      inventario: inventario
+      inventarioV2: inventario
     })
   }
 
@@ -777,29 +842,29 @@ export default class Home extends Component {
             <div className="container">
               <div className="row">
                 <div className="col-md-6 col-lg-4" >
-                  <div className="p-3 p-md-5 feature-block-1 mb-5 mb-lg-0 bg" style={{"background-image": "url('assets/img/01.png')"}}>
+                  <div className="p-3 p-md-5 feature-block-1 mb-5 mb-lg-0 bg" style={{"backgroundImage": "url('assets/img/01.png')"}}>
                     <div className="text">
                       <h2 className="h5 text-white">100 WCSC</h2>
                       <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Eos repellat autem illum nostrum sit distinctio!</p>
-                      <p className="mb-0" onClick={() => this.buyCoins(100)}><div className="btn btn-primary btn-sm px-4 py-2 rounded-0">Buy</div></p>
+                      <p className="mb-0" onClick={() => this.buyCoins(100)}><button className="btn btn-primary btn-sm px-4 py-2 rounded-0">Buy</button></p>
                     </div>
                   </div>
                 </div>
                 <div className="col-md-6 col-lg-4">
-                  <div className="p-3 p-md-5 feature-block-1 mb-5 mb-lg-0 bg" style={{"background-image": "url('assets/img/02.png')"}}>
+                  <div className="p-3 p-md-5 feature-block-1 mb-5 mb-lg-0 bg" style={{"backgroundImage": "url('assets/img/02.png')"}}>
                     <div className="text">
                       <h2 className="h5 text-white">500 WCSC</h2>
                       <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Eos repellat autem illum nostrum sit distinctio!</p>
-                      <p className="mb-0" onClick={() => this.buyCoins(500)}><div className="btn btn-primary btn-sm px-4 py-2 rounded-0">Buy</div></p>
+                      <p className="mb-0" onClick={() => this.buyCoins(500)}><button className="btn btn-primary btn-sm px-4 py-2 rounded-0">Buy</button></p>
                     </div>
                   </div>
                 </div>
                 <div className="col-md-6 col-lg-4">
-                  <div className="p-3 p-md-5 feature-block-1 mb-5 mb-lg-0 bg" style={{"background-image": "url('assets/img/03.png')"}}>
+                  <div className="p-3 p-md-5 feature-block-1 mb-5 mb-lg-0 bg" style={{"backgroundImage": "url('assets/img/03.png')"}}>
                     <div className="text">
-                      <h2 className="h5 text-white">100 WCSC</h2>
+                      <h2 className="h5 text-white">1000 WCSC</h2>
                       <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Eos repellat autem illum nostrum sit distinctio!</p>
-                      <p className="mb-0" onClick={() => this.buyCoins(1000)}><div className="btn btn-primary btn-sm px-4 py-2 rounded-0">Buy</div></p>
+                      <p className="mb-0" onClick={() => this.buyCoins(1000)}><button className="btn btn-primary btn-sm px-4 py-2 rounded-0">Buy</button></p>
                     </div>
                   </div>
                 </div>
@@ -809,7 +874,7 @@ export default class Home extends Component {
 
         <div className="container mt-3 mb-3">
           <div className="row text-center">
-            <div className="col-lg-4 col-md-4 ">
+            <div className="col-lg-6 col-md-6 ">
               <h2>Wallet conected</h2>
               <p>{this.props.currentAccount}</p>
               <p>
@@ -849,22 +914,7 @@ export default class Home extends Component {
               </button>
             </div>
 
-            <div className="col-lg-4 col-md-4 ">
-
-            <h2>Email Registred on Market</h2>
-                {this.state.email}
-              <br /><br />
-              <button
-                className="btn btn-secondary"
-                onClick={() => this.updateEmail()}
-              >
-                <i className="fas fa-envelope-open-text"></i> Update Email
-              </button>
-
-             
-            </div>
-
-            <div className="col-lg-4 col-md-4">
+            <div className="col-lg-6 col-md-6">
 
             <h2>GAME data</h2>
 
@@ -923,47 +973,47 @@ export default class Home extends Component {
               var tx = {};
               tx.status = false;
 
-datos.username = await prompt("please set a NEW username for the game:")
-  var disponible = await fetch(cons.API+"api/v1/username/disponible/?username="+datos.username);
-  disponible = await disponible.text();
+              datos.username = await prompt("please set a NEW username for the game:")
+                var disponible = await fetch(cons.API+"api/v1/username/disponible/?username="+datos.username);
+                disponible = await disponible.text();
 
-  if( disponible === "false"){
-    alert("username not available");
-    return;
-  }else{
-    tx = await this.props.wallet.web3.eth.sendTransaction({
-      from: this.props.currentAccount,
-      to: cons.WALLETPAY,
-      value: 80000+"0000000000"
-    }) 
-  }
+                if( disponible === "false"){
+                  alert("username not available");
+                  return;
+                }else{
+                  tx = await this.props.wallet.web3.eth.sendTransaction({
+                    from: this.props.currentAccount,
+                    to: cons.WALLETPAY,
+                    value: 80000+"0000000000"
+                  }) 
+                }
 
-if(tx.status){
-  
-  datos.token =  cons.SCKDTT;
-  
-  var resultado = await fetch(cons.API+"api/v1/user/update/info/"+this.props.currentAccount,
-  {
-    method: 'POST', // *GET, POST, PUT, DELETE, etc.
-    headers: {
-      'Content-Type': 'application/json'
-      // 'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    body: JSON.stringify(datos) // body data type must match "Content-Type" header
-  })
-  
-  if(await resultado.text() === "true"){
-    alert("username Updated")
-  }else{
-    alert("failed")
-  }
-}
-this.setState({
-  username: this.state.email
-})
+              if(tx.status){
+                
+                datos.token =  cons.SCKDTT;
+                
+                var resultado = await fetch(cons.API+"api/v1/user/update/info/"+this.props.currentAccount,
+                {
+                  method: 'POST', // *GET, POST, PUT, DELETE, etc.
+                  headers: {
+                    'Content-Type': 'application/json'
+                    // 'Content-Type': 'application/x-www-form-urlencoded',
+                  },
+                  body: JSON.stringify(datos) // body data type must match "Content-Type" header
+                })
+                
+                if(await resultado.text() === "true"){
+                  alert("username Updated")
+                }else{
+                  alert("failed")
+                }
+              }
+              this.setState({
+                username: this.state.email
+              })
 
-this.update();
-}} style={{cursor:"pointer"}}> Username: {this.state.username}</span> | {this.state.pais} | {this.state.emailGame}
+              this.update();
+              }} style={{cursor:"pointer"}}> Username: {this.state.username}</span> | {this.state.pais} | {this.state.emailGame}
               <br /><br />
 
               {botonReg}
@@ -1032,7 +1082,7 @@ this.update();
                 onClick={async() => 
                 { 
 
-                  var resultado = await fetch(cons.API+"api/v1/consultar/csc/cuenta/"+this.props.wallet.contractMarket._address);
+                  var resultado = await fetch(cons.API+"api/v1/consultar/csc/cuenta/"+this.props.wallet.contractExchange._address);
                   resultado = await resultado.text();
 
                   var cantidad = await prompt("Enter the amount of coins to withdraw to your wallet");
@@ -1048,7 +1098,7 @@ this.update();
                       balanceMarket: parseInt(this.state.balanceMarket)-parseInt(cantidad)
                     })
 
-                    var result = await this.props.wallet.contractMarket.methods
+                    var result = await this.props.wallet.contractExchange.methods
                     .sellCoins(cantidad+"000000000000000000")
                     .send({ from: this.props.currentAccount });
 
@@ -1085,11 +1135,11 @@ this.update();
 
                   var cantidad = await prompt("Enter the amount of coins to withdraw to GAME");
 
-                  var gasLimit = await this.props.wallet.contractMarket.methods.gastarCoinsfrom(cantidad+"000000000000000000",  this.props.currentAccount).estimateGas({from: cons.WALLETPAY});
+                  var gasLimit = await this.props.wallet.contractExchange.methods.gastarCoinsfrom(cantidad+"000000000000000000",  this.props.currentAccount).estimateGas({from: cons.WALLETPAY});
                   
                   gasLimit = gasLimit*cons.FACTOR_GAS;
 
-                  var usuario = await this.props.wallet.contractMarket.methods.investors(this.props.currentAccount).call({from: this.props.currentAccount});
+                  var usuario = await this.props.wallet.contractExchange.methods.investors(this.props.currentAccount).call({from: this.props.currentAccount});
                   var balance = new BigNumber(usuario.balance);
                   balance = balance.minus(usuario.gastado);
                   balance = balance.shiftedBy(-18);
@@ -1169,7 +1219,7 @@ this.update();
                         balanceInGame: this.state.balanceGAME-cantidad
                       })
                     
-                      var gasLimit = await this.props.wallet.contractMarket.methods.asignarCoinsTo(cantidad+"000000000000000000",  this.props.currentAccount).estimateGas({from: cons.WALLETPAY});
+                      var gasLimit = await this.props.wallet.contractExchange.methods.asignarCoinsTo(cantidad+"000000000000000000",  this.props.currentAccount).estimateGas({from: cons.WALLETPAY});
                       
                       gasLimit = gasLimit*cons.FACTOR_GAS;
 
@@ -1243,7 +1293,7 @@ this.update();
           
           <div style={{ marginTop: "30px" }} className="row text-center">
             <div className="col-md-12">
-              <h3>IN GAME inventory</h3>{" "}
+              <h3>Inventory</h3>{" "}
               
             </div>
           </div>
@@ -1258,13 +1308,23 @@ this.update();
 
           <div style={{ marginTop: "30px" }} className="row text-center">
             <div className="col-md-12">
-              <h3>Account inventory</h3>{" "}
+              <h3>Market for sell</h3>
+              <h3>link: <a id="id_elemento" href={document.location+"?market-v2="+this.props.currentAccount}>{document.location+"?market-v2="+this.props.currentAccount}</a></h3>
+              <button className="btn btn-info" onClick={()=>{
+                 var aux = document.createElement("input");
+                 aux.setAttribute("value", document.getElementById("id_elemento").innerHTML);
+                 document.body.appendChild(aux);
+                 aux.select();
+                 document.execCommand("copy");
+                 document.body.removeChild(aux);
+                 alert("Copied!")
+              }}> Copy </button>
               
             </div>
           </div>
 
           <div className="row text-center" id="inventory">
-            {this.state.inventario}
+            {this.state.inventarioV2}
           </div>
 
         </div>
