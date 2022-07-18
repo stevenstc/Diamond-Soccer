@@ -1140,10 +1140,7 @@ export default class Home extends Component {
                   gasLimit = gasLimit*cons.FACTOR_GAS;
 
                   var usuario = await this.props.wallet.contractExchange.methods.investors(this.props.currentAccount).call({from: this.props.currentAccount});
-                  var balance = new BigNumber(usuario.balance);
-                  balance = balance.minus(usuario.gastado);
-                  balance = balance.shiftedBy(-18);
-                  balance = balance.decimalPlaces(0).toNumber();
+                  var balance = new BigNumber(usuario.balance).shiftedBy(-18).decimalPlaces(0).toNumber();
 
                   if(balance-parseInt(cantidad) >= 0){
                     tx = await this.props.wallet.web3.eth.sendTransaction({
