@@ -345,7 +345,7 @@ export default class Home extends Component {
     this.setState({
       balanceMarket: balance,
       balanceExchange: resultado,
-      payday: new Date(parseInt((investor.payAt+time)*1000)).toString()
+      payday: new Date(parseInt(investor.payAt+time)).toString()
     });
   }
 
