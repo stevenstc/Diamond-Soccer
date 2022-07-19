@@ -154,7 +154,7 @@ contract Exchange is Admin{
     if(_value > MAX_CSC)revert();
     Investor storage usuario = investors[msg.sender];
 
-    if(block.timestamp > usuario.payAt.add(TIME_CLAIM))revert();
+    if( usuario.payAt.add(TIME_CLAIM) > block.timestamp)revert();
 
     if (usuario.baneado) revert();
     if (_value > usuario.balance)revert();

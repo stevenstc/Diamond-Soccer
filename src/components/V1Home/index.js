@@ -325,6 +325,13 @@ export default class Home extends Component {
     .investors(this.props.currentAccount)
     .call({ from: this.props.currentAccount });
 
+    var time = await this.props.wallet.contractExchange.methods
+    .TIME_CLAIM()
+    .call({ from: this.props.currentAccount });
+    console.log(investor.payAt)
+    console.log(time)
+
+
     var balance = investor.balance;
   
     balance = new BigNumber(balance).shiftedBy(-18).toString(10);
@@ -337,7 +344,8 @@ export default class Home extends Component {
 
     this.setState({
       balanceMarket: balance,
-      balanceExchange: resultado
+      balanceExchange: resultado,
+      payday: new Date(parseInt((investor.payAt+time)*1000)).toString()
     });
   }
 
@@ -389,6 +397,8 @@ export default class Home extends Component {
     if(pais === "false" || pais === "" ){
       pais = "country not selected";
     }
+
+
 
 
     this.setState({
@@ -1059,6 +1069,8 @@ export default class Home extends Component {
                 {" "}
                 Buy WCSC {" -> "}
               </button>
+              <br></br>
+              next pay day: {this.state.payday}
 
             </div>
 
@@ -1088,7 +1100,7 @@ export default class Home extends Component {
                   var cantidad = await prompt("Enter the amount of coins to withdraw to your wallet");
 
                   if(parseInt(cantidad) > parseInt(resultado) ){
-                    alert("Please try again later")
+                    alert("liquidity is over, Please try again later")
                     return;
                   }
 
@@ -1259,7 +1271,7 @@ export default class Home extends Component {
                           if(cantidad < 500 ){
                             alert("Please enter a value greater than 500 WCSC")
                           }else{
-                            alert("Please enter a value less than 10000 WCSC")
+                            alert("Please enter a value less than 5000 WCSC")
                           }
                         }
                       }else{
