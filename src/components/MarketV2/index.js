@@ -53,28 +53,19 @@ export default class Market extends Component {
   }
 
 
-  async buyItem(id){
+  async buyItem(user ,id){
 
-    console.log("ento a comprar un item")
 
     var aprovado = await this.props.wallet.contractToken.methods
-      .allowance(this.props.currentAccount, this.props.wallet.contractInventario._address)
-      .call({ from: this.props.currentAccount });
-
-    aprovado = new BigNumber(aprovado).shiftedBy(-18).decimalPlaces(2).toNumber(10);
-
-    /*
-    var balance = await this.props.wallet.contractToken.methods
-    .balanceOf(this.props.currentAccount)
+    .allowance(this.props.currentAccount, this.props.wallet.contractInventario._address)
     .call({ from: this.props.currentAccount });
 
-    balance = new BigNumber(balance).shiftedBy(-18).decimalPlaces(0).toNumber();
-    */
+    aprovado = new BigNumber(aprovado).shiftedBy(-18).decimalPlaces(2).toNumber(10);
 
     if(aprovado > 0){
 
         var result = await this.props.wallet.contractInventario.methods
-          .buyItemsGame(id)
+          .buyItemFromMarket(user,id)
           .send({ from: this.props.currentAccount });
 
         if(result){
@@ -155,7 +146,7 @@ export default class Market extends Component {
                 </h2>
                 
                 <div className="position-relative">
-                  <button className="btn btn-success" onClick={() => {this.buyItem(index);}}>
+                  <button className="btn btn-success" onClick={() => {this.buyItem(this.state.miConsulta,index);}}>
                   Buy for {new BigNumber(enVenta[1][index]).shiftedBy(-18).toString(10)} CSC
                   </button>
                 </div>
