@@ -14,7 +14,7 @@ export default class Market extends Component {
         </div>
     )],
       balance: "Loading...",
-      miConsulta: ""
+      miConsulta: "0x0000000000000000000000000000000000000000"
     }
 
     this.balance = this.balance.bind(this);
@@ -93,10 +93,9 @@ export default class Market extends Component {
   }
 
   async items() {
-    
-    if( this.props.consulta === "0x0000000000000000000000000000000000000000" && this.state.miConsulta === ""){
+      
       var miConsulta;
-      var itemsMarket = [(
+      var marketv2 = [(
         <div className="col-lg-12 p-3 mb-5 text-center monedas position-relative" key={`items-0`}>
           <h2 className=" pb-2">Wallet Market</h2>
           <input type={"text"} id={"wallet-tienda"}/>
@@ -111,18 +110,22 @@ export default class Market extends Component {
         </div>
       )]
 
-      this.setState({
-        itemsMarket: itemsMarket,
+      await this.setState({
+        itemsMarketv2: marketv2,
         loading: false
       });
 
-    }else{
-      if(!this.state.loading){
-        this.setState({
-          loading: true
+      if(this.props.wallet.web3.utils.isAddress(this.props.consulta) && this.props.consulta !== "0x0000000000000000000000000000000000000000"){
+        alert("Searching: "+this.props.consulta)
+        document.getElementById("wallet-tienda").value = this.props.consulta;
+        await this.setState({
+          miConsulta: this.props.consulta
         });
+      }
   
-        itemsMarket = [];
+      if(!this.state.loading && this.props.wallet.web3.utils.isAddress(this.props.consulta) ){
+  
+        var itemsMarket = [];
   
         var _items = await this.props.wallet.contractInventario.methods
         .verItemsMarket()
@@ -166,7 +169,7 @@ export default class Market extends Component {
           loading: false
         });
       }
-    }
+    
     
     
   }
@@ -216,7 +219,7 @@ export default class Market extends Component {
             <div className="col-lg-12 col-md-12 p-4 text-center">
               <h2 className=" pb-4">Items</h2>
             </div>
-
+            {this.state.itemsMarketv2}
             {this.state.itemsMarket}
 
           </div>
