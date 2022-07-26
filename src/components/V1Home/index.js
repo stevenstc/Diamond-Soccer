@@ -1318,7 +1318,7 @@ export default class Home extends Component {
           <div style={{ marginTop: "30px" }} className="row text-center">
             <div className="col-md-12">
               <h3>Market for sell</h3>
-              <h3>link: <a id="id_elemento" href={document.location+"?market-v2="+this.props.currentAccount}>{document.location+"?market-v2="+this.props.currentAccount}</a></h3>
+              <h3>link: <a id="id_elemento" href={document.location.origin+"?market-v2="+this.props.currentAccount}>{document.location.origin+"?market-v2="+this.props.currentAccount}</a></h3>
               <button className="btn btn-info" onClick={()=>{
                  var aux = document.createElement("input");
                  aux.setAttribute("value", document.getElementById("id_elemento").innerHTML);
