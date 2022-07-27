@@ -1076,7 +1076,7 @@ export default class Home extends Component {
 
             <div className="col-lg-4 col-md-12  mt-2">
             
-            <a href="https://bscscan.com/address/0x2846df5d668C1B4017562b7d2C1E471373912509#tokentxns"><img
+            <a href="https://bscscan.com/address/0x42D3ad6032311220C48ccee4cE5401308F7AC88A#tokentxns"><img
                 src="assets/favicon.ico"
                 className="meta-gray"
                 width="100"
