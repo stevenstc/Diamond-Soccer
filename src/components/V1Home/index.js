@@ -231,9 +231,9 @@ export default class Home extends Component {
 
     this.update();
     
-    /*setInterval(async() => {
+    setInterval(async() => {
       this.update();
-    },15*1000);*/
+    },15*1000);
     
   }
 
@@ -244,13 +244,12 @@ export default class Home extends Component {
     this.inventario();
     this.inventarioV2();
 
-    
   }
 
   async balance() {
     var balance = await this.props.wallet.contractToken.methods
-        .balanceOf(this.props.currentAccount)
-        .call({ from: this.props.currentAccount });
+    .balanceOf(this.props.currentAccount)
+    .call({ from: this.props.currentAccount });
 
     balance = new BigNumber(balance).shiftedBy(-18).toString(10);
 

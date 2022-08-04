@@ -18,14 +18,16 @@ import abiStaking from "../../abi/staking"
 import abiFaucet from "../../abi/faucet"
 import abiExchange from "../../abi/exchange"
 
+import detectEthereumProvider from '@metamask/detect-provider';
+
 const delay = (s) => new Promise((res) => setTimeout(res, s*1000));
 
+console.log(cons)
 var addressToken = cons.TOKEN;
 var addressMarket = cons.SC;
 var addressFan = cons.SC2;
 var addressStaking = cons.SC3;
 var addressFaucet = cons.SC4;
-var chainId = cons.chainId;
 
 
 class App extends Component {
@@ -68,11 +70,11 @@ class App extends Component {
       this.setState({
         metamask: true
       }) 
-          
-        await window.ethereum.request({
-          method: 'wallet_switchEthereumChain',
-          params: [{ chainId: chainId}],
-        });
+
+        /*await window.ethereum.request({
+          method: 'wallet_addEthereumChain',
+          params: [{ chainId: chainId }],
+        });*/
         
         window.ethereum.request({ method: 'eth_requestAccounts' })
         .then(async(accounts) => {
@@ -102,8 +104,10 @@ class App extends Component {
             baneado: false
           })   
         });
+
+        const provider = await detectEthereumProvider();
   
-        var web3 = new Web3(window.web3.currentProvider); 
+        var web3 = new Web3(provider); 
         var contractToken = new web3.eth.Contract(
           abiToken,
           addressToken
