@@ -1,14 +1,14 @@
 {
-  "name": "brutustoken",
+  "name": "crypto-soccer",
   "version": "0.1.0",
-  "description": "Es la aplicacion para hacer Crowd Funding en la Blockchain tron",
+  "description": "es la market comercial de Cryto Soccer",
   "scripts": {
     "start": "node scripts/start.js",
     "build": "node scripts/build.js && npx rimraf docs && npx move-cli build docs"
   },
-  "author": "brutustoken",
+  "author": "crypto-soccer",
   "license": "Apache 2.0",
-  "homepage": "https://cryptosoccermarket.ml/",
+  "homepage": "https://cryptosoccermarket.com/",
   "dependencies": {
     "@babel/core": "7.8.4",
     "@metamask/detect-provider": "^1.2.0",
@@ -69,6 +69,7 @@
     "resolve-url-loader": "^3.1.2",
     "sass-loader": "8.0.2",
     "semver": "6.3.0",
+    "shell-quote": "^1.7.2",
     "style-loader": "0.23.1",
     "sweetalert2": "^8.19.0",
     "terser-webpack-plugin": "^4.2.3",
