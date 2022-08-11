@@ -496,7 +496,7 @@ export default class Home extends Component {
                 }
 
 
-                var price = prompt("set price",5000)
+                var price = prompt("Remember that you must have 300 CSC in your Metamask wallet, set price",5000)
                 price = new BigNumber(price).shiftedBy(18).toString(10);
                 await this.props.wallet.contractInventario.methods
                 .SellItemFromMarket( index,this.props.wallet.contractToken._address, price)
@@ -1103,7 +1103,7 @@ export default class Home extends Component {
                     return;
                   }
 
-                  if(parseInt(this.state.balanceMarket) > 0 && parseInt(this.state.balanceMarket)-parseInt(cantidad) >= 0 && parseInt(cantidad) >= 100 && parseInt(cantidad)<= 5000){
+                  if(parseInt(this.state.balanceMarket) > 0 && parseInt(this.state.balanceMarket)-parseInt(cantidad) >= 0 && parseInt(cantidad) >= 100 && parseInt(cantidad)<= 10000){
                     
                     this.setState({
                       balanceMarket: parseInt(this.state.balanceMarket)-parseInt(cantidad)
@@ -1120,8 +1120,8 @@ export default class Home extends Component {
                       alert("Please set amount greater than 500 WCSC");
                     }
 
-                    if(parseInt(cantidad) > 5000){
-                      alert("Set an amount less than 5000 WCSC");
+                    if(parseInt(cantidad) > 10000){
+                      alert("Set an amount less than 10000 WCSC");
                     }
 
                     if(parseInt(this.state.balanceMarket) <= 0){
@@ -1221,7 +1221,7 @@ export default class Home extends Component {
                     var timeWitdrwal = await fetch(cons.API+"api/v1/time/coinsalmarket/"+this.props.currentAccount);
                     timeWitdrwal =  parseInt(await timeWitdrwal.text());
 
-                    if(Date.now() >= timeWitdrwal && this.state.balanceGAME-cantidad >= 0 && cantidad >= 500 && cantidad <= 5000){
+                    if(Date.now() >= timeWitdrwal && this.state.balanceGAME-cantidad >= 0 && cantidad >= 500 && cantidad <= 10000){
 
                       this.setState({
                         balanceInGame: this.state.balanceGAME-cantidad
@@ -1269,8 +1269,9 @@ export default class Home extends Component {
                         }else{
                           if(cantidad < 500 ){
                             alert("Please enter a value greater than 500 WCSC")
-                          }else{
-                            alert("Please enter a value less than 5000 WCSC")
+                          }
+                          if(cantidad > 10000){
+                            alert("Please enter a value less than 10000 WCSC")
                           }
                         }
                       }else{
