@@ -22,7 +22,6 @@ import detectEthereumProvider from '@metamask/detect-provider';
 
 const delay = (s) => new Promise((res) => setTimeout(res, s*1000));
 
-console.log(cons)
 var addressToken = cons.TOKEN;
 var addressMarket = cons.SC;
 var addressFan = cons.SC2;
