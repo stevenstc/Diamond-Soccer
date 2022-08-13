@@ -1032,6 +1032,14 @@ export default class Home extends Component {
           </div>
           <hr></hr>
           <div className="row text-center">
+
+            <div className="col-md-12">
+              <h3><b>liquidity for withdrawals: {this.state.balanceExchange} CSC</b></h3>
+              <hr></hr>
+
+            </div>
+
+
           
             <div className="col-lg-4 col-md-12 mt-2">
             <img
@@ -1082,9 +1090,9 @@ export default class Home extends Component {
                 height="100" 
                 alt="markert info"/></a>
 
-            <h3>EXCHANGE <br></br>{this.state.balanceExchange +" CSC"}</h3>
+            <h3>EXCHANGE</h3>
             <hr></hr>
-              <span title={"liquidity"}>
+              <span >
                 WCSC: {this.state.balanceMarket}
               </span>
               <br/><br/>

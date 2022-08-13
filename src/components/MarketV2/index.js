@@ -146,6 +146,7 @@ export default class Market extends Component {
                 </h2>
                 
                 <div className="position-relative">
+                  Remember that you must have 300 CSC in your Metamask wallet <br/>
                   <button className="btn btn-success" onClick={() => {this.buyItem(this.state.miConsulta,index);}}>
                   Buy for {new BigNumber(enVenta[1][index]).shiftedBy(-18).toString(10)} CSC
                   </button>
