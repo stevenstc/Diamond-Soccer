@@ -10,9 +10,7 @@ interface BEPC20 {
     function approve(address spender, uint256 amount) external returns (bool);
     function transferFrom(address sender, address recipient, uint256 amount) external returns (bool);
 
-    event Burn(address indexed from, uint256 value);
     event Transfer(address indexed from, address indexed to, uint256 value);
-    event Print(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed owner, address indexed spender, uint256 value);
 
     function name() external view returns (string memory);
@@ -86,6 +84,9 @@ contract DiamondCSC is Context, BEPC20 {
 
     constructor () {}
 
+    event Burn(address indexed from, uint256 value);
+    event Print(address indexed from, address indexed to, uint256 value);
+
     function name() public view virtual override returns (string memory) {
         return _name;
     }
@@ -100,20 +101,6 @@ contract DiamondCSC is Context, BEPC20 {
 
     function totalSupply() public view virtual override returns (uint256) {
         return _totalSupply;
-    }
-
-    function price() public view virtual returns (uint256) {
-
-        uint256 plata = contractPool.balanceOf(address(this));
-        uint256 tokens = _totalSupply;
-
-        if(plata == 0 || tokens == 0){
-            return 10**decimals();
-        }else{
-            return (plata.mul(10**decimals())).div( tokens );
-
-        }
-
     }
 
     function balanceOf(address account) public view virtual override returns (uint256) {
@@ -139,8 +126,8 @@ contract DiamondCSC is Context, BEPC20 {
 
         uint256 currentAllowance = _allowances[sender][_msgSender()];
         require(currentAllowance >= amount, "ERC20: transfer amount exceeds allowance");
-        _approve(sender, _msgSender(), currentAllowance - amount);
-
+        _approve(sender, _msgSender(), currentAllowance.sub(amount));
+        
         return true;
     }
 
@@ -178,7 +165,21 @@ contract DiamondCSC is Context, BEPC20 {
         emit Approval(owner, spender, amount);
     }
 
-    function _burn(address sender, uint256 amount) internal virtual {
+    function price() public view returns (uint256) {
+
+        uint256 plata = contractPool.balanceOf(address(this));
+        uint256 tokens = _totalSupply;
+
+        if(plata == 0 || tokens == 0){
+            return 10**decimals();
+        }else{
+            return (plata.mul(10**decimals())).div( tokens );
+
+        }
+
+    }
+
+    function _burn(address sender, uint256 amount) internal {
         uint256 senderBalance = _balances[sender];
         require(senderBalance >= amount, "ERC20: transfer amount exceeds balance");
         _balances[sender] = senderBalance - amount;
@@ -188,7 +189,7 @@ contract DiamondCSC is Context, BEPC20 {
 
     }
 
-    function _print(address to, uint256 amount) internal virtual {
+    function _print(address to, uint256 amount) internal {
         uint256 senderBalance = _balances[to];
         _balances[to] = senderBalance.add(amount);
         _totalSupply = _totalSupply.add(amount);
@@ -207,7 +208,7 @@ contract DiamondCSC is Context, BEPC20 {
         uint256 valor = (amount.mul( 10 ** decimals() )).div(price());
 
         if(!contractPool.transferFrom(_msgSender(), address(this), valor))return();
-        _print(_msgSender(), amount.mul(95).div(100));
+        _print(_msgSender(), amount.mul(99).div(100));
         burn();
 
     }
@@ -216,7 +217,7 @@ contract DiamondCSC is Context, BEPC20 {
 
         uint256 pago = (amount.mul(price())).div(10 ** decimals());
 
-        if(!contractPool.transfer(_msgSender(), pago.mul(90).div(100)))return();
+        if(!contractPool.transfer(_msgSender(), pago.mul(98).div(100)))return();
         _burn(_msgSender(), amount);
         burn();
 
