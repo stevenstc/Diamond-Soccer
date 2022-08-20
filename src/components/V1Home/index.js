@@ -214,7 +214,9 @@ export default class Home extends Component {
         "Zimbabwe"
       ],
       imagenLink: "assets/img/default-user-csg.png",
-      balanceExchange: "loading..."
+      balanceExchange: "loading...",
+      minCSC: 1500,
+      maxCSC: 15000
     }
 
     this.balance = this.balance.bind(this);
@@ -853,18 +855,18 @@ export default class Home extends Component {
                 <div className="col-md-6 col-lg-4" >
                   <div className="p-3 p-md-5 feature-block-1 mb-5 mb-lg-0 bg" style={{"backgroundImage": "url('assets/img/01.png')"}}>
                     <div className="text">
-                      <h2 className="h5 text-white">500 WCSC</h2>
+                      <h2 className="h5 text-white">1500 WCSC</h2>
                       <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Eos repellat autem illum nostrum sit distinctio!</p>
-                      <p className="mb-0" onClick={() => this.buyCoins(500)}><button className="btn btn-primary btn-sm px-4 py-2 rounded-0">Buy</button></p>
+                      <p className="mb-0" onClick={() => this.buyCoins(1500)}><button className="btn btn-primary btn-sm px-4 py-2 rounded-0">Buy</button></p>
                     </div>
                   </div>
                 </div>
                 <div className="col-md-6 col-lg-4">
                   <div className="p-3 p-md-5 feature-block-1 mb-5 mb-lg-0 bg" style={{"backgroundImage": "url('assets/img/02.png')"}}>
                     <div className="text">
-                      <h2 className="h5 text-white">1000 WCSC</h2>
+                      <h2 className="h5 text-white">3000 WCSC</h2>
                       <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Eos repellat autem illum nostrum sit distinctio!</p>
-                      <p className="mb-0" onClick={() => this.buyCoins(1000)}><button className="btn btn-primary btn-sm px-4 py-2 rounded-0">Buy</button></p>
+                      <p className="mb-0" onClick={() => this.buyCoins(3000)}><button className="btn btn-primary btn-sm px-4 py-2 rounded-0">Buy</button></p>
                     </div>
                   </div>
                 </div>
@@ -1063,10 +1065,10 @@ export default class Home extends Component {
                   
                   var cantidad = await prompt("Enter the amount of coins to send to EXCHANGE");
 
-                  if(parseInt(cantidad) >= 100 ){
+                  if(parseInt(cantidad) >= this.state.minCSC ){
                     await this.buyCoins(cantidad);
                   }else{
-                    alert("please enter valid amount");
+                    alert("ingrese un monto mayor a 1500 CSC");
                   }
 
                   this.update();
@@ -1077,7 +1079,7 @@ export default class Home extends Component {
                 Buy WCSC {" -> "}
               </button>
               <br></br>
-              next pay day: {this.state.payday}
+              next witdrawl day: {this.state.payday}
 
             </div>
 
@@ -1111,7 +1113,7 @@ export default class Home extends Component {
                     return;
                   }
 
-                  if(parseInt(this.state.balanceMarket) > 0 && parseInt(this.state.balanceMarket)-parseInt(cantidad) >= 0 && parseInt(cantidad) >= 100 && parseInt(cantidad)<= 10000){
+                  if(parseInt(this.state.balanceMarket) > 0 && parseInt(this.state.balanceMarket)-parseInt(cantidad) >= 0 && parseInt(cantidad) >= this.state.minCSC && parseInt(cantidad)<= this.state.maxCSC){
                     
                     this.setState({
                       balanceMarket: parseInt(this.state.balanceMarket)-parseInt(cantidad)
@@ -1124,12 +1126,12 @@ export default class Home extends Component {
                     alert("your hash transaction: "+result.transactionHash);
 
                   }else{
-                    if(parseInt(cantidad) < 500){
-                      alert("Please set amount greater than 500 WCSC");
+                    if(parseInt(cantidad) < this.state.minCSC){
+                      alert("Please set amount greater than "+this.state.minCSC+" WCSC");
                     }
 
-                    if(parseInt(cantidad) > 10000){
-                      alert("Set an amount less than 10000 WCSC");
+                    if(parseInt(cantidad) > this.state.maxCSC){
+                      alert("Set an amount less than "+this.state.maxCSC+" WCSC");
                     }
 
                     if(parseInt(this.state.balanceMarket) <= 0){
@@ -1229,7 +1231,7 @@ export default class Home extends Component {
                     var timeWitdrwal = await fetch(cons.API+"api/v1/time/coinsalmarket/"+this.props.currentAccount);
                     timeWitdrwal =  parseInt(await timeWitdrwal.text());
 
-                    if(Date.now() >= timeWitdrwal && this.state.balanceGAME-cantidad >= 0 && cantidad >= 500 && cantidad <= 10000){
+                    if(Date.now() >= timeWitdrwal && this.state.balanceGAME-cantidad >= 0 && cantidad >= this.state.minCSC && cantidad <= this.state.maxCSC){
 
                       this.setState({
                         balanceInGame: this.state.balanceGAME-cantidad
@@ -1275,11 +1277,11 @@ export default class Home extends Component {
                         if (this.state.balanceGAME-cantidad < 0) {
                           alert("Insufficient funds WCSC")
                         }else{
-                          if(cantidad < 500 ){
-                            alert("Please enter a value greater than 500 WCSC")
+                          if(cantidad < this.state.minCSC ){
+                            alert("Please enter a value greater than "+this.state.minCSC+" WCSC")
                           }
-                          if(cantidad > 10000){
-                            alert("Please enter a value less than 10000 WCSC")
+                          if(cantidad > this.state.maxCSC){
+                            alert("Please enter a value less than "+this.state.maxCSC+" WCSC")
                           }
                         }
                       }else{

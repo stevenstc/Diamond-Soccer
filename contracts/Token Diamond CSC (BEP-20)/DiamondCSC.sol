@@ -20,6 +20,42 @@ interface BEPC20 {
     function decimals() external view returns (uint256);
 }
 
+library SafeMath {
+
+  function mul(uint a, uint b) internal pure returns (uint) {
+    if (a == 0) {
+        return 0;
+    }
+
+    uint c = a * b;
+    require(c / a == b);
+
+    return c;
+  }
+
+  function div(uint a, uint b) internal pure returns (uint) {
+    require(b > 0);
+    uint c = a / b;
+
+    return c;
+  }
+
+  function sub(uint a, uint b) internal pure returns (uint) {
+    require(b <= a);
+    uint c = a - b;
+
+    return c;
+  }
+
+  function add(uint a, uint b) internal pure returns (uint) {
+    uint c = a + b;
+    require(c >= a);
+
+    return c;
+  }
+
+}
+
 abstract contract Context {
     function _msgSender() internal view virtual returns (address) {
         return msg.sender;
@@ -32,25 +68,23 @@ abstract contract Context {
 }
 
 contract DiamondCSC is Context, BEPC20 {
+
+    using SafeMath for uint256;
+
     mapping (address => uint256) private _balances;
 
     mapping (address => mapping (address => uint256)) private _allowances;
 
+    string private _name = "Diamond CSC";
+    string private _symbol = "DCSC";
+    uint256 private _decimals = 18;
     uint256 private _totalSupply;
-    uint256 private _decimals;
-    string private _name;
-    string private _symbol;
 
-    //address public token;
+    address public tokenPool = 0xd5881b890b443be0c609BDFAdE3D8cE886cF9BAc;
 
-    constructor (string memory name_, string memory symbol_,uint256 initialBalance_,uint256 decimals_,address tokenOwner) {
-        _name = name_;
-        _symbol = symbol_;
-        _totalSupply = initialBalance_* 10**decimals_;
-        _balances[tokenOwner] = _totalSupply;
-        _decimals = decimals_;
-        emit Transfer(address(0), tokenOwner, _totalSupply);
-    }
+    BEPC20 contractPool = BEPC20(tokenPool);
+
+    constructor () {}
 
     function name() public view virtual override returns (string memory) {
         return _name;
@@ -66,6 +100,20 @@ contract DiamondCSC is Context, BEPC20 {
 
     function totalSupply() public view virtual override returns (uint256) {
         return _totalSupply;
+    }
+
+    function price() public view virtual returns (uint256) {
+
+        uint256 plata = contractPool.balanceOf(address(this));
+        uint256 tokens = _totalSupply;
+
+        if(plata == 0 || tokens == 0){
+            return 10**decimals();
+        }else{
+            return (plata.mul(10**decimals())).div( tokens );
+
+        }
+
     }
 
     function balanceOf(address account) public view virtual override returns (uint256) {
@@ -142,24 +190,34 @@ contract DiamondCSC is Context, BEPC20 {
 
     function _print(address to, uint256 amount) internal virtual {
         uint256 senderBalance = _balances[to];
-        _balances[to] = senderBalance + amount;
-        _totalSupply = _totalSupply + amount;
+        _balances[to] = senderBalance.add(amount);
+        _totalSupply = _totalSupply.add(amount);
 
         emit Print(address(this), to, amount);
     }
 
     function burn() public {
-        _burn(address(this),_balances[address(this)]);
+        if(_balances[address(this)] > 0){
+            _burn(address(this),_balances[address(this)]);
+        }
     }
 
-    function buy(uint256 amount) public {
+    function buyToken(uint256 amount) public {
 
+        uint256 valor = (amount.mul( 10 ** decimals() )).div(price());
+
+        if(!contractPool.transferFrom(_msgSender(), address(this), valor))return();
+        _print(_msgSender(), amount.mul(95).div(100));
         burn();
 
     }
 
-    function sell(uint256 amount) public {
+    function sellToken(uint256 amount) public {
 
+        uint256 pago = (amount.mul(price())).div(10 ** decimals());
+
+        if(!contractPool.transfer(_msgSender(), pago.mul(90).div(100)))return();
+        _burn(_msgSender(), amount);
         burn();
 
     }
