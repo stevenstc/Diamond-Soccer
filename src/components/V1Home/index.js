@@ -216,7 +216,8 @@ export default class Home extends Component {
       imagenLink: "assets/img/default-user-csg.png",
       balanceExchange: "loading...",
       minCSC: 1500,
-      maxCSC: 15000
+      maxCSC: 15000,
+      payTime: Date.now()+1
     }
 
     this.balance = this.balance.bind(this);
@@ -329,24 +330,20 @@ export default class Home extends Component {
     var time = await this.props.wallet.contractExchange.methods
     .TIME_CLAIM()
     .call({ from: this.props.currentAccount });
-    console.log(investor.payAt)
-    console.log(time)
 
+    time = parseInt(time)*1000;
+    investor.payAt = parseInt(investor.payAt)*1000;
 
-    var balance = investor.balance;
-  
-    balance = new BigNumber(balance).shiftedBy(-18).toString(10);
-
-    //console.log(balance)
+    var balance = new BigNumber(investor.balance).shiftedBy(-18).toString(10);
 
     var resultado = await fetch(cons.API+"api/v1/consultar/csc/cuenta/"+this.props.wallet.contractExchange._address)
-    resultado = await resultado.text()
-    resultado = parseFloat(resultado)
+    resultado = parseFloat(await resultado.text());
 
     this.setState({
       balanceMarket: balance,
       balanceExchange: resultado,
-      payday: new Date(parseInt(investor.payAt+time)).toString()
+      payday: new Date(parseInt(investor.payAt)+parseInt(time)).toString(),
+      payTime: investor.payAt+time
     });
   }
 
@@ -359,7 +356,8 @@ export default class Home extends Component {
     var timeWitdrwal = "Loading...";
     var imagenLink = "assets/img/default-user-csg.png";
 
-    var register = await fetch(cons.API+"api/v1/user/exist/"+this.props.currentAccount);
+    var register = await fetch(cons.API+"api/v1/user/exist/"+this.props.currentAccount)
+    .catch(()=>{return false;})
     register = await register.text();
 
     if(register === "true"){
@@ -398,9 +396,6 @@ export default class Home extends Component {
     if(pais === "false" || pais === "" ){
       pais = "country not selected";
     }
-
-
-
 
     this.setState({
       balanceGAME: balance,
@@ -1103,6 +1098,11 @@ export default class Home extends Component {
                 onClick={async() => 
                 { 
 
+                  if(this.state.payTime >= Date.now()){
+                    alert("it's not time to withdraw, please wait and try again later")
+                    return;
+                  }
+
                   var resultado = await fetch(cons.API+"api/v1/consultar/csc/cuenta/"+this.props.wallet.contractExchange._address);
                   resultado = await resultado.text();
 
@@ -1113,7 +1113,9 @@ export default class Home extends Component {
                     return;
                   }
 
-                  if(parseInt(this.state.balanceMarket) > 0 && parseInt(this.state.balanceMarket)-parseInt(cantidad) >= 0 && parseInt(cantidad) >= this.state.minCSC && parseInt(cantidad)<= this.state.maxCSC){
+                  
+
+                  if( parseInt(this.state.balanceMarket) > 0 && parseInt(this.state.balanceMarket)-parseInt(cantidad) >= 0 && parseInt(cantidad) >= this.state.minCSC && parseInt(cantidad)<= this.state.maxCSC){
                     
                     this.setState({
                       balanceMarket: parseInt(this.state.balanceMarket)-parseInt(cantidad)
