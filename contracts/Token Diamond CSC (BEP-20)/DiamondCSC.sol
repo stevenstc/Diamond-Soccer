@@ -1,21 +1,21 @@
 pragma solidity >=0.8.0;
 // SPDX-License-Identifier: MIT
 
-interface BEPC20 {
+interface IBEP20 {
 
-    function totalSupply() external view returns (uint256);
-    function balanceOf(address account) external view returns (uint256);
-    function transfer(address recipient, uint256 amount) external returns (bool);
-    function allowance(address owner, address spender) external view returns (uint256);
-    function approve(address spender, uint256 amount) external returns (bool);
-    function transferFrom(address sender, address recipient, uint256 amount) external returns (bool);
+  function totalSupply() external view returns (uint256);
+  function decimals() external view returns (uint256);
+  function symbol() external view returns (string memory);
+  function name() external view returns (string memory);
+  function getOwner() external view returns (address);
+  function balanceOf(address account) external view returns (uint256);
+  function transfer(address recipient, uint256 amount) external returns (bool);
+  function allowance(address _owner, address spender) external view returns (uint256);
+  function approve(address spender, uint256 amount) external returns (bool);
+  function transferFrom(address sender, address recipient, uint256 amount) external returns (bool);
 
-    event Transfer(address indexed from, address indexed to, uint256 value);
-    event Approval(address indexed owner, address indexed spender, uint256 value);
-
-    function name() external view returns (string memory);
-    function symbol() external view returns (string memory);
-    function decimals() external view returns (uint256);
+  event Transfer(address indexed from, address indexed to, uint256 value);
+  event Approval(address indexed owner, address indexed spender, uint256 value);
 }
 
 library SafeMath {
@@ -65,7 +65,7 @@ abstract contract Context {
     }
 }
 
-contract DiamondCSC is Context, BEPC20 {
+contract DiamondCSC is Context  {
 
     using SafeMath for uint256;
 
@@ -80,48 +80,51 @@ contract DiamondCSC is Context, BEPC20 {
 
     address public tokenPool = 0xd5881b890b443be0c609BDFAdE3D8cE886cF9BAc;
 
-    BEPC20 contractPool = BEPC20(tokenPool);
+    IBEP20 contractPool = IBEP20(tokenPool);
 
     constructor () {}
+
+    event Transfer(address indexed from, address indexed to, uint256 value);
+    event Approval(address indexed owner, address indexed spender, uint256 value);
 
     event Burn(address indexed from, uint256 value);
     event Print(address indexed from, address indexed to, uint256 value);
 
-    function name() public view virtual override returns (string memory) {
+    function name() public view returns (string memory) {
         return _name;
     }
 
-    function symbol() public view virtual override returns (string memory) {
+    function symbol() public view returns (string memory) {
         return _symbol;
     }
 
-    function decimals() public view virtual override returns (uint256) {
+    function decimals() public view returns (uint256) {
         return _decimals;
     }
 
-    function totalSupply() public view virtual override returns (uint256) {
+    function totalSupply() public view returns (uint256) {
         return _totalSupply;
     }
 
-    function balanceOf(address account) public view virtual override returns (uint256) {
+    function balanceOf(address account) public view returns (uint256) {
         return _balances[account];
     }
 
-    function transfer(address recipient, uint256 amount) public virtual override returns (bool) {
+    function transfer(address recipient, uint256 amount) public returns (bool) {
         _transfer(_msgSender(), recipient, amount);
         return true;
     }
 
-    function allowance(address owner, address spender) public view virtual override returns (uint256) {
+    function allowance(address owner, address spender) public view returns (uint256) {
         return _allowances[owner][spender];
     }
 
-    function approve(address spender, uint256 amount) public virtual override returns (bool) {
+    function approve(address spender, uint256 amount) public returns (bool) {
         _approve(_msgSender(), spender, amount);
         return true;
     }
 
-    function transferFrom(address sender, address recipient, uint256 amount) public virtual override returns (bool) {
+    function transferFrom(address sender, address recipient, uint256 amount) public returns (bool) {
         _transfer(sender, recipient, amount);
 
         uint256 currentAllowance = _allowances[sender][_msgSender()];
@@ -131,12 +134,12 @@ contract DiamondCSC is Context, BEPC20 {
         return true;
     }
 
-    function increaseAllowance(address spender, uint256 addedValue) public virtual returns (bool) {
+    function increaseAllowance(address spender, uint256 addedValue) public returns (bool) {
         _approve(_msgSender(), spender, _allowances[_msgSender()][spender] + addedValue);
         return true;
     }
 
-    function decreaseAllowance(address spender, uint256 subtractedValue) public virtual returns (bool) {
+    function decreaseAllowance(address spender, uint256 subtractedValue) public returns (bool) {
         uint256 currentAllowance = _allowances[_msgSender()][spender];
         require(currentAllowance >= subtractedValue, "ERC20: decreased allowance below zero");
         _approve(_msgSender(), spender, currentAllowance - subtractedValue);
@@ -144,7 +147,7 @@ contract DiamondCSC is Context, BEPC20 {
         return true;
     }
 
-    function _transfer(address sender, address recipient, uint256 amount) internal virtual {
+    function _transfer(address sender, address recipient, uint256 amount) internal {
         require(sender != address(0), "ERC20: transfer from the zero address");
         require(recipient != address(0), "ERC20: transfer to the zero address");
 
@@ -157,7 +160,7 @@ contract DiamondCSC is Context, BEPC20 {
         emit Transfer(sender, recipient, amount);
     }
 
-    function _approve(address owner, address spender, uint256 amount) internal virtual {
+    function _approve(address owner, address spender, uint256 amount) internal {
         require(owner != address(0), "ERC20: approve from the zero address");
         require(spender != address(0), "ERC20: approve to the zero address");
 
