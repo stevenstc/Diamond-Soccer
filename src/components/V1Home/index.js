@@ -1046,7 +1046,7 @@ export default class Home extends Component {
                 height="100" 
                 alt="markert info"/>
 
-            <h3>MARKET</h3>
+            <h3>MY ACCOUNT</h3>
             <hr></hr>
               <span>
                 CSC: {this.state.balance}
@@ -1063,7 +1063,7 @@ export default class Home extends Component {
                   if(parseInt(cantidad) >= this.state.minCSC ){
                     await this.buyCoins(cantidad);
                   }else{
-                    alert("ingrese un monto mayor a 1500 CSC");
+                    alert("ingrese un monto mayor a "+this.state.minCSC+" CSC");
                   }
 
                   this.update();
@@ -1227,7 +1227,7 @@ export default class Home extends Component {
                     var tx = {};
                     tx.status = false;
 
-                    var cantidad = await prompt("Enter the amount of coins to withdraw to EXCHANGE","500");
+                    var cantidad = await prompt("Enter the amount of coins to withdraw to EXCHANGE",this.state.minCSC);
                     cantidad = parseInt(cantidad);
 
                     var timeWitdrwal = await fetch(cons.API+"api/v1/time/coinsalmarket/"+this.props.currentAccount);
