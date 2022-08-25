@@ -217,7 +217,8 @@ export default class Home extends Component {
       balanceExchange: "loading...",
       minCSC: 1500,
       maxCSC: 15000,
-      payTime: Date.now()+1
+      payTime: Date.now()+1,
+      latesMaches: []
     }
 
     this.balance = this.balance.bind(this);
@@ -227,6 +228,7 @@ export default class Home extends Component {
     this.inventarioV2 = this.inventarioV2.bind(this);
     this.updateEmail = this.updateEmail.bind(this);
     this.update = this.update.bind(this);
+    this.verLates = this.verLates.bind(this);
 
   }
 
@@ -241,6 +243,7 @@ export default class Home extends Component {
   }
 
   async update() {
+    this.verLates();
     this.balanceInGame();
     this.balance();
     this.balanceInMarket();
@@ -590,6 +593,79 @@ export default class Home extends Component {
     this.setState({
       inventarioV2: inventario
     })
+  }
+
+  async verLates(){
+
+    var latesMaches = [];
+
+    var result = await fetch('https://brutustronstaking.tk/csc/api/v1/sesion/consultar/latesmaches?long=5',
+    {method: 'GET', // *GET, POST, PUT, DELETE, etc.
+      headers: {
+        'Content-Type': 'application/json'
+        // 'Content-Type': 'application/x-www-form-urlencoded',
+      }
+    })
+    .then(response => response.json())
+    .then(json => {return json;})
+    .catch(error =>{console.log(error);return [];})
+
+    console.log(result)
+
+    for (let index = 0; index < result.length; index++) {
+      latesMaches[index] = (
+      
+      <div className="row bg-white align-items-center ml-0 mr-0 py-4 " key={`itemsmatches-${index}`}>
+            <div className="col-md-4 col-lg-4 mb-4 mb-lg-0">
+
+              <div className="text-center text-lg-left">
+                <div className="d-block d-lg-flex align-items-center">
+                  <div className="image image-small text-center mb-3 mb-lg-0 mr-lg-3">
+                    <img src="images/img_1_sq.jpg" alt="imagen jugadores" className="img-fluid" />
+                  </div>
+                  <div className="text">
+                    <h3 className="h5 mb-0 text-black">{result[index].u1}</h3>
+                    <span className="text-uppercase text-black small country">{result[index].csc} CSC</span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+            <div className="col-md-4 col-lg-4 text-center mb-4 mb-lg-0">
+              <div className="d-inline-block">
+                <div className="bg-black py-2 px-4 mb-2 text-white d-inline-block rounded"><span className="h5">{result[index].goles1 +":"+result[index].goles2}</span></div>
+              </div>
+            </div>
+
+            <div className="col-md-4 col-lg-4 text-center text-lg-right">
+              <div className="">
+                <div className="d-block d-lg-flex align-items-center">
+                  <div className="image image-small ml-lg-3 mb-3 mb-lg-0 order-2">
+                    <img src="images/img_4_sq.jpg" alt="imagen jugadores" className="img-fluid" />
+                  </div>
+                  <div className="text order-1 w-100">
+                    <h3 className="h5 mb-0 text-black">{result[index].u2} </h3>
+                    <span className="text-uppercase small text-black country">{result[index].csc} CSC</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="col-md-12 col-lg-12 text-center text-lg-right">
+              <hr></hr>
+            </div>
+            
+          </div>
+
+
+      );
+    }
+
+
+    this.setState({
+      latesMaches: latesMaches
+    })
+
   }
 
   render() {
@@ -1349,6 +1425,30 @@ export default class Home extends Component {
           </div>
 
         </div>
+
+        <div className="site-blocks-vs site-section bg-light">
+          <div className="container">
+
+            <div className="row">
+              <div className="col-md-12">
+
+                <h2 className="h6 text-uppercase text-black font-weight-bold mb-3">Latest Matches</h2>
+                <div className="site-block-tab">
+                  <div className="tab-content" >
+                    <div className="tab-pane fade show active">
+                      <div className="row align-items-center">
+                        <div className="col-md-12">
+                          {this.state.latesMaches}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </>
     );
   }
