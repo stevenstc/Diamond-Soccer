@@ -1203,8 +1203,6 @@ export default class Home extends Component {
                     return;
                   }
 
-                  
-
                   if( parseInt(this.state.balanceMarket) > 0 && parseInt(this.state.balanceMarket)-parseInt(cantidad) >= 0 && parseInt(cantidad) >= this.state.minCSC && parseInt(cantidad)<= this.state.maxCSC){
                     
                     this.setState({

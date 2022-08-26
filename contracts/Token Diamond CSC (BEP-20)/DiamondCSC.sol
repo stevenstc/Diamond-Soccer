@@ -78,7 +78,7 @@ contract DiamondCSC is Context  {
     uint256 private _decimals = 18;
     uint256 private _totalSupply;
 
-    address public tokenPool = 0xd5881b890b443be0c609BDFAdE3D8cE886cF9BAc;
+    address public tokenPool = 0x55d398326f99059fF775485246999027B3197955; // USDT
 
     IBEP20 contractPool = IBEP20(tokenPool);
 
@@ -86,9 +86,6 @@ contract DiamondCSC is Context  {
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed owner, address indexed spender, uint256 value);
-
-    event Burn(address indexed from, uint256 value);
-    event Print(address indexed from, address indexed to, uint256 value);
 
     function name() public view returns (string memory) {
         return _name;
@@ -188,7 +185,7 @@ contract DiamondCSC is Context  {
         _balances[sender] = senderBalance - amount;
         _totalSupply = _totalSupply - amount;
 
-        emit Burn(sender, amount);
+        emit Transfer(sender,address(0), amount);
 
     }
 
@@ -197,7 +194,7 @@ contract DiamondCSC is Context  {
         _balances[to] = senderBalance.add(amount);
         _totalSupply = _totalSupply.add(amount);
 
-        emit Print(address(this), to, amount);
+        emit Transfer(address(this), to, amount);
     }
 
     function burn() public {
