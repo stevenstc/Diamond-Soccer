@@ -334,6 +334,18 @@ export default class Home extends Component {
     .TIME_CLAIM()
     .call({ from: this.props.currentAccount });
 
+    var min = await this.props.wallet.contractExchange.methods
+    .MIN_CSC()
+    .call({ from: this.props.currentAccount });
+
+    min = new BigNumber(min).shiftedBy(-18).toNumber();
+
+    var max = await this.props.wallet.contractExchange.methods
+    .MAX_CSC()
+    .call({ from: this.props.currentAccount });
+
+    max = new BigNumber(max).shiftedBy(-18).toNumber();
+
     time = parseInt(time)*1000;
     investor.payAt = parseInt(investor.payAt)*1000;
 
@@ -343,6 +355,9 @@ export default class Home extends Component {
     resultado = parseFloat(await resultado.text());
 
     this.setState({
+
+      minCSC: min,
+      maxCSC: max,
       balanceMarket: balance,
       balanceExchange: resultado,
       payday: new Date(parseInt(investor.payAt)+parseInt(time)).toString(),
@@ -368,10 +383,10 @@ export default class Home extends Component {
       username = await fetch(cons.API+"api/v1/user/username/"+this.props.currentAccount);
       username = await username.text();
 
+      document.getElementById("username").innerHTML = username;
+
       imagenLink = await fetch(cons.API+"api/v1/imagen/user/?username="+username);
       imagenLink = await imagenLink.text();
-
-      document.getElementById("username").innerHTML = username;
 
       pais = await fetch(cons.API+"api/v1/user/pais/"+this.props.currentAccount);
       pais = await pais.text();
@@ -610,7 +625,7 @@ export default class Home extends Component {
     .then(json => {return json;})
     .catch(error =>{console.log(error);return [];})
 
-    console.log(result)
+    //console.log(result)
 
     for (let index = 0; index < result.length; index++) {
       latesMaches[index] = (
@@ -656,7 +671,6 @@ export default class Home extends Component {
             </div>
             
           </div>
-
 
       );
     }
@@ -1174,7 +1188,7 @@ export default class Home extends Component {
                 onClick={async() => 
                 { 
 
-                  if(this.state.payTime >= Date.now()){
+                  if(this.state.payTime >= Date.now() ){
                     alert("it's not time to withdraw, please wait and try again later")
                     return;
                   }
