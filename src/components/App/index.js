@@ -11,6 +11,7 @@ import TronLinkGuide from "../TronLinkGuide";
 import cons from "../../cons"
 
 import abiToken from "../../abi/token";
+import abiDiamonCSC from "../../diamonCSC"
 import abiMarket from "../../abi/market";
 import abiInventario from "../../abi/inventario";
 import abiFan from "../../abi/fan"
@@ -27,6 +28,8 @@ var addressMarket = cons.SC;
 var addressFan = cons.SC2;
 var addressStaking = cons.SC3;
 var addressFaucet = cons.SC4;
+var addressToken2 = cons.tokenCSC;
+
 
 
 class App extends Component {
@@ -111,6 +114,10 @@ class App extends Component {
           abiToken,
           addressToken
         );
+        var contractToken2 = new web3.eth.Contract(
+          abiDiamonCSC,
+          addressToken2
+        );
         var contractMarket = new web3.eth.Contract(
           abiMarket,
           addressMarket
@@ -152,6 +159,7 @@ class App extends Component {
           binanceM:{
             web3: web3,
             contractToken: contractToken,
+            contractToken2: contractToken2,
             contractMarket: contractMarket,
             contractFan: contractFan,
             contractStaking: contractStaking,
