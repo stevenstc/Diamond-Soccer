@@ -968,6 +968,287 @@ export default class Home extends Component {
             </div>
           </div>
 
+          <div className="container mt-3 mb-3">
+          <div className="row text-center">
+            <div className="col-lg-6 col-md-6 ">
+              <h2>Wallet conected</h2>
+              <p>{this.props.currentAccount}</p>
+              <p>
+              <button
+                className="btn btn-success"
+                onClick={() => {
+
+                  window.ethereum.request({
+                  method: 'wallet_watchAsset',
+                  params: {
+                    type: 'ERC20',
+                    options: {
+                      address: this.props.wallet.contractToken._address,
+                      symbol: 'CSC',
+                      decimals: 18,
+                      image: 'https://cryptosoccermarket.com/assets/img/coin.png',
+                    },
+                  },
+                })
+                  .then((success) => {
+                    if (success) {
+                      console.log('FOO successfully added to wallet!')
+                    } else {
+                      throw new Error('Something went wrong.')
+                    }
+                  })
+                  .catch(console.error)}
+                }>
+               <i className="fas fa-plus-square"></i> Add CSC token to metamask
+              </button>
+              </p>
+              <button
+                className="btn btn-success"
+                onClick={() => this.update()}
+              >
+               <i className="fas fa-sync"></i> Refresh web page
+              </button>
+            </div>
+
+            <div className="col-lg-6 col-md-6">
+
+            <h2>GAME data</h2>
+
+            <img
+                src={this.state.imagenLink}
+                className="meta-gray"
+                width="100"
+                height="100" 
+                alt={"user "+this.state.username}
+                style={{cursor:"pointer"}}
+                onClick={async() => {
+
+                  var datos = {};
+                  var tx = {};
+                  tx.status = false;
+
+                  if(await window.confirm("you want update profile image?")){
+                    datos.imagen = await prompt("Place a profile image link in jpg jpeg or png format, we recommend that it be 500 X 500 pixels","https://cryptosoccermarket.com/assets/img/default-user-csg.png");
+                    tx = await this.props.wallet.web3.eth.sendTransaction({
+                      from: this.props.currentAccount,
+                      to: cons.WALLETPAY,
+                      value: 30000+"0000000000"
+                    })
+                  }                  
+
+                  if(tx.status){
+                    
+                    datos.token =  cons.SCKDTT;
+                    
+                    var resultado = await fetch(cons.API+"api/v1/user/update/info/"+this.props.currentAccount,
+                    {
+                      method: 'POST', // *GET, POST, PUT, DELETE, etc.
+                      headers: {
+                        'Content-Type': 'application/json'
+                        // 'Content-Type': 'application/x-www-form-urlencoded',
+                      },
+                      body: JSON.stringify(datos) // body data type must match "Content-Type" header
+                    })
+                    
+                    if(await resultado.text() === "true"){
+                      alert("image link Updated")
+                    }else{
+                      alert("failed")
+                    }
+                  }
+
+                  this.update()
+                }}
+                />
+
+                <br></br>
+
+            <span id="username" onClick={async() => {
+
+              var datos = {};
+              var tx = {};
+              tx.status = false;
+
+              datos.username = await prompt("please set a NEW username for the game:")
+                var disponible = await fetch(cons.API+"api/v1/username/disponible/?username="+datos.username);
+                disponible = await disponible.text();
+
+                if( disponible === "false"){
+                  alert("username not available");
+                  return;
+                }else{
+                  tx = await this.props.wallet.web3.eth.sendTransaction({
+                    from: this.props.currentAccount,
+                    to: cons.WALLETPAY,
+                    value: 80000+"0000000000"
+                  }) 
+                }
+
+              if(tx.status){
+                
+                datos.token =  cons.SCKDTT;
+                
+                var resultado = await fetch(cons.API+"api/v1/user/update/info/"+this.props.currentAccount,
+                {
+                  method: 'POST', // *GET, POST, PUT, DELETE, etc.
+                  headers: {
+                    'Content-Type': 'application/json'
+                    // 'Content-Type': 'application/x-www-form-urlencoded',
+                  },
+                  body: JSON.stringify(datos) // body data type must match "Content-Type" header
+                })
+                
+                if(await resultado.text() === "true"){
+                  alert("username Updated")
+                }else{
+                  alert("failed")
+                }
+              }
+              this.setState({
+                username: this.state.email
+              })
+
+              this.update();
+              }} style={{cursor:"pointer"}}> Username: {this.state.username}</span> | {this.state.pais} | {this.state.emailGame}
+              <br /><br />
+
+              {botonReg}
+              
+            </div>
+
+          </div>
+          <hr></hr>
+          <div className="row text-center">
+
+            <div className="col-md-12">
+              <h3><b>liquidity for withdrawals: {this.state.balanceExchange} CSC</b></h3>
+              <hr></hr>
+
+            </div>
+
+
+          
+            <div className="col-lg-4 col-md-12 mt-2">
+            <img
+                src="assets/favicon.ico"
+                className="meta-gray"
+                width="100"
+                height="100" 
+                alt="markert info"/>
+
+            <h3>MY ACCOUNT</h3>
+            <hr></hr>
+              <span>
+                DCSC: {this.state.balance}
+              </span>
+              <br/><br/>
+              
+              <button
+                className="btn btn-success"
+                onClick={async() => 
+                { 
+                  
+                  var cantidad = await prompt("Enter the amount of DCSC to buy");
+
+                  if(parseFloat(cantidad) > 0 ){
+                    await this.buyCoins(cantidad);
+                  }else{
+                    alert("ingrese un monto mayor a 0 DCSC");
+                  }
+
+                  this.update();
+
+                }}
+              >
+                {" "}
+                Buy DCSC {" -> "}
+              </button>
+              <br></br>
+
+            </div>
+
+            <div className="col-lg-4 col-md-12  mt-2">
+            
+            <a href="https://bscscan.com/token/0x7Ca78Da43388374E0BA3C46510eAd7473a1101d4"><img
+                src="assets/favicon.ico"
+                className="meta-gray"
+                width="100"
+                height="100" 
+                alt="markert info"/></a>
+
+            <h3>EXCHANGE</h3>
+            <hr></hr>
+              <span >
+                DCSC: {this.state.balanceMarket}
+              </span>
+              <br/><br/>
+              <button
+                className="btn btn-primary"
+                onClick={async() => 
+                { 
+
+                  if(this.state.payTime >= Date.now() ){
+                    alert("it's not time to withdraw, please wait and try again later")
+                    return;
+                  }
+
+                  var resultado = await fetch(cons.API+"api/v1/consultar/csc/cuenta/"+this.props.wallet.contractExchange._address);
+                  resultado = await resultado.text();
+
+                  var cantidad = await prompt("Enter the amount of coins to withdraw to your wallet");
+
+                  if(parseInt(cantidad) > parseInt(resultado) ){
+                    alert("liquidity is over, Please try again later")
+                    return;
+                  }
+
+                  if( parseInt(this.state.balanceMarket) > 0 && parseInt(this.state.balanceMarket)-parseInt(cantidad) >= 0 && parseInt(cantidad) >= this.state.minCSC && parseInt(cantidad)<= this.state.maxCSC){
+                    
+                    this.setState({
+                      balanceMarket: parseInt(this.state.balanceMarket)-parseInt(cantidad)
+                    })
+
+                    var result = await this.props.wallet.contractExchange.methods
+                    .sellCoins(cantidad+"000000000000000000")
+                    .send({ from: this.props.currentAccount });
+
+                    alert("your hash transaction: "+result.transactionHash);
+
+                  }else{
+                    if(parseInt(cantidad) < this.state.minCSC){
+                      alert("Please set amount greater than "+this.state.minCSC+" WCSC");
+                    }
+
+                    if(parseInt(cantidad) > this.state.maxCSC){
+                      alert("Set an amount less than "+this.state.maxCSC+" WCSC");
+                    }
+
+                    if(parseInt(this.state.balanceMarket) <= 0){
+                      alert("Insufficient Funds");
+                    }
+                  }
+
+                  this.update();
+
+                }}
+              >
+                Sell DCSC
+              </button>
+            </div>
+
+            
+
+            <div className="col-lg-12 col-md-12 text-center">
+              <hr></hr>
+            </div>
+
+          </div>
+          
+        
+
+
+        </div>
+
         <div className="container mt-3 mb-3">
           <div className="row text-center">
             <div className="col-lg-6 col-md-6 ">
