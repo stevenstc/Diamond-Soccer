@@ -10,6 +10,9 @@ export default class Home extends Component {
       inventario: [],
       itemsYoutube: [],
       balance: "Loading...",
+      balanceDCSC: "Loading...",
+      balanceUSDT: "Loading...",
+      balanceUSDTPOOL: "Loading...",
       balanceGAME: "Loading...",
       email: "Loading...",
       username: "Loading...",
@@ -230,6 +233,10 @@ export default class Home extends Component {
     this.update = this.update.bind(this);
     this.verLates = this.verLates.bind(this);
 
+    this.buyCoins = this.buyCoins.bind(this);
+    this.buyCoins2 = this.buyCoins2.bind(this);
+
+
   }
 
   async componentDidMount() {
@@ -257,12 +264,31 @@ export default class Home extends Component {
     .balanceOf(this.props.currentAccount)
     .call({ from: this.props.currentAccount });
 
-    balance = new BigNumber(balance).shiftedBy(-18).toString(10);
+    balance = new BigNumber(balance).shiftedBy(-18).decimalPlaces(2).toString(10);
 
-    //console.log(balance)
+    var balanceDCSC = await this.props.wallet.contractToken2.methods
+    .balanceOf(this.props.currentAccount)
+    .call({ from: this.props.currentAccount });
+
+    balanceDCSC = new BigNumber(balanceDCSC).shiftedBy(-18).decimalPlaces(2).toString(10);
+
+    var balanceUSDT = await this.props.wallet.contractToken3.methods
+    .balanceOf(this.props.currentAccount)
+    .call({ from: this.props.currentAccount });
+
+    balanceUSDT = new BigNumber(balanceUSDT).shiftedBy(-18).decimalPlaces(2).toString(10);
+
+    var balanceUSDTPOOL = await this.props.wallet.contractToken3.methods
+    .balanceOf(this.props.wallet.contractToken2._address)
+    .call({ from: this.props.currentAccount });
+
+    balanceUSDTPOOL = new BigNumber(balanceUSDTPOOL).shiftedBy(-18).decimalPlaces(2).toString(10);
 
     this.setState({
-      balance: balance
+      balance: balance,
+      balanceDCSC: balanceDCSC,
+      balanceUSDT: balanceUSDT,
+      balanceUSDTPOOL: balanceUSDTPOOL
     });
   }
 
@@ -424,6 +450,52 @@ export default class Home extends Component {
       timeWitdrwal: new Date(parseInt(timeWitdrwal)).toString(),
       imagenLink: imagenLink
     });
+  }
+
+  async buyCoins2(amount){
+
+    var aprovado = await this.props.wallet.contractToken3.methods
+      .allowance(this.props.currentAccount, this.props.wallet.contractToken2._address)
+      .call({ from: this.props.currentAccount });
+
+    aprovado = new BigNumber(aprovado).shiftedBy(-18).decimalPlaces(2).toNumber();
+
+    var balance = await this.props.wallet.contractToken3.methods
+    .balanceOf(this.props.currentAccount)
+    .call({ from: this.props.currentAccount });
+
+    balance = new BigNumber(balance).shiftedBy(-18).toNumber();
+
+    var compra = new BigNumber(amount).shiftedBy(18).toString(10);
+    amount = new BigNumber(amount).toNumber();
+
+    if(aprovado > 0){
+
+      if (balance>=amount) {
+
+        var result = await this.props.wallet.contractToken2.methods
+        .buyToken(compra)
+        .send({ from: this.props.currentAccount });
+  
+        if(result){
+          alert("coins buyed");
+        }
+        
+      }else{
+        alert("insuficient founds")
+      }
+
+    }else{
+      alert("insuficient aproved balance")
+      await this.props.wallet.contractToken3.methods
+      .approve(this.props.wallet.contractToken2._address, "115792089237316195423570985008687907853269984665640564039457584007913129639935")
+      .send({ from: this.props.currentAccount });
+
+    }
+
+    this.update();
+
+    
   }
 
   async buyCoins(amount){
@@ -1405,7 +1477,7 @@ export default class Home extends Component {
           <div className="row text-center">
 
             <div className="col-md-12">
-              <h3><b>DCSC LIQUIDITY POOL: {this.state.balanceExchange} USDT</b></h3>
+              <h3><b>DCSC LIQUIDITY POOL: {this.state.balanceUSDTPOOL} USDT</b></h3>
               <hr></hr>
 
             </div>
@@ -1414,20 +1486,15 @@ export default class Home extends Component {
           
             <div className="col-lg-6 col-md-12 mt-2">
             <img
-                src="assets/favicon.ico"
+                src="assets/img/logo-cuadrado-dcsc.png"
                 className="meta-gray"
-                width="100"
                 height="100" 
                 alt="markert info"/>
 
             <h3>MY ACCOUNT</h3>
             <hr></hr>
               <span>
-                DCSC: {this.state.balance}
-              </span>
-              <br/><br/>
-              <span>
-                USDT: {this.state.balance}
+                USDT: {this.state.balanceUSDT}
               </span>
               <br/><br/>
               
@@ -1438,8 +1505,8 @@ export default class Home extends Component {
                   
                   var cantidad = await prompt("Enter the amount of DCSC to buy");
 
-                  if(parseFloat(cantidad) > 0 ){
-                    await this.buyCoins(cantidad);
+                  if(parseFloat(cantidad.replace(",",".")) > 0 ){
+                    await this.buyCoins2(cantidad);
                   }else{
                     alert("ingrese un monto mayor a 0 DCSC");
                   }
@@ -1448,7 +1515,6 @@ export default class Home extends Component {
 
                 }}
               >
-                {" "}
                 Buy DCSC {" -> "}
               </button>
               <br></br>
@@ -1458,16 +1524,15 @@ export default class Home extends Component {
             <div className="col-lg-6 col-md-12  mt-2">
             
               <a href="https://bscscan.com/token/0x7Ca78Da43388374E0BA3C46510eAd7473a1101d4"><img
-                src="assets/favicon.ico"
+                src="assets/img/logo-cuadrado-dcsc.png"
                 className="meta-gray"
-                width="100"
                 height="100" 
                 alt="markert info"/></a>
 
               <h3>EXCHANGE</h3>
               <hr></hr>
               <span >
-                DCSC: {this.state.balanceMarket}
+                DCSC: {this.state.balanceDCSC}
               </span>
               <br/><br/>
               <button
@@ -1475,52 +1540,25 @@ export default class Home extends Component {
                 onClick={async() => 
                 { 
 
-                  if(this.state.payTime >= Date.now() ){
-                    alert("it's not time to withdraw, please wait and try again later")
-                    return;
-                  }
-
-                  var resultado = await fetch(cons.API+"api/v1/consultar/csc/cuenta/"+this.props.wallet.contractExchange._address);
-                  resultado = await resultado.text();
-
                   var cantidad = await prompt("Enter the amount of coins to withdraw to your wallet");
 
-                  if(parseInt(cantidad) > parseInt(resultado) ){
-                    alert("liquidity is over, Please try again later")
-                    return;
-                  }
+                  if( parseFloat(cantidad) > 0 ){
 
-                  if( parseInt(this.state.balanceMarket) > 0 && parseInt(this.state.balanceMarket)-parseInt(cantidad) >= 0 && parseInt(cantidad) >= this.state.minCSC && parseInt(cantidad)<= this.state.maxCSC){
-                    
-                    this.setState({
-                      balanceMarket: parseInt(this.state.balanceMarket)-parseInt(cantidad)
-                    })
-
-                    var result = await this.props.wallet.contractExchange.methods
-                    .sellCoins(cantidad+"000000000000000000")
+                    var result = await this.props.wallet.contractToken2.methods
+                    .sellToken(new BigNumber(cantidad).shiftedBy(18).toString(10))
                     .send({ from: this.props.currentAccount });
 
                     alert("your hash transaction: "+result.transactionHash);
 
                   }else{
-                    if(parseInt(cantidad) < this.state.minCSC){
-                      alert("Please set amount greater than "+this.state.minCSC+" WCSC");
-                    }
-
-                    if(parseInt(cantidad) > this.state.maxCSC){
-                      alert("Set an amount less than "+this.state.maxCSC+" WCSC");
-                    }
-
-                    if(parseInt(this.state.balanceMarket) <= 0){
-                      alert("Insufficient Funds");
-                    }
+                    alert("Please enter a more that 0");
                   }
 
                   this.update();
 
                 }}
               >
-                Sell DCSC
+                {" <- "}Sell DCSC
               </button>
             </div>
 

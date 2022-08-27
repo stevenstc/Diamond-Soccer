@@ -24,11 +24,13 @@ import detectEthereumProvider from '@metamask/detect-provider';
 const delay = (s) => new Promise((res) => setTimeout(res, s*1000));
 
 var addressToken = cons.TOKEN;
+var addressToken2 = cons.tokenCSC;
+var addressToken3 = cons.tokenUSDT;
 var addressMarket = cons.SC;
 var addressFan = cons.SC2;
 var addressStaking = cons.SC3;
 var addressFaucet = cons.SC4;
-var addressToken2 = cons.tokenCSC;
+var chainId = cons.chainId;
 
 
 
@@ -73,10 +75,10 @@ class App extends Component {
         metamask: true
       }) 
 
-        /*await window.ethereum.request({
-          method: 'wallet_addEthereumChain',
+        await window.ethereum.request({
+          method: 'wallet_switchEthereumChain',
           params: [{ chainId: chainId }],
-        });*/
+        });
         
         window.ethereum.request({ method: 'eth_requestAccounts' })
         .then(async(accounts) => {
@@ -118,6 +120,11 @@ class App extends Component {
           abiDiamonCSC,
           addressToken2
         );
+        var contractToken3 = new web3.eth.Contract(
+          abiToken,
+          addressToken3
+        );
+        
         var contractMarket = new web3.eth.Contract(
           abiMarket,
           addressMarket
@@ -160,6 +167,7 @@ class App extends Component {
             web3: web3,
             contractToken: contractToken,
             contractToken2: contractToken2,
+            contractToken3: contractToken3,
             contractMarket: contractMarket,
             contractFan: contractFan,
             contractStaking: contractStaking,
