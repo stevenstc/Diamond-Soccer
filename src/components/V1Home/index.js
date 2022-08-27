@@ -14,6 +14,7 @@ export default class Home extends Component {
       balanceUSDT: "Loading...",
       balanceUSDTPOOL: "Loading...",
       balanceGAME: "Loading...",
+      priceDCSC: "Loading...",
       email: "Loading...",
       username: "Loading...",
       register: false,
@@ -282,13 +283,27 @@ export default class Home extends Component {
     .balanceOf(this.props.wallet.contractToken2._address)
     .call({ from: this.props.currentAccount });
 
+    var balanceUSDTPOOL2 = balanceUSDTPOOL;
+
     balanceUSDTPOOL = new BigNumber(balanceUSDTPOOL).shiftedBy(-18).decimalPlaces(2).toString(10);
+
+    var balanceDCSCPOOL = await this.props.wallet.contractToken2.methods
+    .totalSupply()
+    .call({ from: this.props.currentAccount });
+
+    var balanceDCSCPOOL2 = balanceDCSCPOOL
+
+    balanceDCSCPOOL = new BigNumber(balanceDCSCPOOL).shiftedBy(-18).decimalPlaces(2).toString(10);
+
+    var priceDCSC = balanceUSDTPOOL2/balanceDCSCPOOL2
+
 
     this.setState({
       balance: balance,
       balanceDCSC: balanceDCSC,
       balanceUSDT: balanceUSDT,
-      balanceUSDTPOOL: balanceUSDTPOOL
+      balanceUSDTPOOL: balanceUSDTPOOL,
+      priceDCSC: priceDCSC
     });
   }
 
@@ -1532,7 +1547,7 @@ export default class Home extends Component {
               <h3>EXCHANGE</h3>
               <hr></hr>
               <span >
-                DCSC: {this.state.balanceDCSC}
+                DCSC: {this.state.balanceDCSC} (${parseFloat(this.state.balanceDCSC*this.state.priceDCSC).toFixed(2)})
               </span>
               <br/><br/>
               <button
