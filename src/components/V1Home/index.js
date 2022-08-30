@@ -393,7 +393,7 @@ export default class Home extends Component {
     var balance = new BigNumber(investor.balance).shiftedBy(-18).toString(10);
 
     var resultado = await fetch(cons.API+"api/v1/consultar/csc/cuenta/"+this.props.wallet.contractExchange._address)
-    resultado = parseFloat(await resultado.text());
+    resultado = parseFloat(await resultado.text()).toFixed(2);
 
     this.setState({
 
