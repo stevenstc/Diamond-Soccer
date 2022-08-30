@@ -701,7 +701,7 @@ export default class Home extends Component {
 
     var latesMaches = [];
 
-    var result = await fetch('https://brutustronstaking.tk/csc/api/v1/sesion/consultar/latesmaches?long=5',
+    var result = await fetch('https://brutustronstaking.tk/csc/api/v1/sesion/consultar/latesmaches?long=10',
     {method: 'GET', // *GET, POST, PUT, DELETE, etc.
       headers: {
         'Content-Type': 'application/json'
@@ -715,10 +715,53 @@ export default class Home extends Component {
     //console.log(result)
 
     for (let index = 0; index < result.length; index++) {
+
+      if(result[index].goles1 === result[index].goles2){
+        result[index].result1 = "Draw"
+        result[index].color1 = "secondary"
+
+        result[index].result2 = "Draw"
+        result[index].color2 = "secondary"
+
+      }
+
+      if(result[index].goles1 > result[index].goles2){
+        result[index].result1 = "Winner"
+        result[index].color1 = "success"
+
+        if(result[index].goles1 >= 99){
+          result[index].goles1 = "X"
+          result[index].goles2 = "X"
+          result[index].result2 = "desertion"
+          result[index].color2 = "warning"
+        }else{
+          result[index].result2 = "Loser"
+          result[index].color2 = "danger"
+        }
+        
+
+      }
+
+      if(result[index].goles2 > result[index].goles1){
+        result[index].result2 = "Winner"
+        result[index].color2 = "success"
+
+        if(result[index].goles2 >= 99){
+          result[index].goles1 = "X"
+          result[index].goles2 = "X"
+          result[index].result1 = "desertion"
+          result[index].color1 = "warning"
+        }else{
+          result[index].result1 = "Loser"
+          result[index].color1 = "danger"
+        }
+
+      }
+
       latesMaches[index] = (
       
       <div className="row bg-white align-items-center ml-0 mr-0 py-4 " key={`itemsmatches-${index}`}>
-            <div className="col-md-4 col-lg-4 mb-4 mb-lg-0">
+            <div className="col-md-3 col-lg-3 mb-4 mb-lg-0">
 
               <div className="text-center text-lg-left">
                 <div className="d-block d-lg-flex align-items-center">
@@ -733,13 +776,19 @@ export default class Home extends Component {
               </div>
 
             </div>
-            <div className="col-md-4 col-lg-4 text-center mb-4 mb-lg-0">
+            <div className="col-md-6 col-lg-6 text-center mb-4 mb-lg-0">
+              <div className="d-inline-block">
+                <div className={"bg-"+result[index].color1+" py-2 px-4 mb-2 text-white d-inline-block rounded"}><span className="h5">{result[index].result1}</span></div>
+              </div>
               <div className="d-inline-block">
                 <div className="bg-black py-2 px-4 mb-2 text-white d-inline-block rounded"><span className="h5">{result[index].goles1 +":"+result[index].goles2}</span></div>
               </div>
+              <div className="d-inline-block">
+                <div className={"bg-"+result[index].color2+" py-2 px-4 mb-2 text-white d-inline-block rounded"}><span className="h5">{result[index].result2}</span></div>
+              </div>
             </div>
 
-            <div className="col-md-4 col-lg-4 text-center text-lg-right">
+            <div className="col-md-3 col-lg-3 text-center text-lg-right">
               <div className="">
                 <div className="d-block d-lg-flex align-items-center">
                   <div className="image image-small ml-lg-3 mb-3 mb-lg-0 order-2">
