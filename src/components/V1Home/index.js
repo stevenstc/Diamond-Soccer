@@ -770,7 +770,7 @@ export default class Home extends Component {
                   </div>
                   <div className="text">
                     <h3 className="h5 mb-0 text-black">{result[index].u1}</h3>
-                    <span className="text-uppercase text-black small country">{result[index].csc} CSC</span>
+                    <span className="text-uppercase text-black small country">{result[index].csc} CSC #{result[index].identificador}</span>
                   </div>
                 </div>
               </div>
@@ -796,7 +796,7 @@ export default class Home extends Component {
                   </div>
                   <div className="text order-1 w-100">
                     <h3 className="h5 mb-0 text-black">{result[index].u2} </h3>
-                    <span className="text-uppercase small text-black country">{result[index].csc} CSC</span>
+                    <span className="text-uppercase small text-black country">{result[index].csc} CSC #{result[index].identificador}</span>
                   </div>
                 </div>
               </div>
