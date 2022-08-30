@@ -760,7 +760,7 @@ export default class Home extends Component {
 
       latesMaches[index] = (
       
-      <div className="row bg-white align-items-center ml-0 mr-0 py-4 " key={`itemsmatches-${index}`}>
+      <div className="row bg-white align-items-center ml-0 mr-0 py-0 " key={`itemsmatches-${index}`}>
             <div className="col-md-3 col-lg-3 mb-4 mb-lg-0">
 
               <div className="text-center text-lg-left">
