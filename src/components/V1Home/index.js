@@ -716,6 +716,36 @@ export default class Home extends Component {
 
     for (let index = 0; index < result.length; index++) {
 
+      
+
+      var imagen1 = await fetch('https://brutustronstaking.tk/csc/api/v1/imagen/user?username='+result[index].u1,
+      {method: 'GET', // *GET, POST, PUT, DELETE, etc.
+        headers: {
+          'Content-Type': 'application/json'
+          // 'Content-Type': 'application/x-www-form-urlencoded',
+        }
+      })
+      .then(response => response.json())
+      .then(json => {return json;})
+      .catch(error =>{console.log(error);return 0;})
+
+      console.log(imagen1)
+
+      result[index].imagen1 = imagen1;
+
+      var imagen2 = await fetch('https://brutustronstaking.tk/csc/api/v1/imagen/user?username='+result[index].u2,
+      {method: 'GET', // *GET, POST, PUT, DELETE, etc.
+        headers: {
+          'Content-Type': 'application/json'
+          // 'Content-Type': 'application/x-www-form-urlencoded',
+        }
+      })
+      .then(response => response.json())
+      .then(json => {return json;})
+      .catch(error =>{console.log(error);return 0;})
+
+      result[index].imagen2 = imagen2;
+
       if(result[index].goles1 === result[index].goles2){
         result[index].result1 = "Draw"
         result[index].color1 = "secondary"
@@ -766,7 +796,7 @@ export default class Home extends Component {
               <div className="text-center text-lg-left">
                 <div className="d-block d-lg-flex align-items-center">
                   <div className="image image-small text-center mb-3 mb-lg-0 mr-lg-3">
-                    <img src={"assets/avatares/0.png"} alt="imagen jugadores" className="img-fluid" />
+                    <img src={"assets/avatares/"+result[index].imagen1+".png"} alt="imagen jugadores" className="img-fluid" />
                   </div>
                   <div className="text">
                     <h3 className="h5 mb-0 text-black">{result[index].u1}</h3>
@@ -792,7 +822,7 @@ export default class Home extends Component {
               <div className="">
                 <div className="d-block d-lg-flex align-items-center">
                   <div className="image image-small ml-lg-3 mb-3 mb-lg-0 order-2">
-                    <img src={"assets/avatares/0.png"} alt="imagen jugadores" className="img-fluid" />
+                    <img src={"assets/avatares/"+result[index].imagen2+".png"} alt="imagen jugadores" className="img-fluid" />
                   </div>
                   <div className="text order-1 w-100">
                     <h3 className="h5 mb-0 text-black">{result[index].u2} </h3>
