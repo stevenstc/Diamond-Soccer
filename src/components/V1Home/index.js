@@ -424,8 +424,6 @@ export default class Home extends Component {
       username = await fetch(cons.API+"api/v1/user/username/"+this.props.currentAccount);
       username = await username.text();
 
-      document.getElementById("username").innerHTML = username;
-
       imagenLink = await fetch(cons.API+"api/v1/imagen/user/?username="+username);
       imagenLink = await imagenLink.text();
 
