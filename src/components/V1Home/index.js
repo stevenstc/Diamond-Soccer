@@ -796,7 +796,7 @@ export default class Home extends Component {
               <div className="text-center text-lg-left">
                 <div className="d-block d-lg-flex align-items-center">
                   <div className="image image-small text-center mb-3 mb-lg-0 mr-lg-3">
-                    <img src={"assets/avatares/"+result[index].imagen1+".png"} alt="imagen jugadores" className="img-fluid" />
+                    <img src={"assets/avatares/"+result[index].imagen1+".png"} alt={"imagen "+result[index].u1} className="img-fluid" />
                   </div>
                   <div className="text">
                     <h3 className="h5 mb-0 text-black">{result[index].u1}</h3>
@@ -822,7 +822,7 @@ export default class Home extends Component {
               <div className="">
                 <div className="d-block d-lg-flex align-items-center">
                   <div className="image image-small ml-lg-3 mb-3 mb-lg-0 order-2">
-                    <img src={"assets/avatares/"+result[index].imagen2+".png"} alt="imagen jugadores" className="img-fluid" />
+                    <img src={"assets/avatares/"+result[index].imagen2+".png"} alt={"imagen "+result[index].u1} className="img-fluid" />
                   </div>
                   <div className="text order-1 w-100">
                     <h3 className="h5 mb-0 text-black">{result[index].u2} </h3>
