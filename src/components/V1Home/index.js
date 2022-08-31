@@ -714,8 +714,6 @@ export default class Home extends Component {
 
     for (let index = 0; index < result.length; index++) {
 
-      
-
       var imagen1 = await fetch('https://brutustronstaking.tk/csc/api/v1/imagen/user?username='+result[index].u1,
       {method: 'GET', // *GET, POST, PUT, DELETE, etc.
         headers: {
@@ -726,8 +724,6 @@ export default class Home extends Component {
       .then(response => response.json())
       .then(json => {return json;})
       .catch(error =>{console.log(error);return 0;})
-
-      console.log(imagen1)
 
       result[index].imagen1 = imagen1;
 
@@ -743,6 +739,12 @@ export default class Home extends Component {
       .catch(error =>{console.log(error);return 0;})
 
       result[index].imagen2 = imagen2;
+
+      if(result[index].tipo === "LEAGUE"){
+        result[index].csc = "LEAGUE"
+      }else{
+        result[index].csc = result[index].csc+" CSC"
+      }
 
       if(result[index].goles1 === result[index].goles2){
         result[index].result1 = "Draw"
@@ -798,7 +800,7 @@ export default class Home extends Component {
                   </div>
                   <div className="text">
                     <h3 className="h5 mb-0 text-black">{result[index].u1}</h3>
-                    <span className="text-uppercase text-black small country">{result[index].csc} CSC #{result[index].identificador}</span>
+                    <span className="text-uppercase text-black small country">{result[index].csc} #{result[index].identificador}</span>
                   </div>
                 </div>
               </div>
