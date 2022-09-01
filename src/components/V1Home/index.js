@@ -711,11 +711,17 @@ export default class Home extends Component {
 
     for (let index = 0; index < result[0].length; index++) {
 
+        var token = "CSC";
+
+          if(result[2][index] === "0x7Ca78Da43388374E0BA3C46510eAd7473a1101d4"){
+            token = "DCSC"
+          }
+
         inventario[index] = (
 
           <div className="col-md-3 p-1" key={`itemsTeam-${index}`}>
             <img className="pb-4" src={"assets/img/" + nombres_items[0][result[0][index]] + ".png"} width="100%" alt={"team-"+nombres_items[0][result[0][index]]} />
-            <p>Price: {new BigNumber(result[1][index]).shiftedBy(-18).toString(10)} CSC</p>
+            <p>Price: {new BigNumber(result[1][index]).shiftedBy(-18).toString(10)} {token}</p>
             <button className="btn btn-warning" onClick={async()=>{
               
               await this.props.wallet.contractInventario.methods

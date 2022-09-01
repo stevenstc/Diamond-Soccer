@@ -62,21 +62,35 @@ export default class Market extends Component {
 
     aprovado = new BigNumber(aprovado).shiftedBy(-18).decimalPlaces(2).toNumber(10);
 
-    if(aprovado > 0){
+    if(aprovado <= 0){
 
-        var result = await this.props.wallet.contractInventario.methods
-          .buyItemFromMarket(user,id)
-          .send({ from: this.props.currentAccount });
-
-        if(result){
-          alert("item buy");
-        }
-    }else{
-        alert("insuficient aproved balance")
+      alert("insuficient aproved balance of CSC")
       await this.props.wallet.contractToken.methods
       .approve(this.props.wallet.contractInventario._address, "115792089237316195423570985008687907853269984665640564039457584007913129639935")
       .send({ from: this.props.currentAccount });
-      }
+    }
+
+    aprovado = await this.props.wallet.contractToken2.methods
+    .allowance(this.props.currentAccount, this.props.wallet.contractInventario._address)
+    .call({ from: this.props.currentAccount });
+
+    aprovado = new BigNumber(aprovado).shiftedBy(-18).decimalPlaces(2).toNumber(10);
+
+    if(aprovado <= 0){
+
+      alert("insuficient aproved balance of DCSC")
+      await this.props.wallet.contractToken2.methods
+      .approve(this.props.wallet.contractInventario._address, "115792089237316195423570985008687907853269984665640564039457584007913129639935")
+      .send({ from: this.props.currentAccount });
+    }
+
+    var result = await this.props.wallet.contractInventario.methods
+      .buyItemFromMarket(user,id)
+      .send({ from: this.props.currentAccount });
+
+    if(result){
+      alert("item buy");
+    }
 
 
     this.update();
@@ -131,6 +145,13 @@ export default class Market extends Component {
         for (let index = 0; index < enVenta[0].length; index++) {
   
           //console.log(item)
+
+          var token = "CSC";
+
+          if(enVenta[2][index] === "0x7Ca78Da43388374E0BA3C46510eAd7473a1101d4"){
+            token = "DCSC"
+          }
+
           itemsMarket[index] = (
               <div className="col-lg-3 col-md-6 p-3 mb-5 text-center monedas position-relative border" key={`items-${index}`}>
                 <h2 className=" pb-2"> {(_items[0][enVenta[0][index]]).replace(/-/g," ").replace("comun", "common").replace("formacion","formation").replace("epico","epic").replace("legendario","legendary")}</h2>
@@ -148,7 +169,7 @@ export default class Market extends Component {
                 <div className="position-relative">
                   Remember that you must have 300 CSC in your Metamask wallet <br/>
                   <button className="btn btn-success" onClick={() => {this.buyItem(this.state.miConsulta,index);}}>
-                  Buy for {new BigNumber(enVenta[1][index]).shiftedBy(-18).toString(10)} CSC
+                  Buy for {new BigNumber(enVenta[1][index]).shiftedBy(-18).toString(10)} {token}
                   </button>
                 </div>
               </div>
