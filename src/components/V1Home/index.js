@@ -574,35 +574,74 @@ export default class Home extends Component {
 
       for (let index = 0; index < result.length; index++) {
 
+        var ventaTeam = (<></>);
+        if(result[index]<=10){
+          ventaTeam = (
+            <button className="btn btn-danger" onClick={async()=>{
+
+              var aprovado = await this.props.wallet.contractToken2.methods
+              .allowance(this.props.currentAccount, this.props.wallet.contractInventario._address)
+              .call({ from: this.props.currentAccount });
+
+              aprovado = new BigNumber(aprovado).shiftedBy(-18).decimalPlaces(2).toNumber();
+
+              if(aprovado <= 0){
+
+                alert("insuficient aproved balance of DCSC")
+                await this.props.wallet.contractToken2.methods
+                .approve(this.props.wallet.contractInventario._address, "115792089237316195423570985008687907853269984665640564039457584007913129639935")
+                .send({ from: this.props.currentAccount });
+
+              }
+
+              aprovado = await this.props.wallet.contractToken.methods
+              .allowance(this.props.currentAccount, this.props.wallet.contractInventario._address)
+              .call({ from: this.props.currentAccount });
+
+              aprovado = new BigNumber(aprovado).shiftedBy(-18).decimalPlaces(2).toNumber();
+
+              if(aprovado <= 0){
+
+                alert("insuficient aproved balance of CSC")
+                await this.props.wallet.contractToken.methods
+                .approve(this.props.wallet.contractInventario._address, "115792089237316195423570985008687907853269984665640564039457584007913129639935")
+                .send({ from: this.props.currentAccount });
+
+              }
+
+              if(window.confirm("You want sell your item in DCSC\nOK or Cancel.")){
+
+                var price = prompt("you must have 300 CSC in your Metamask wallet for fees, set price in DCSC",20)
+                price = new BigNumber(price).shiftedBy(18).toString(10);
+
+              
+
+              await this.props.wallet.contractInventario.methods
+              .SellItemFromMarket( index,this.props.wallet.contractToken2._address, price)
+              .send({ from: this.props.currentAccount })
+
+              }else{
+
+              price = prompt("Remember that you must have 300 CSC in your Metamask wallet, set price",5000)
+              price = new BigNumber(price).shiftedBy(18).toString(10);
+
+              await this.props.wallet.contractInventario.methods
+              .SellItemFromMarket( index,this.props.wallet.contractToken._address, price)
+              .send({ from: this.props.currentAccount })
+
+              }
+
+              
+              this.update();
+              }}>Sell item</button>
+          );
+        }
+
           inventario[index] = (
 
             <div className="col-md-3 p-1" key={`itemsTeam-${index}`}>
               <img className="pb-4" src={"assets/img/" + nombres_items[0][result[index]] + ".png"} width="100%" alt={"team-"+nombres_items[0][result[index]]} />
-              <button className="btn btn-danger" onClick={async()=>{
-
-                var aprovado = await this.props.wallet.contractToken.methods
-                .allowance(this.props.currentAccount, this.props.wallet.contractInventario._address)
-                .call({ from: this.props.currentAccount });
-
-                aprovado = new BigNumber(aprovado).shiftedBy(-18).decimalPlaces(2).toNumber();
-
-                if(aprovado <= 0){
-
-                  alert("insuficient aproved balance")
-                  await this.props.wallet.contractToken.methods
-                  .approve(this.props.wallet.contractInventario._address, "115792089237316195423570985008687907853269984665640564039457584007913129639935")
-                  .send({ from: this.props.currentAccount });
-
-                }
-
-
-                var price = prompt("Remember that you must have 300 CSC in your Metamask wallet, set price",5000)
-                price = new BigNumber(price).shiftedBy(18).toString(10);
-                await this.props.wallet.contractInventario.methods
-                .SellItemFromMarket( index,this.props.wallet.contractToken._address, price)
-                .send({ from: this.props.currentAccount })
-                this.update();
-                }}>Sell item</button>
+              {ventaTeam}
             </div>
 
           )
@@ -1158,7 +1197,7 @@ export default class Home extends Component {
                 })
                   .then((success) => {
                     if (success) {
-                      console.log('FOO successfully added to wallet!')
+                      console.log('CSC successfully added to wallet!')
                     } else {
                       throw new Error('Something went wrong.')
                     }
@@ -1611,7 +1650,34 @@ export default class Home extends Component {
               >
                 Buy DCSC {" -> "}
               </button>
-              <br></br>
+              <br/><br/>
+              <button
+                className="btn btn-info"
+                onClick={() => {
+
+                  window.ethereum.request({
+                  method: 'wallet_watchAsset',
+                  params: {
+                    type: 'ERC20',
+                    options: {
+                      address: this.props.wallet.contractToken2._address,
+                      symbol: 'DCSC',
+                      decimals: 18,
+                      image: 'https://cryptosoccermarket.com/assets/img/DCSC.png',
+                    },
+                  },
+                })
+                  .then((success) => {
+                    if (success) {
+                      console.log('DCSC successfully added to wallet!')
+                    } else {
+                      throw new Error('Something went wrong.')
+                    }
+                  })
+                  .catch(console.error)}
+                }>
+                Add DCSC token to metamask
+              </button>
 
             </div>
 
@@ -1654,6 +1720,8 @@ export default class Home extends Component {
               >
                 {" <- "}Sell DCSC
               </button>
+              
+
             </div>
 
            
