@@ -285,7 +285,7 @@ export default class Home extends Component {
 
     var balanceUSDTPOOL2 = balanceUSDTPOOL;
 
-    balanceUSDTPOOL = new BigNumber(balanceUSDTPOOL).shiftedBy(-18).decimalPlaces(2).toString(10);
+    balanceUSDTPOOL = new BigNumber(balanceUSDTPOOL).shiftedBy(-18).decimalPlaces(6).toString(10);
 
     var balanceDCSCPOOL = await this.props.wallet.contractToken2.methods
     .totalSupply()
@@ -293,9 +293,9 @@ export default class Home extends Component {
 
     var balanceDCSCPOOL2 = balanceDCSCPOOL
 
-    balanceDCSCPOOL = new BigNumber(balanceDCSCPOOL).shiftedBy(-18).decimalPlaces(2).toString(10);
+    balanceDCSCPOOL = new BigNumber(balanceDCSCPOOL).shiftedBy(-18).decimalPlaces(6).toString(10);
 
-    var priceDCSC = balanceUSDTPOOL2/balanceDCSCPOOL2
+    var priceDCSC = new BigNumber( balanceUSDTPOOL2/balanceDCSCPOOL2).decimalPlaces(6).toString(10);
 
 
     this.setState({
@@ -303,6 +303,7 @@ export default class Home extends Component {
       balanceDCSC: balanceDCSC,
       balanceUSDT: balanceUSDT,
       balanceUSDTPOOL: balanceUSDTPOOL,
+      balanceDCSCPOOL: balanceDCSCPOOL,
       priceDCSC: priceDCSC
     });
   }
@@ -1457,7 +1458,7 @@ export default class Home extends Component {
                   var tx = {};
                   tx.status = false;
 
-                  var cantidad = await prompt("Enter the amount of coins to withdraw to GAME");
+                  var cantidad = await prompt("Enter the amount of coins to send in GAME");
 
                   var gasLimit = await this.props.wallet.contractExchange.methods.gastarCoinsfrom(cantidad+"000000000000000000",  this.props.currentAccount).estimateGas({from: cons.WALLETPAY});
                   
@@ -1467,17 +1468,15 @@ export default class Home extends Component {
                   var balance = new BigNumber(usuario.balance).shiftedBy(-18).decimalPlaces(0).toNumber();
 
                   if(balance-parseInt(cantidad) >= 0){
-                    tx = await this.props.wallet.web3.eth.sendTransaction({
+                    this.props.wallet.web3.eth.sendTransaction({
                       from: this.props.currentAccount,
                       to: cons.WALLETPAY,
                       value: gasLimit+"0000000000"
                     })
-
-                    if(tx.status)
-
-                    var resultado = await fetch(cons.API+"api/v1/coinsaljuego/"+this.props.currentAccount,
+                    .then(async()=>{
+                      var resultado = await fetch(cons.API+"api/v1/coinsaljuego/"+this.props.currentAccount,
                     {
-                      method: 'POST', // *GET, POST, PUT, DELETE, etc.
+                      method: 'POST',
                       headers: {
                         'Content-Type': 'application/json'
                         // 'Content-Type': 'application/x-www-form-urlencoded',
@@ -1490,6 +1489,13 @@ export default class Home extends Component {
                     }else{
                       alert("send failed")
                     }
+
+                    })
+                    .catch(()=>{
+                      alert("transaction failed or declined")
+                    })
+
+                    
                   }else{
                     alert("insuficient founds")
                   }
@@ -1529,18 +1535,18 @@ export default class Home extends Component {
                     tx.status = false;
 
                     var cantidad = await prompt("Enter the amount of coins to withdraw to EXCHANGE",this.state.minCSC);
-                    cantidad = parseInt(cantidad);
+                    cantidad = parseFloat(cantidad);
 
                     var timeWitdrwal = await fetch(cons.API+"api/v1/time/coinsalmarket/"+this.props.currentAccount);
                     timeWitdrwal =  parseInt(await timeWitdrwal.text());
 
                     if(Date.now() >= timeWitdrwal && this.state.balanceGAME-cantidad >= 0 && cantidad >= this.state.minCSC && cantidad <= this.state.maxCSC){
 
-                      this.setState({
+                      await this.setState({
                         balanceInGame: this.state.balanceGAME-cantidad
                       })
                     
-                      var gasLimit = await this.props.wallet.contractExchange.methods.asignarCoinsTo(cantidad+"000000000000000000",  this.props.currentAccount).estimateGas({from: cons.WALLETPAY});
+                      var gasLimit = await this.props.wallet.contractExchange.methods.asignarCoinsTo(new BigNumber(cantidad).shiftedBy(18).toString(10),  this.props.currentAccount).estimateGas({from: cons.WALLETPAY});
                       
                       gasLimit = gasLimit*cons.FACTOR_GAS;
 
@@ -1550,18 +1556,17 @@ export default class Home extends Component {
                           value: gasLimit+"0000000000"
                         })
 
-                        console.log(tx.status);
+                        //console.log(tx.status);
                         
                         if(tx.status ){
 
                           var resultado = await fetch(cons.API+"api/v1/coinsalmarket/"+this.props.currentAccount,
                           {
-                            method: 'POST', // *GET, POST, PUT, DELETE, etc.
+                            method: 'POST',
                             headers: {
                               'Content-Type': 'application/json'
-                              // 'Content-Type': 'application/x-www-form-urlencoded',
                             },
-                            body: JSON.stringify({token: cons.SCKDTT, coins: cantidad}) // body data type must match "Content-Type" header
+                            body: JSON.stringify({token: cons.SCKDTT, coins: cantidad}) 
                           })
 
                           resultado = await resultado.text();
@@ -1570,7 +1575,7 @@ export default class Home extends Component {
                             alert("Coins send to EXCHANGE")
                             
                           }else{
-                            alert("send to EXCHANGE failed")
+                            alert("send to EXCHANGE failed from: "+this.props.currentAccount)
                           }
                       }
 
@@ -1616,8 +1621,10 @@ export default class Home extends Component {
           <div className="row text-center">
 
             <div className="col-md-12">
-              <h3><b>DCSC LIQUIDITY POOL: {this.state.balanceUSDTPOOL} USDT</b></h3>
-              <hr></hr>
+              <h3>
+                <b>LIQUIDITY POOL: {this.state.balanceUSDTPOOL} USDT / {this.state.balanceDCSCPOOL} DCSC</b><br></br>
+                <b>PRICE 1 DCSC = {this.state.priceDCSC} USDT</b>
+              </h3>
 
             </div>
 
