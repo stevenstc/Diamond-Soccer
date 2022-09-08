@@ -487,13 +487,14 @@ export default class Home extends Component {
 
       if (balance>=amount) {
 
-        var result = await this.props.wallet.contractToken2.methods
-        .buyToken(compra)
-        .send({ from: this.props.currentAccount });
-  
-        if(result){
+        this.props.wallet.contractToken2.methods.buyToken(compra).send({ from: this.props.currentAccount })
+        .then(()=>{
           alert("coins buyed");
-        }
+        })
+        .catch(()=>{
+          alert("transaction fail");
+        })
+        
         
       }else{
         alert("insuficient founds")
@@ -1623,7 +1624,7 @@ export default class Home extends Component {
             <div className="col-md-12">
               <h3>
                 <b>LIQUIDITY POOL: {this.state.balanceUSDTPOOL} USDT / {this.state.balanceDCSCPOOL} DCSC</b><br></br>
-                <b>PRICE 1 DCSC = {this.state.priceDCSC} USDT</b>
+                <b>1 DCSC = {this.state.priceDCSC} USDT</b>
               </h3>
 
             </div>
@@ -1649,12 +1650,12 @@ export default class Home extends Component {
                 onClick={async() => 
                 { 
                   
-                  var cantidad = await prompt("Enter the amount of DCSC to buy");
+                  var cantidad = await prompt("Enter the amount of USDT to buy");
 
                   if(parseFloat(cantidad.replace(",",".")) > 0 ){
                     await this.buyCoins2(cantidad);
                   }else{
-                    alert("ingrese un monto mayor a 0 DCSC");
+                    alert("ingrese un monto mayor a 0 USDT");
                   }
 
                   this.update();
