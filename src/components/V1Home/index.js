@@ -420,6 +420,9 @@ export default class Home extends Component {
     .catch(()=>{return false;})
     register = await register.text();
 
+    var coinsdiaria = await fetch('https://brutustronstaking.tk/csc/api/v1/coinsdiaria/')
+    coinsdiaria = await coinsdiaria.text();
+
     if(register === "true"){
 
       username = await fetch(cons.API+"api/v1/user/username/"+this.props.currentAccount);
@@ -462,7 +465,8 @@ export default class Home extends Component {
       emailGame: emailGame,
       pais: pais,
       timeWitdrwal: new Date(parseInt(timeWitdrwal)).toString(),
-      imagenLink: imagenLink
+      imagenLink: imagenLink,
+      coinsdiaria: parseFloat(coinsdiaria).toFixed(2)
     });
   }
 
@@ -1337,6 +1341,7 @@ export default class Home extends Component {
 
             <div className="col-md-12">
               <h3><b>liquidity for withdrawals: {this.state.balanceExchange} CSC</b></h3>
+              <h4>aviable for daily misions: {this.state.coinsdiaria} CSC</h4>
               <hr></hr>
 
             </div>
