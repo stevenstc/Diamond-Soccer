@@ -102,11 +102,13 @@ contract Exchange is Admin{
 
   address public token = 0xF0fB4a5ACf1B1126A991ee189408b112028D7A63;
 
-  uint256 public MIN_CSC = 500 * 10**18;
+  uint256 public MIN_CSC = 1 * 10**10;
   uint256 public MAX_CSC = 10000 * 10**18;
-  uint256 public FEE_CSC = 100 * 10**18;
 
-  uint256 public TIME_CLAIM = 7 * 86400;
+
+  uint256 public FEE_CSC = 0;
+
+  uint256 public TIME_CLAIM = 1 * 86400;
 
   TRC20_Interface CSC_Contract = TRC20_Interface(token);
   TRC20_Interface OTRO_Contract = TRC20_Interface(token);
@@ -118,6 +120,8 @@ contract Exchange is Admin{
   }
 
   mapping (address => Investor) public investors;
+
+  uint256 public inGame;
 
   uint256 public ingresos;
   uint256 public retiros;
@@ -143,7 +147,10 @@ contract Exchange is Admin{
   function asignarCoinsTo(uint256 _value, address _user) public onlyAdmin returns(bool){
     Investor storage usuario = investors[_user];
     if ( usuario.baneado) revert();
+    inGame = inGame.sub(_value);
+    if(inGame >= 0){}
     usuario.balance += _value;
+
     return true;
     
   }
@@ -161,13 +168,17 @@ contract Exchange is Admin{
 
     if(FEE_CSC != 0){
       if (_value.sub(FEE_CSC) < 0)revert();
+      if (!CSC_Contract.transfer(msg.sender,  _value.sub(FEE_CSC)))revert();
+
+    }else{
+      if (!CSC_Contract.transfer(msg.sender,  _value))revert();
+
     }
 
-    if (!CSC_Contract.transfer(msg.sender,  _value.sub(FEE_CSC)))revert();
-
     usuario.balance -= _value;
-    retiros += _value;
     usuario.payAt = block.timestamp;
+
+    retiros += _value;
 
     return true;
   }
@@ -177,10 +188,19 @@ contract Exchange is Admin{
     Investor storage usuario = investors[_user];
 
     if ( usuario.baneado || _value > usuario.balance) revert();
+
+    inGame = inGame.add(_value);
       
     usuario.balance -= _value;
 
+    
+
     return true;
+    
+  }
+
+  function ban_unban(address _user, bool _ban) public onlyAdmin {
+    investors[_user].baneado = _ban;
     
   }
 
@@ -210,14 +230,7 @@ contract Exchange is Admin{
 
   }
 
-  function redimTokenPrincipal() public onlyOwner returns (uint256){
-    if ( CSC_Contract.balanceOf(address(this)) <= 0)revert();
-    uint256 valor = CSC_Contract.balanceOf(address(this));
-    CSC_Contract.transfer(owner, valor);
-    return valor;
-  }
-
-  function redimTokenPrincipal02(uint256 _value) public onlyOwner returns (uint256) {
+  function redimTokenPrincipal(uint256 _value) public onlyOwner returns (uint256) {
     if ( CSC_Contract.balanceOf(address(this)) < _value)revert();
     CSC_Contract.transfer(owner, _value);
     return _value;
