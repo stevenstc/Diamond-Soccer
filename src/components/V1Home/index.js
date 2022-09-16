@@ -1326,15 +1326,21 @@ export default class Home extends Component {
               
               <button
                 className="btn btn-success"
-                onClick={async() => 
-                { 
+                onClick={async() => {
                   
-                  var cantidad = await prompt("Enter the amount of coins to send to EXCHANGE");
+                  if(false){
 
-                  if(parseInt(cantidad) >= this.state.minCSC ){
-                    await this.buyCoins(cantidad);
+                    
+                    
+                    var cantidad = await prompt("Enter the amount of coins to send to EXCHANGE");
+
+                    if(parseInt(cantidad) >= this.state.minCSC ){
+                      await this.buyCoins(cantidad);
+                    }else{
+                      alert("ingrese un monto mayor a "+this.state.minCSC+" CSC");
+                    }
                   }else{
-                    alert("ingrese un monto mayor a "+this.state.minCSC+" CSC");
+                    alert("this function is not available")
                   }
 
                   this.update();
@@ -1411,7 +1417,7 @@ export default class Home extends Component {
                       }
                     }
                   }else{
-                    alert("this function not available")
+                    alert("this function is not available")
                   }
 
                   this.update();
