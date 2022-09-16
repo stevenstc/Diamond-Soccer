@@ -522,43 +522,49 @@ export default class Home extends Component {
 
   async buyCoins(amount){
 
-    var aprovado = await this.props.wallet.contractToken.methods
-      .allowance(this.props.currentAccount, this.props.wallet.contractExchange._address)
+    if(false){
+
+      var aprovado = await this.props.wallet.contractToken.methods
+        .allowance(this.props.currentAccount, this.props.wallet.contractExchange._address)
+        .call({ from: this.props.currentAccount });
+
+      aprovado = new BigNumber(aprovado).shiftedBy(-18).decimalPlaces(2).toNumber();
+
+      var balance = await this.props.wallet.contractToken.methods
+      .balanceOf(this.props.currentAccount)
       .call({ from: this.props.currentAccount });
 
-    aprovado = new BigNumber(aprovado).shiftedBy(-18).decimalPlaces(2).toNumber();
+      balance = new BigNumber(balance).shiftedBy(-18).decimalPlaces(2).toNumber();
 
-    var balance = await this.props.wallet.contractToken.methods
-    .balanceOf(this.props.currentAccount)
-    .call({ from: this.props.currentAccount });
+      var compra = amount+"000000000000000000";
+      amount = new BigNumber(amount).decimalPlaces(2).toNumber();
 
-    balance = new BigNumber(balance).shiftedBy(-18).decimalPlaces(2).toNumber();
+      if(aprovado > 0){
 
-    var compra = amount+"000000000000000000";
-    amount = new BigNumber(amount).decimalPlaces(2).toNumber();
+        if (balance>=amount) {
 
-    if(aprovado > 0){
-
-      if (balance>=amount) {
-
-        var result = await this.props.wallet.contractExchange.methods
-        .buyCoins(compra)
-        .send({ from: this.props.currentAccount });
-  
-        if(result){
-          alert("coins buyed");
+          var result = await this.props.wallet.contractExchange.methods
+          .buyCoins(compra)
+          .send({ from: this.props.currentAccount });
+    
+          if(result){
+            alert("coins buyed");
+          }
+          
+        }else{
+          alert("insuficient founds")
         }
-        
+
       }else{
-        alert("insuficient founds")
+        alert("insuficient aproved balance")
+        await this.props.wallet.contractToken.methods
+        .approve(this.props.wallet.contractExchange._address, "115792089237316195423570985008687907853269984665640564039457584007913129639935")
+        .send({ from: this.props.currentAccount });
+
       }
 
     }else{
-      alert("insuficient aproved balance")
-      await this.props.wallet.contractToken.methods
-      .approve(this.props.wallet.contractExchange._address, "115792089237316195423570985008687907853269984665640564039457584007913129639935")
-      .send({ from: this.props.currentAccount });
-
+      alert("this function is not available")
     }
 
     this.update();
