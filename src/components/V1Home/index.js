@@ -217,12 +217,13 @@ export default class Home extends Component {
         "Zambia",
         "Zimbabwe"
       ],
-      imagenLink: "assets/img/default-user-csg.png",
+      imagenLink: "assets/avatares/0.png",
       balanceExchange: "loading...",
       minCSC: 1500,
       maxCSC: 15000,
       payTime: Date.now()+1,
-      latesMaches: []
+      latesMaches: [],
+      coinsdiaria: 0
     }
 
     this.balance = this.balance.bind(this);
@@ -430,6 +431,8 @@ export default class Home extends Component {
 
       imagenLink = await fetch(cons.API+"api/v1/imagen/user/?username="+username);
       imagenLink = await imagenLink.text();
+
+      imagenLink= "assets/avatares/"+imagenLink+".png"
 
       pais = await fetch(cons.API+"api/v1/user/pais/"+this.props.currentAccount);
       pais = await pais.text();
@@ -1097,14 +1100,8 @@ export default class Home extends Component {
               return;
             }
 
-            if(await window.confirm("you want profile image?")){
-              datos.imagen = await prompt("Place a profile image link in jpg jpeg or png format, we recommend that it be 500 X 500 pixels","https://cryptosoccermarket.com/assets/img/default-user-csg.png");
+            datos.imagen = "0";
             
-            }else{
-              datos.imagen = "https://cryptosoccermarket.com/assets/img/default-user-csg.png";
-            }
-
-
             tx = await this.props.wallet.web3.eth.sendTransaction({
               from: this.props.currentAccount,
               to: cons.WALLETPAY,
@@ -1237,45 +1234,7 @@ export default class Home extends Component {
                 width="100"
                 height="100" 
                 alt={"user "+this.state.username}
-                style={{cursor:"pointer"}}
-                onClick={async() => {
-
-                  var datos = {};
-                  var tx = {};
-                  tx.status = false;
-
-                  if(await window.confirm("you want update profile image?")){
-                    datos.imagen = await prompt("Place a profile image link in jpg jpeg or png format, we recommend that it be 500 X 500 pixels","https://cryptosoccermarket.com/assets/img/default-user-csg.png");
-                    tx = await this.props.wallet.web3.eth.sendTransaction({
-                      from: this.props.currentAccount,
-                      to: cons.WALLETPAY,
-                      value: 30000+"0000000000"
-                    })
-                  }                  
-
-                  if(tx.status){
-                    
-                    datos.token =  cons.SCKDTT;
-                    
-                    var resultado = await fetch(cons.API+"api/v1/user/update/info/"+this.props.currentAccount,
-                    {
-                      method: 'POST', // *GET, POST, PUT, DELETE, etc.
-                      headers: {
-                        'Content-Type': 'application/json'
-                        // 'Content-Type': 'application/x-www-form-urlencoded',
-                      },
-                      body: JSON.stringify(datos) // body data type must match "Content-Type" header
-                    })
-                    
-                    if(await resultado.text() === "true"){
-                      alert("image link Updated")
-                    }else{
-                      alert("failed")
-                    }
-                  }
-
-                  this.update()
-                }}
+               
                 />
 
                 <br></br>
@@ -1326,7 +1285,9 @@ export default class Home extends Component {
               })
 
               this.update();
-              }} style={{cursor:"pointer"}}> Username: {this.state.username}</span> | {this.state.pais} | {this.state.emailGame}
+              }} style={{cursor:"pointer"}}> 
+              Username: {this.state.username}</span> | {this.state.pais} <br />
+               {this.state.emailGame}
               <br /><br />
 
               {botonReg}
@@ -1405,48 +1366,52 @@ export default class Home extends Component {
               <br/><br/>
               <button
                 className="btn btn-primary"
-                onClick={async() => 
-                { 
+                onClick={async() => { 
 
-                  if(this.state.payTime >= Date.now() ){
-                    alert("it's not time to withdraw, please wait and try again later")
-                    return;
-                  }
+                  if(false){
 
-                  var resultado = await fetch(cons.API+"api/v1/consultar/csc/cuenta/"+this.props.wallet.contractExchange._address);
-                  resultado = await resultado.text();
+                    if(this.state.payTime >= Date.now() ){
+                      alert("it's not time to withdraw, please wait and try again later")
+                      return;
+                    }
 
-                  var cantidad = await prompt("Enter the amount of coins to withdraw to your wallet");
+                    var resultado = await fetch(cons.API+"api/v1/consultar/csc/cuenta/"+this.props.wallet.contractExchange._address);
+                    resultado = await resultado.text();
 
-                  if(parseInt(cantidad) > parseInt(resultado) ){
-                    alert("liquidity is over, Please try again later")
-                    return;
-                  }
+                    var cantidad = await prompt("Enter the amount of coins to withdraw to your wallet");
 
-                  if( parseInt(this.state.balanceMarket) > 0 && parseInt(this.state.balanceMarket)-parseInt(cantidad) >= 0 && parseInt(cantidad) >= this.state.minCSC && parseInt(cantidad)<= this.state.maxCSC){
-                    
-                    this.setState({
-                      balanceMarket: parseInt(this.state.balanceMarket)-parseInt(cantidad)
-                    })
+                    if(parseInt(cantidad) > parseInt(resultado) ){
+                      alert("liquidity is over, Please try again later")
+                      return;
+                    }
 
-                    var result = await this.props.wallet.contractExchange.methods
-                    .sellCoins(cantidad+"000000000000000000")
-                    .send({ from: this.props.currentAccount });
+                    if( parseInt(this.state.balanceMarket) > 0 && parseInt(this.state.balanceMarket)-parseInt(cantidad) >= 0 && parseInt(cantidad) >= this.state.minCSC && parseInt(cantidad)<= this.state.maxCSC){
+                      
+                      this.setState({
+                        balanceMarket: parseInt(this.state.balanceMarket)-parseInt(cantidad)
+                      })
 
-                    alert("your hash transaction: "+result.transactionHash);
+                      var result = await this.props.wallet.contractExchange.methods
+                      .sellCoins(cantidad+"000000000000000000")
+                      .send({ from: this.props.currentAccount });
 
+                      alert("your hash transaction: "+result.transactionHash);
+
+                    }else{
+                      if(parseInt(cantidad) < this.state.minCSC){
+                        alert("Please set amount greater than "+this.state.minCSC+" WCSC");
+                      }
+
+                      if(parseInt(cantidad) > this.state.maxCSC){
+                        alert("Set an amount less than "+this.state.maxCSC+" WCSC");
+                      }
+
+                      if(parseInt(this.state.balanceMarket) <= 0){
+                        alert("Insufficient Funds");
+                      }
+                    }
                   }else{
-                    if(parseInt(cantidad) < this.state.minCSC){
-                      alert("Please set amount greater than "+this.state.minCSC+" WCSC");
-                    }
-
-                    if(parseInt(cantidad) > this.state.maxCSC){
-                      alert("Set an amount less than "+this.state.maxCSC+" WCSC");
-                    }
-
-                    if(parseInt(this.state.balanceMarket) <= 0){
-                      alert("Insufficient Funds");
-                    }
+                    alert("this function not available")
                   }
 
                   this.update();
@@ -1532,81 +1497,89 @@ export default class Home extends Component {
                 className="btn btn-primary"
                 onClick={async() => {
 
-                  if(this.state.botonwit){
-                    this.setState({
-                      botonwit: false
-                    })
+                  if(false){
 
-                    var tx = {};
-                    tx.status = false;
-
-                    var cantidad = await prompt("Enter the amount of coins to withdraw to EXCHANGE",this.state.minCSC);
-                    cantidad = parseFloat(cantidad);
-
-                    var timeWitdrwal = await fetch(cons.API+"api/v1/time/coinsalmarket/"+this.props.currentAccount);
-                    timeWitdrwal =  parseInt(await timeWitdrwal.text());
-
-                    if(Date.now() >= timeWitdrwal && this.state.balanceGAME-cantidad >= 0 && cantidad >= this.state.minCSC && cantidad <= this.state.maxCSC){
-
-                      await this.setState({
-                        balanceInGame: this.state.balanceGAME-cantidad
+                    if(this.state.botonwit){
+                      this.setState({
+                        botonwit: false
                       })
-                    
-                      var gasLimit = await this.props.wallet.contractExchange.methods.asignarCoinsTo(new BigNumber(cantidad).shiftedBy(18).toString(10),  this.props.currentAccount).estimateGas({from: cons.WALLETPAY});
-                      
-                      gasLimit = gasLimit*cons.FACTOR_GAS;
 
-                        tx = await this.props.wallet.web3.eth.sendTransaction({
-                          from: this.props.currentAccount,
-                          to: cons.WALLETPAY,
-                          value: gasLimit+"0000000000"
+                      var tx = {};
+                      tx.status = false;
+
+                      var cantidad = await prompt("Enter the amount of coins to withdraw to EXCHANGE",this.state.minCSC);
+                      cantidad = parseFloat(cantidad);
+
+                      var timeWitdrwal = await fetch(cons.API+"api/v1/time/coinsalmarket/"+this.props.currentAccount);
+                      timeWitdrwal =  parseInt(await timeWitdrwal.text());
+
+                      if(Date.now() >= timeWitdrwal && this.state.balanceGAME-cantidad >= 0 && cantidad >= this.state.minCSC && cantidad <= this.state.maxCSC){
+
+                        await this.setState({
+                          balanceInGame: this.state.balanceGAME-cantidad
                         })
-
-                        //console.log(tx.status);
+                      
+                        var gasLimit = await this.props.wallet.contractExchange.methods.asignarCoinsTo(new BigNumber(cantidad).shiftedBy(18).toString(10),  this.props.currentAccount).estimateGas({from: cons.WALLETPAY});
                         
-                        if(tx.status ){
+                        gasLimit = gasLimit*cons.FACTOR_GAS;
 
-                          var resultado = await fetch(cons.API+"api/v1/coinsalmarket/"+this.props.currentAccount,
-                          {
-                            method: 'POST',
-                            headers: {
-                              'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({token: cons.SCKDTT, coins: cantidad}) 
+                          tx = await this.props.wallet.web3.eth.sendTransaction({
+                            from: this.props.currentAccount,
+                            to: cons.WALLETPAY,
+                            value: gasLimit+"0000000000"
                           })
 
-                          resultado = await resultado.text();
-    
-                          if(resultado === "true"){
-                            alert("Coins send to EXCHANGE")
-                            
-                          }else{
-                            alert("send to EXCHANGE failed from: "+this.props.currentAccount)
-                          }
-                      }
+                          //console.log(tx.status);
+                          
+                          if(tx.status ){
 
-                      this.update()
-                    }else{
-                      if(Date.now() >= timeWitdrwal){
-                        if (this.state.balanceGAME-cantidad < 0) {
-                          alert("Insufficient funds WCSC")
-                        }else{
-                          if(cantidad < this.state.minCSC ){
-                            alert("Please enter a value greater than "+this.state.minCSC+" WCSC")
-                          }
-                          if(cantidad > this.state.maxCSC){
-                            alert("Please enter a value less than "+this.state.maxCSC+" WCSC")
-                          }
+                            var resultado = await fetch(cons.API+"api/v1/coinsalmarket/"+this.props.currentAccount,
+                            {
+                              method: 'POST',
+                              headers: {
+                                'Content-Type': 'application/json'
+                              },
+                              body: JSON.stringify({token: cons.SCKDTT, coins: cantidad}) 
+                            })
+
+                            resultado = await resultado.text();
+      
+                            if(resultado === "true"){
+                              alert("Coins send to EXCHANGE")
+                              
+                            }else{
+                              alert("send to EXCHANGE failed from: "+this.props.currentAccount)
+                            }
                         }
+
+                        this.update()
                       }else{
-                        alert("It is not yet time to withdraw")
+                        if(Date.now() >= timeWitdrwal){
+                          if (this.state.balanceGAME-cantidad < 0) {
+                            alert("Insufficient funds WCSC")
+                          }else{
+                            if(cantidad < this.state.minCSC ){
+                              alert("Please enter a value greater than "+this.state.minCSC+" WCSC")
+                            }
+                            if(cantidad > this.state.maxCSC){
+                              alert("Please enter a value less than "+this.state.maxCSC+" WCSC")
+                            }
+                          }
+                        }else{
+                          alert("It is not yet time to withdraw")
+                        }
+                        
                       }
-                      
+                      this.setState({
+                        botonwit: true
+                      })
                     }
-                    this.setState({
-                      botonwit: true
-                    })
+
+                  }else{
+                    alert("this function not available")
                   }
+
+
                 }}
               >
                 
@@ -1708,10 +1681,10 @@ export default class Home extends Component {
                 height="100" 
                 alt="markert info"/></a>
 
-              <h3>EXCHANGE</h3>
+              <h3>POOL</h3>
               <hr></hr>
               <span >
-                DCSC: {this.state.balanceDCSC} (${parseFloat(this.state.balanceDCSC*this.state.priceDCSC).toFixed(2)})
+                DCSC: {this.state.balanceDCSC} (${parseFloat(this.state.balanceDCSC*this.state.priceDCSC).toFixed(2)} USDT)
               </span>
               <br/><br/>
               <button
