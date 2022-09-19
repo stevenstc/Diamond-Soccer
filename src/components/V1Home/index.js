@@ -415,7 +415,7 @@ export default class Home extends Component {
     var emailGame = "email game not set";
     var pais =  "country not selected";
     var timeWitdrwal = "Loading...";
-    var imagenLink = "assets/img/default-user-csg.png";
+    var imagenLink = "assets/avatares/0.png";
 
     var register = await fetch(cons.API+"api/v1/user/exist/"+this.props.currentAccount)
     .catch(()=>{return false;})
@@ -429,7 +429,7 @@ export default class Home extends Component {
       username = await fetch(cons.API+"api/v1/user/username/"+this.props.currentAccount);
       username = await username.text();
 
-      imagenLink = await fetch(cons.API+"api/v1/imagen/user/?username="+username);
+      imagenLink = await fetch("https://brutustronstaking.tk/csc/api/v1/imagen/user/?username="+username);
       imagenLink = await imagenLink.text();
 
       imagenLink= "assets/avatares/"+imagenLink+".png"
@@ -1438,6 +1438,12 @@ export default class Home extends Component {
                 className="btn btn-success"
                 onClick={async() => {
 
+                  var cantidadEquipos = await this.props.wallet.contractInventario.methods
+                  .largoInventario(this.props.currentAccount)
+                  .call({ from: this.props.currentAccount });
+
+                  if(cantidadEquipos>0){
+
                   var tx = {};
                   tx.status = false;
 
@@ -1481,6 +1487,10 @@ export default class Home extends Component {
                     
                   }else{
                     alert("insuficient founds")
+                  }
+
+                  }else{
+                    alert("First buy a Team for send founds to game and play")
                   }
                   this.update()
                 }}
