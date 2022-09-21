@@ -816,15 +816,21 @@ export default class Home extends Component {
       }
 
       if(result[index].goles1 > result[index].goles2){
-        result[index].result1 = "Winner"
-        result[index].color1 = "success"
+        
 
         if(result[index].goles1 >= 99){
           result[index].goles1 = "X"
           result[index].goles2 = "X"
-          result[index].result2 = "desertion"
+
+          result[index].result1 = "Default"
+          result[index].color1 = "info"
+
+          result[index].result2 = "Desertion"
           result[index].color2 = "warning"
         }else{
+          result[index].result1 = "Winner"
+          result[index].color1 = "success"
+
           result[index].result2 = "Loser"
           result[index].color2 = "danger"
         }
@@ -833,17 +839,23 @@ export default class Home extends Component {
       }
 
       if(result[index].goles2 > result[index].goles1){
-        result[index].result2 = "Winner"
-        result[index].color2 = "success"
+        
 
         if(result[index].goles2 >= 99){
           result[index].goles1 = "X"
           result[index].goles2 = "X"
-          result[index].result1 = "desertion"
+
+          result[index].result1 = "Desertion"
           result[index].color1 = "warning"
+
+          result[index].result2 = "Default"
+          result[index].color2 = "info"
         }else{
           result[index].result1 = "Loser"
           result[index].color1 = "danger"
+
+          result[index].result2 = "Winner"
+          result[index].color2 = "success"
         }
 
       }
@@ -856,7 +868,7 @@ export default class Home extends Component {
               <div className="text-center text-lg-left">
                 <div className="d-block d-lg-flex align-items-center">
                   <div className="image image-small text-center mb-3 mb-lg-0 mr-lg-3">
-                    <img src={"assets/avatares/"+result[index].imagen1+".png"} alt={"imagen "+result[index].u1} className="img-fluid" />
+                    <img src={"assets/avatares/"+result[index].imagen1+".png"} alt={"imagen "+result[index].u1} className="img-fluid" title={result[index].soporte1}/>
                   </div>
                   <div className="text">
                     <h3 className="h5 mb-0 text-black">{result[index].u1}</h3>
@@ -870,7 +882,7 @@ export default class Home extends Component {
               <div className="d-inline-block">
                 <div className={"bg-"+result[index].color1+" py-2 px-4 mb-2 text-white d-inline-block rounded"}><span className="h5">{result[index].result1}</span></div>
               </div>
-              <div className="d-inline-block">
+              <div className="d-inline-block" title={result[index].soporteAlterno}>
                 <div className="bg-black py-2 px-4 mb-2 text-white d-inline-block rounded"><span className="h5">{result[index].goles1 +":"+result[index].goles2}</span></div>
               </div>
               <div className="d-inline-block">
@@ -882,11 +894,11 @@ export default class Home extends Component {
               <div className="">
                 <div className="d-block d-lg-flex align-items-center">
                   <div className="image image-small ml-lg-3 mb-3 mb-lg-0 order-2">
-                    <img src={"assets/avatares/"+result[index].imagen2+".png"} alt={"imagen "+result[index].u1} className="img-fluid" />
+                    <img src={"assets/avatares/"+result[index].imagen2+".png"} alt={"imagen "+result[index].u2} className="img-fluid" title={result[index].soporte2}/>
                   </div>
                   <div className="text order-1 w-100">
                     <h3 className="h5 mb-0 text-black">{result[index].u2} </h3>
-                    <span className="text-uppercase small text-black country">{result[index].csc} CSC #{result[index].identificador}</span>
+                    <span className="text-uppercase small text-black country">{result[index].csc} #{result[index].identificador}</span>
                   </div>
                 </div>
               </div>

@@ -140,7 +140,7 @@ export default class Market extends Component {
         .verMarket(this.state.miConsulta)
         .call({ from: this.props.currentAccount });
   
-        console.log(enVenta);
+        //console.log(enVenta);
   
         for (let index = 0; index < enVenta[0].length; index++) {
   
