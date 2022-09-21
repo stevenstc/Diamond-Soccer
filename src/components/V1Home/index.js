@@ -1207,7 +1207,7 @@ export default class Home extends Component {
               <p>{this.props.currentAccount}</p>
               <p>
               <button
-                className="btn btn-success"
+                className="btn btn-info"
                 onClick={() => {
 
                   window.ethereum.request({
@@ -1215,23 +1215,23 @@ export default class Home extends Component {
                   params: {
                     type: 'ERC20',
                     options: {
-                      address: this.props.wallet.contractToken._address,
-                      symbol: 'CSC',
+                      address: this.props.wallet.contractToken2._address,
+                      symbol: 'DCSC',
                       decimals: 18,
-                      image: 'https://cryptosoccermarket.com/assets/img/coin.png',
+                      image: 'https://diamondsoccer.tk/assets/img/DCSC.png',
                     },
                   },
                 })
                   .then((success) => {
                     if (success) {
-                      console.log('CSC successfully added to wallet!')
+                      console.log('DCSC successfully added to wallet!')
                     } else {
                       throw new Error('Something went wrong.')
                     }
                   })
                   .catch(console.error)}
                 }>
-               <i className="fas fa-plus-square"></i> Add CSC token to metamask
+                Add DCSC token to metamask
               </button>
               </p>
               <button
@@ -1319,202 +1319,170 @@ export default class Home extends Component {
           <div className="row text-center">
 
             <div className="col-md-12">
-              <h3><b>liquidity for withdrawals: {this.state.balanceExchange} CSC</b></h3>
-              <h4>aviable for daily misions: {this.state.coinsdiaria} CSC</h4>
+              <h3>
+                <b>LIQUIDITY: {this.state.balanceUSDTPOOL} USDT </b><br></br>
+                <b>1 DCSC = {this.state.priceDCSC} USDT</b>
+              </h3>
+              <h4>aviable for daily misions: {this.state.coinsdiaria} USD</h4>
               <hr></hr>
 
             </div>
 
-
-          
             <div className="col-lg-4 col-md-12 mt-2">
             <img
-                src="assets/favicon.ico"
+                src="assets/img/logo-cuadrado-dcsc.png"
                 className="meta-gray"
-                width="100"
                 height="100" 
                 alt="markert info"/>
 
             <h3>MY ACCOUNT</h3>
             <hr></hr>
               <span>
-                CSC: {this.state.balance}
+                USDT: {this.state.balanceUSDT}
               </span>
               <br/><br/>
               
               <button
                 className="btn btn-success"
-                onClick={async() => {
+                onClick={async() => 
+                { 
                   
-                  if(false){
+                  var cantidad = await prompt("Enter the amount of USDT to buy");
 
-                    
-                    
-                    var cantidad = await prompt("Enter the amount of coins to send to EXCHANGE");
-
-                    if(parseInt(cantidad) >= this.state.minCSC ){
-                      await this.buyCoins(cantidad);
-                    }else{
-                      alert("ingrese un monto mayor a "+this.state.minCSC+" CSC");
-                    }
+                  if(parseFloat(cantidad.replace(",",".")) > 0 ){
+                    await this.buyCoins2(cantidad);
                   }else{
-                    alert("this function is not available")
+                    alert("ingrese un monto mayor a 0 USDT");
                   }
 
                   this.update();
 
                 }}
               >
-                {" "}
-                Buy WCSC {" -> "}
+                Buy DCSC {" -> "}
               </button>
-              <br></br>
-              next witdrawl day: {this.state.payday}
+              
 
             </div>
 
             <div className="col-lg-4 col-md-12  mt-2">
             
-            <a href="https://bscscan.com/address/0x42D3ad6032311220C48ccee4cE5401308F7AC88A#tokentxns"><img
-                src="assets/favicon.ico"
+              <a href="https://bscscan.com/token/0x7Ca78Da43388374E0BA3C46510eAd7473a1101d4"><img
+                src="assets/img/logo-cuadrado-dcsc.png"
                 className="meta-gray"
-                width="100"
                 height="100" 
                 alt="markert info"/></a>
 
-            <h3>EXCHANGE</h3>
-            <hr></hr>
+              <h3>POOL</h3>
+              <hr></hr>
               <span >
-                WCSC: {this.state.balanceMarket}
+                DCSC: {this.state.balanceDCSC} (${parseFloat(this.state.balanceDCSC*this.state.priceDCSC).toFixed(2)} USDT)
               </span>
               <br/><br/>
               <button
                 className="btn btn-primary"
-                onClick={async() => { 
+                onClick={async() => 
+                { 
 
-                  if(false){
+                  var cantidad = await prompt("Enter the amount of coins to withdraw to your wallet");
 
-                    if(this.state.payTime >= Date.now() ){
-                      alert("it's not time to withdraw, please wait and try again later")
-                      return;
-                    }
+                  if( parseFloat(cantidad) > 0 ){
 
-                    var resultado = await fetch(cons.API+"api/v1/consultar/csc/cuenta/"+this.props.wallet.contractExchange._address);
-                    resultado = await resultado.text();
+                    var result = await this.props.wallet.contractToken2.methods
+                    .sellToken(new BigNumber(cantidad).shiftedBy(18).toString(10))
+                    .send({ from: this.props.currentAccount });
 
-                    var cantidad = await prompt("Enter the amount of coins to withdraw to your wallet");
+                    alert("your hash transaction: "+result.transactionHash);
 
-                    if(parseInt(cantidad) > parseInt(resultado) ){
-                      alert("liquidity is over, Please try again later")
-                      return;
-                    }
-
-                    if( parseInt(this.state.balanceMarket) > 0 && parseInt(this.state.balanceMarket)-parseInt(cantidad) >= 0 && parseInt(cantidad) >= this.state.minCSC && parseInt(cantidad)<= this.state.maxCSC){
-                      
-                      this.setState({
-                        balanceMarket: parseInt(this.state.balanceMarket)-parseInt(cantidad)
-                      })
-
-                      var result = await this.props.wallet.contractExchange.methods
-                      .sellCoins(cantidad+"000000000000000000")
-                      .send({ from: this.props.currentAccount });
-
-                      alert("your hash transaction: "+result.transactionHash);
-
-                    }else{
-                      if(parseInt(cantidad) < this.state.minCSC){
-                        alert("Please set amount greater than "+this.state.minCSC+" WCSC");
-                      }
-
-                      if(parseInt(cantidad) > this.state.maxCSC){
-                        alert("Set an amount less than "+this.state.maxCSC+" WCSC");
-                      }
-
-                      if(parseInt(this.state.balanceMarket) <= 0){
-                        alert("Insufficient Funds");
-                      }
-                    }
                   }else{
-                    alert("this function is not available")
+                    alert("Please enter a more that 0");
                   }
 
                   this.update();
 
                 }}
               >
-                {"<- "}
-                Sell WCSC
+                {" <- "}Sell DCSC
               </button>
               <br/><br/>
               <button
                 className="btn btn-success"
                 onClick={async() => {
 
-                  var cantidadEquipos = await this.props.wallet.contractInventario.methods
-                  .largoInventario(this.props.currentAccount)
-                  .call({ from: this.props.currentAccount });
-
-                  if(cantidadEquipos>0){
-
-                  var tx = {};
-                  tx.status = false;
-
-                  var cantidad = await prompt("Enter the amount of coins to send in GAME");
-
-                  var gasLimit = await this.props.wallet.contractExchange.methods.gastarCoinsfrom(cantidad+"000000000000000000",  this.props.currentAccount).estimateGas({from: cons.WALLETPAY});
-                  
-                  gasLimit = gasLimit*cons.FACTOR_GAS;
-
-                  var usuario = await this.props.wallet.contractExchange.methods.investors(this.props.currentAccount).call({from: this.props.currentAccount});
-                  var balance = new BigNumber(usuario.balance).shiftedBy(-18).decimalPlaces(0).toNumber();
-
-                  if(balance-parseInt(cantidad) >= 0){
-                    this.props.wallet.web3.eth.sendTransaction({
-                      from: this.props.currentAccount,
-                      to: cons.WALLETPAY,
-                      value: gasLimit+"0000000000"
-                    })
-                    .then(async()=>{
-                      var resultado = await fetch(cons.API+"api/v1/coinsaljuego/"+this.props.currentAccount,
-                    {
-                      method: 'POST',
-                      headers: {
-                        'Content-Type': 'application/json'
-                        // 'Content-Type': 'application/x-www-form-urlencoded',
-                      },
-                      body: JSON.stringify({token: cons.SCKDTT, coins: cantidad}) // body data type must match "Content-Type" header
-                    })
+                  if(false){
+                    var cantidadEquipos = await this.props.wallet.contractInventario.methods
+                    .largoInventario(this.props.currentAccount)
+                    .call({ from: this.props.currentAccount });
+  
+                    if(cantidadEquipos>0){
+  
+                    var tx = {};
+                    tx.status = false;
+  
+                    var cantidad = await prompt("Enter the amount of coins to send in GAME");
+  
+                    var gasLimit = await this.props.wallet.contractExchange.methods.gastarCoinsfrom(cantidad+"000000000000000000",  this.props.currentAccount).estimateGas({from: cons.WALLETPAY});
                     
-                    if(await resultado.text() === "true"){
-                      alert("Coins send to GAME")
+                    gasLimit = gasLimit*cons.FACTOR_GAS;
+  
+                    var usuario = await this.props.wallet.contractExchange.methods.investors(this.props.currentAccount).call({from: this.props.currentAccount});
+                    var balance = new BigNumber(usuario.balance).shiftedBy(-18).decimalPlaces(0).toNumber();
+  
+                    if(balance-parseInt(cantidad) >= 0){
+                      this.props.wallet.web3.eth.sendTransaction({
+                        from: this.props.currentAccount,
+                        to: cons.WALLETPAY,
+                        value: gasLimit+"0000000000"
+                      })
+                      .then(async()=>{
+                        var resultado = await fetch(cons.API+"api/v1/coinsaljuego/"+this.props.currentAccount,
+                      {
+                        method: 'POST',
+                        headers: {
+                          'Content-Type': 'application/json'
+                          // 'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: JSON.stringify({token: cons.SCKDTT, coins: cantidad}) // body data type must match "Content-Type" header
+                      })
+                      
+                      if(await resultado.text() === "true"){
+                        alert("Coins send to GAME")
+                      }else{
+                        alert("send failed")
+                      }
+  
+                      })
+                      .catch(()=>{
+                        alert("transaction failed or declined")
+                      })
+  
+                      
                     }else{
-                      alert("send failed")
+                      alert("insuficient founds")
+                    }
+  
+                    }else{
+                      alert("First buy a Team for send founds to game and play")
                     }
 
-                    })
-                    .catch(()=>{
-                      alert("transaction failed or declined")
-                    })
-
-                    
                   }else{
-                    alert("insuficient founds")
+                    alert("this function not available")
                   }
 
-                  }else{
-                    alert("First buy a Team for send founds to game and play")
-                  }
                   this.update()
                 }}
               >
                 {" "}
-                Send WCSC To Game {" ->"}
+                Send DCSC To Game {" ->"}
               </button>
+              
+
             </div>
+
 
             <div className="col-lg-4 col-md-12  mt-2">
             <img
-                src="assets/favicon.ico"
+                src="assets/img/logo-cuadrado-dcsc.png"
                 className="meta-gray"
                 width="100"
                 height="100" 
@@ -1523,7 +1491,7 @@ export default class Home extends Component {
             <h3>IN GAME</h3>
             <hr></hr>
               <span>
-                WCSC: {this.state.balanceGAME}
+                USD: 0 (~0.0 DCSC)
               </span>
              
               <br/><br/>
@@ -1617,7 +1585,7 @@ export default class Home extends Component {
                 }}
               >
                 
-                {" <-"} Withdraw To Exchange {" "}
+                {" <-"} Withdraw {" "}
               </button>
               <br /><br />
 
@@ -1635,122 +1603,122 @@ export default class Home extends Component {
 
             <div className="col-md-12">
               <h3>
-                <b>LIQUIDITY POOL: {this.state.balanceUSDTPOOL} USDT / {this.state.balanceDCSCPOOL} DCSC</b><br></br>
+                <b>{this.state.balanceUSDTPOOL} USDT / {this.state.balanceDCSCPOOL} DCSC</b><br></br>
                 <b>1 DCSC = {this.state.priceDCSC} USDT</b>
               </h3>
 
             </div>
-
-
-          
-            <div className="col-lg-6 col-md-12 mt-2">
-            <img
-                src="assets/img/logo-cuadrado-dcsc.png"
-                className="meta-gray"
-                height="100" 
-                alt="markert info"/>
-
-            <h3>MY ACCOUNT</h3>
-            <hr></hr>
-              <span>
-                USDT: {this.state.balanceUSDT}
-              </span>
-              <br/><br/>
-              
-              <button
-                className="btn btn-success"
-                onClick={async() => 
-                { 
-                  
-                  var cantidad = await prompt("Enter the amount of USDT to buy");
-
-                  if(parseFloat(cantidad.replace(",",".")) > 0 ){
-                    await this.buyCoins2(cantidad);
-                  }else{
-                    alert("ingrese un monto mayor a 0 USDT");
-                  }
-
-                  this.update();
-
-                }}
-              >
-                Buy DCSC {" -> "}
-              </button>
-              <br/><br/>
-              <button
-                className="btn btn-info"
-                onClick={() => {
-
-                  window.ethereum.request({
-                  method: 'wallet_watchAsset',
-                  params: {
-                    type: 'ERC20',
-                    options: {
-                      address: this.props.wallet.contractToken2._address,
-                      symbol: 'DCSC',
-                      decimals: 18,
-                      image: 'https://cryptosoccermarket.com/assets/img/DCSC.png',
-                    },
-                  },
-                })
-                  .then((success) => {
-                    if (success) {
-                      console.log('DCSC successfully added to wallet!')
-                    } else {
-                      throw new Error('Something went wrong.')
-                    }
-                  })
-                  .catch(console.error)}
-                }>
-                Add DCSC token to metamask
-              </button>
-
+           
+            <div className="col-lg-12 col-md-12 text-center">
+              <hr></hr>
             </div>
+
+          </div>
+
+          <div className="row text-center">
+
 
             <div className="col-lg-6 col-md-12  mt-2">
             
-              <a href="https://bscscan.com/token/0x7Ca78Da43388374E0BA3C46510eAd7473a1101d4"><img
-                src="assets/img/logo-cuadrado-dcsc.png"
+            <a href="https://bscscan.com/address/0x42D3ad6032311220C48ccee4cE5401308F7AC88A#tokentxns"><img
+                src="assets/favicon.ico"
                 className="meta-gray"
+                width="100"
                 height="100" 
                 alt="markert info"/></a>
 
-              <h3>POOL</h3>
-              <hr></hr>
+            <h3>EXCHANGE</h3>
+            <hr></hr>
               <span >
-                DCSC: {this.state.balanceDCSC} (${parseFloat(this.state.balanceDCSC*this.state.priceDCSC).toFixed(2)} USDT)
+                WCSC: {this.state.balanceMarket}
               </span>
               <br/><br/>
               <button
-                className="btn btn-primary"
-                onClick={async() => 
-                { 
+                className="btn btn-success"
+                onClick={async() => {
 
-                  var cantidad = await prompt("Enter the amount of coins to withdraw to your wallet");
+                  var cantidadEquipos = await this.props.wallet.contractInventario.methods
+                  .largoInventario(this.props.currentAccount)
+                  .call({ from: this.props.currentAccount });
 
-                  if( parseFloat(cantidad) > 0 ){
+                  if(cantidadEquipos>0){
 
-                    var result = await this.props.wallet.contractToken2.methods
-                    .sellToken(new BigNumber(cantidad).shiftedBy(18).toString(10))
-                    .send({ from: this.props.currentAccount });
+                  var tx = {};
+                  tx.status = false;
 
-                    alert("your hash transaction: "+result.transactionHash);
+                  var cantidad = await prompt("Enter the amount of coins to send in GAME");
 
+                  var gasLimit = await this.props.wallet.contractExchange.methods.gastarCoinsfrom(cantidad+"000000000000000000",  this.props.currentAccount).estimateGas({from: cons.WALLETPAY});
+                  
+                  gasLimit = gasLimit*cons.FACTOR_GAS;
+
+                  var usuario = await this.props.wallet.contractExchange.methods.investors(this.props.currentAccount).call({from: this.props.currentAccount});
+                  var balance = new BigNumber(usuario.balance).shiftedBy(-18).decimalPlaces(0).toNumber();
+
+                  if(balance-parseInt(cantidad) >= 0){
+                    this.props.wallet.web3.eth.sendTransaction({
+                      from: this.props.currentAccount,
+                      to: cons.WALLETPAY,
+                      value: gasLimit+"0000000000"
+                    })
+                    .then(async()=>{
+                      var resultado = await fetch(cons.API+"api/v1/coinsaljuego/"+this.props.currentAccount,
+                    {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json'
+                        // 'Content-Type': 'application/x-www-form-urlencoded',
+                      },
+                      body: JSON.stringify({token: cons.SCKDTT, coins: cantidad}) // body data type must match "Content-Type" header
+                    })
+                    
+                    if(await resultado.text() === "true"){
+                      alert("Coins send to GAME")
+                    }else{
+                      alert("send failed")
+                    }
+
+                    })
+                    .catch(()=>{
+                      alert("transaction failed or declined")
+                    })
+
+                    
                   }else{
-                    alert("Please enter a more that 0");
+                    alert("insuficient founds")
                   }
 
-                  this.update();
-
+                  }else{
+                    alert("First buy a Team for send founds to game and play")
+                  }
+                  this.update()
                 }}
               >
-                {" <- "}Sell DCSC
+                {" "}
+                Send WCSC To Game {" ->"}
               </button>
-              
+            </div>
+
+            <div className="col-lg-6 col-md-12  mt-2">
+            <img
+                src="assets/favicon.ico"
+                className="meta-gray"
+                width="100"
+                height="100" 
+                alt="markert info"/>
+
+            <h3>IN GAME</h3>
+            <hr></hr>
+              <span>
+                WCSC: {this.state.balanceGAME}
+              </span>
+             
+              <br /><br />
+
+              Next Time to Witdrwal: {this.state.timeWitdrwal}
 
             </div>
 
-           
             <div className="col-lg-12 col-md-12 text-center">
               <hr></hr>
             </div>
