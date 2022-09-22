@@ -411,6 +411,7 @@ export default class Home extends Component {
   async balanceInGame(){
 
     var balance = 0;
+    var balanceCSC = 0;
     var username = "Please register";
     var emailGame = "email game not set";
     var pais =  "country not selected";
@@ -437,8 +438,11 @@ export default class Home extends Component {
       pais = await fetch(cons.API+"api/v1/user/pais/"+this.props.currentAccount);
       pais = await pais.text();
 
-      balance = await fetch(cons.API+"api/v1/coins/"+this.props.currentAccount)
+      balance = await fetch(cons.API2+"api/v1/coins/"+this.props.currentAccount)
       balance = await balance.text();
+
+      balanceCSC = await fetch(cons.API2+"api/v1/coinscsc/"+this.props.currentAccount)
+      balanceCSC = await balanceCSC.text();
 
       emailGame = await fetch(cons.API+"api/v1/user/email/"+this.props.currentAccount+"?tokenemail=nuevo123");
       emailGame = await emailGame.text();
@@ -463,6 +467,7 @@ export default class Home extends Component {
 
     this.setState({
       balanceGAME: balance,
+      balanceCSC: balanceCSC,
       username: username,
       register: register,
       emailGame: emailGame,
@@ -772,6 +777,8 @@ export default class Home extends Component {
 
     //console.log(result)
 
+    
+
     for (let index = 0; index < result.length; index++) {
 
       var imagen1 = await fetch('https://brutustronstaking.tk/csc/api/v1/imagen/user?username='+result[index].u1,
@@ -803,7 +810,7 @@ export default class Home extends Component {
       if(result[index].tipo === "LEAGUE"){
         result[index].csc = "LEAGUE"
       }else{
-        result[index].csc = result[index].csc+" CSC"
+        result[index].csc = result[index].csc+" USD"
       }
 
       if(result[index].goles1 === result[index].goles2){
@@ -860,6 +867,11 @@ export default class Home extends Component {
 
       }
 
+
+      var today = new Date(result[index].fin);
+
+      result[index].fin = today.getMonth()+1+"/"+today.getDate()+" - "+today.getHours()+":"+today.getMinutes()+":"+today.getSeconds()
+
       latesMaches[index] = (
       
       <div className="row bg-white align-items-center ml-0 mr-0 py-0 " key={`itemsmatches-${index}`}>
@@ -888,6 +900,7 @@ export default class Home extends Component {
               <div className="d-inline-block">
                 <div className={"bg-"+result[index].color2+" py-2 px-4 mb-2 text-white d-inline-block rounded"}><span className="h5">{result[index].result2}</span></div>
               </div>
+              <br></br>{result[index].fin}
             </div>
 
             <div className="col-md-3 col-lg-3 text-center text-lg-right">
@@ -1491,7 +1504,8 @@ export default class Home extends Component {
             <h3>IN GAME</h3>
             <hr></hr>
               <span>
-                USD: 0 (~0.0 DCSC)
+                USD: {this.state.balanceGAME} <br></br>
+                (~{(this.state.balanceGAME/this.state.priceDCSC).toFixed(2)} DCSC)
               </span>
              
               <br/><br/>
@@ -1710,7 +1724,7 @@ export default class Home extends Component {
             <h3>IN GAME</h3>
             <hr></hr>
               <span>
-                WCSC: {this.state.balanceGAME}
+                WCSC: {this.state.balanceCSC}
               </span>
              
               <br /><br />

@@ -16,6 +16,7 @@ var SCK = process.env.APP_CSRK;
 var SCKDTT = process.env.APP_TOKNN;
 
 var API = "https://brutustronstaking.tk/csc-market/";
+var API2 = "https://brutustronstaking.tk/csc/";
 
 var WALLETPAY = "0x00326ad2E5ADb9b95035737fD4c56aE452C2c965";
 
@@ -37,4 +38,4 @@ if(TESTNET){
 
 const FACTOR_GAS = 3;
 
-export default {WALLETPAY, FACTOR_GAS, SC, SC2, SC3, SC4, SC5, SC6, TOKEN, tokenCSC, SCK, SCKDTT, API, chainId, tokenUSDT};
+export default {WALLETPAY, FACTOR_GAS, SC, SC2, SC3, SC4, SC5, SC6, TOKEN, tokenCSC, SCK, SCKDTT, API, API2, chainId, tokenUSDT};
