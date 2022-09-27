@@ -11,7 +11,7 @@ import TronLinkGuide from "../TronLinkGuide";
 import cons from "../../cons"
 
 import abiToken from "../../abi/token";
-import abiDiamonCSC from "../../diamonCSC"
+import abiDiamonCSC from "../../abi/diamonCSC"
 import abiMarket from "../../abi/market";
 import abiInventario from "../../abi/inventario";
 import abiFan from "../../abi/fan"

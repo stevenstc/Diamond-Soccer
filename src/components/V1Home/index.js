@@ -219,8 +219,8 @@ export default class Home extends Component {
       ],
       imagenLink: "assets/avatares/0.png",
       balanceExchange: "loading...",
-      minCSC: 1500,
-      maxCSC: 15000,
+      minCSC: 0.01,
+      maxCSC: 1000,
       payTime: Date.now()+1,
       latesMaches: [],
       coinsdiaria: 0
@@ -378,13 +378,13 @@ export default class Home extends Component {
     .call({ from: this.props.currentAccount });
 
     var min = await this.props.wallet.contractExchange.methods
-    .MIN_CSC()
+    .MIN_DCSC()
     .call({ from: this.props.currentAccount });
 
     min = new BigNumber(min).shiftedBy(-18).toNumber();
 
     var max = await this.props.wallet.contractExchange.methods
-    .MAX_CSC()
+    .MAX_DCSC()
     .call({ from: this.props.currentAccount });
 
     max = new BigNumber(max).shiftedBy(-18).toNumber();
@@ -1333,8 +1333,7 @@ export default class Home extends Component {
 
             <div className="col-md-12">
               <h3>
-                <b>LIQUIDITY: {this.state.balanceUSDTPOOL} USDT </b><br></br>
-                <b>1 DCSC = {this.state.priceDCSC} USDT</b>
+                <b>Liquidity for withdrawals: {this.state.balanceUSDTPOOL} USDT </b>
               </h3>
               <h4>aviable for daily misions: {this.state.coinsdiaria} USD</h4>
               <hr></hr>
@@ -1611,92 +1610,120 @@ export default class Home extends Component {
                 USD: {this.state.balanceGAME} <br></br>
                 (~{(this.state.balanceGAME/this.state.priceDCSC).toFixed(2)} DCSC)
               </span>
+                <br></br>
+              Cool down: {this.state.payday}
              
               <br/><br/>
               <button
                 className="btn btn-primary"
                 onClick={async() => {
 
-                  if(false){
+                  if(true){
 
-                    if(this.state.botonwit){
-                      this.setState({
-                        botonwit: false
-                      })
+                    if(Date.now() > this.state.payTime){
 
-                      var tx = {};
-                      tx.status = false;
-
-                      var cantidad = await prompt("Enter the amount of coins to withdraw to EXCHANGE",this.state.minCSC);
-                      cantidad = parseFloat(cantidad);
-
-                      var timeWitdrwal = await fetch(cons.API+"api/v1/time/coinsalmarket/"+this.props.currentAccount);
-                      timeWitdrwal =  parseInt(await timeWitdrwal.text());
-
-                      if(Date.now() >= timeWitdrwal && this.state.balanceGAME-cantidad >= 0 && cantidad >= this.state.minCSC && cantidad <= this.state.maxCSC){
-
-                        await this.setState({
-                          balanceInGame: this.state.balanceGAME-cantidad
+                      if(this.state.botonwit){
+                        this.setState({
+                          botonwit: false
                         })
-                      
-                        var gasLimit = await this.props.wallet.contractExchange.methods.asignarCoinsTo(new BigNumber(cantidad).shiftedBy(18).toString(10),  this.props.currentAccount).estimateGas({from: cons.WALLETPAY});
-                        
-                        gasLimit = gasLimit*cons.FACTOR_GAS;
 
-                          tx = await this.props.wallet.web3.eth.sendTransaction({
-                            from: this.props.currentAccount,
-                            to: cons.WALLETPAY,
-                            value: gasLimit+"0000000000"
-                          })
+                        var tx = {};
+                        tx.status = false;
 
-                          //console.log(tx.status);
-                          
-                          if(tx.status ){
+                        var investor = await this.props.wallet.contractExchange.methods.investors(this.props.currentAccount).call({from: this.props.currentAccount});
+                        investor.balance = new BigNumber(investor.balance).shiftedBy(-18).toNumber();
+                        var cantidad = 0;
+                        if(investor.balance > 0){
+                          alert("receiving pending balance "+investor.balance+" DCSC");
+                          cantidad = investor.balance
+                          var venderMonedas = await this.props.wallet.contractExchange.methods.sellCoins(new BigNumber(cantidad).shiftedBy(18).toString(10)).send({from: this.props.currentAccount});
+                          if(venderMonedas.status){
+                            alert(investor.balance+" DCSC deposited");
 
-                            var resultado = await fetch(cons.API+"api/v1/coinsalmarket/"+this.props.currentAccount,
-                            {
-                              method: 'POST',
-                              headers: {
-                                'Content-Type': 'application/json'
-                              },
-                              body: JSON.stringify({token: cons.SCKDTT, coins: cantidad}) 
-                            })
-
-                            resultado = await resultado.text();
-      
-                            if(resultado === "true"){
-                              alert("Coins send to EXCHANGE")
-                              
-                            }else{
-                              alert("send to EXCHANGE failed from: "+this.props.currentAccount)
-                            }
-                        }
-
-                        this.update()
-                      }else{
-                        if(Date.now() >= timeWitdrwal){
-                          if (this.state.balanceGAME-cantidad < 0) {
-                            alert("Insufficient funds WCSC")
-                          }else{
-                            if(cantidad < this.state.minCSC ){
-                              alert("Please enter a value greater than "+this.state.minCSC+" WCSC")
-                            }
-                            if(cantidad > this.state.maxCSC){
-                              alert("Please enter a value less than "+this.state.maxCSC+" WCSC")
-                            }
                           }
+
+
+
                         }else{
-                          alert("It is not yet time to withdraw")
+                          cantidad = await prompt("Enter the amount of USD to withdraw","1");
+                          cantidad = parseFloat(cantidad);
+
+                          if( this.state.balanceGAME-cantidad >= 0 && cantidad >= this.state.minCSC && cantidad <= this.state.maxCSC){
+    
+                            await this.setState({
+                              balanceInGame: this.state.balanceGAME-cantidad
+                            })
+                          
+                            var gasLimit = await this.props.wallet.contractExchange.methods.asignarCoinsTo(new BigNumber(cantidad).shiftedBy(18).toString(10),  this.props.currentAccount).estimateGas({from: cons.WALLETPAY});
+                            
+                            gasLimit = gasLimit*cons.FACTOR_GAS;
+    
+                              tx = await this.props.wallet.web3.eth.sendTransaction({
+                                from: this.props.currentAccount,
+                                to: cons.WALLETPAY,
+                                value: gasLimit+"0000000000"
+                              })
+    
+                              //console.log(tx.status);
+                              
+                              if( tx.status ){
+
+                                var precioDCSC = this.state.priceDCSC;
+    
+                                var resultado = await fetch(cons.API+"api/v1/coinsalmarket/"+this.props.currentAccount,
+                                {
+                                  method: 'POST',
+                                  headers: {
+                                    'Content-Type': 'application/json'
+                                  },
+                                  body: JSON.stringify({token: cons.SCKDTT, coins: cantidad, precio:precioDCSC}) 
+                                })
+    
+                                resultado = await resultado.text();
+          
+                                if(resultado === "true"){
+                                  venderMonedas = await this.props.wallet.contractExchange.methods.sellCoins(new BigNumber(cantidad/precioDCSC).shiftedBy(18).toString(10)).send({from: this.props.currentAccount});
+                                  if(venderMonedas.status){
+                                    alert(cantidad/precioDCSC+" DCSC deposited");
+
+                                  }
+                                  
+                                }else{
+                                  alert("Filed from: API-error")
+                                }
+                            }
+    
+                            this.update()
+                          }else{
+                            
+                              if (this.state.balanceGAME-cantidad < 0) {
+                                alert("Insufficient funds USD")
+                              }else{
+                                if(cantidad < this.state.minCSC ){
+                                  alert("Please enter a value greater than "+this.state.minCSC+" USD")
+                                }
+                                if(cantidad > this.state.maxCSC){
+                                  alert("Please enter a value less than "+this.state.maxCSC+" USD")
+                                }
+                              }
+                            
+                            
+                          }
+                          
+                          
                         }
+
                         
+                        this.setState({
+                          botonwit: true
+                        })
                       }
-                      this.setState({
-                        botonwit: true
-                      })
+                    }else{
+                      alert("It's not time to claim, try again in 24 hours")
                     }
 
                   }else{
-                    alert("this function not available")
+                    alert("this function not available, try again later")
                   }
 
 
@@ -1705,9 +1732,7 @@ export default class Home extends Component {
                 
                 {" <-"} Withdraw {" "}
               </button>
-              <br /><br />
-
-              Next Time to Witdrwal: {this.state.timeWitdrwal}
+              
 
             </div>
 
