@@ -419,8 +419,8 @@ export default class Home extends Component {
     var imagenLink = "assets/avatares/0.png";
 
     var register = await fetch(cons.API+"api/v1/user/exist/"+this.props.currentAccount)
-    .catch(()=>{return false;})
-    register = await register.text();
+    .then(async(result)=>await result.text())
+    .catch(()=>{return "false";})
 
     var coinsdiaria = await fetch('https://brutustronstaking.tk/csc/api/v1/coinsdiaria/')
     coinsdiaria = await coinsdiaria.text();
@@ -527,7 +527,7 @@ export default class Home extends Component {
 
   async buyCoins(amount){
 
-    if(false){
+    if(true){
 
       var aprovado = await this.props.wallet.contractToken.methods
         .allowance(this.props.currentAccount, this.props.wallet.contractExchange._address)
@@ -1341,7 +1341,7 @@ export default class Home extends Component {
 
             </div>
 
-            <div className="col-lg-4 col-md-12 mt-2">
+            <div className="col-lg-4 col-md-12 mt-2" id="buydcsc">
             <img
                 src="assets/img/logo-cuadrado-dcsc.png"
                 className="meta-gray"
@@ -1422,7 +1422,7 @@ export default class Home extends Component {
                 className="btn btn-success"
                 onClick={async() => {
 
-                  if(false){
+                  if(true){
                     var cantidadEquipos = await this.props.wallet.contractInventario.methods
                     .largoInventario(this.props.currentAccount)
                     .call({ from: this.props.currentAccount });
@@ -1441,7 +1441,7 @@ export default class Home extends Component {
                     var usuario = await this.props.wallet.contractExchange.methods.investors(this.props.currentAccount).call({from: this.props.currentAccount});
                     var balance = new BigNumber(usuario.balance).shiftedBy(-18).decimalPlaces(0).toNumber();
   
-                    if(balance-parseInt(cantidad) >= 0){
+                    if(balance-parseInt(cantidad) >= 0 && gasLimit > 0){
                       this.props.wallet.web3.eth.sendTransaction({
                         from: this.props.currentAccount,
                         to: cons.WALLETPAY,
@@ -1452,8 +1452,8 @@ export default class Home extends Component {
                       {
                         method: 'POST',
                         headers: {
-                          'Content-Type': 'application/json'
-                          // 'Content-Type': 'application/x-www-form-urlencoded',
+                          //'Content-Type': 'application/json'
+                          'Content-Type': 'application/x-www-form-urlencoded',
                         },
                         body: JSON.stringify({token: cons.SCKDTT, coins: cantidad}) // body data type must match "Content-Type" header
                       })
@@ -1471,7 +1471,7 @@ export default class Home extends Component {
   
                       
                     }else{
-                      alert("insuficient founds")
+                      alert("Failed, insuficient founds")
                     }
   
                     }else{

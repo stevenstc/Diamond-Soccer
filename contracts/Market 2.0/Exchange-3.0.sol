@@ -134,13 +134,15 @@ contract Proxy is Admin {
 contract Exchange is Proxy{
   using SafeMath for uint256;
 
-  address public token = 0xF0fB4a5ACf1B1126A991ee189408b112028D7A63;
+  address public token = 0x7Ca78Da43388374E0BA3C46510eAd7473a1101d4;
 
-  uint256 public MIN_CSC = 500 * 10**18;
-  uint256 public MAX_CSC = 10000 * 10**18;
-  uint256 public FEE_CSC = 100 * 10**18;
+  uint256 public MIN_DCSC = 1;
+  uint256 public MAX_DCSC = 10000 * 10**18;
 
-  uint256 public TIME_CLAIM = 7 * 86400;
+  bool public porcent = false;
+  uint256 public FEE_DCSC = 5;
+
+  uint256 public TIME_CLAIM = 1 * 86400;
 
   TRC20_Interface CSC_Contract = TRC20_Interface(token);
   TRC20_Interface OTRO_Contract = TRC20_Interface(token);
@@ -155,6 +157,7 @@ contract Exchange is Proxy{
 
   uint256 public ingresos;
   uint256 public retiros;
+  uint256 public inGame;
 
   constructor() {
 
@@ -178,14 +181,16 @@ contract Exchange is Proxy{
     Investor storage usuario = investors[_user];
     if ( usuario.baneado) revert();
     usuario.balance += _value;
+    inGame = inGame.sub(_value);
+
     return true;
     
   }
 
   function sellCoins(uint256 _value) public returns (bool) {
 
-    if(_value < MIN_CSC)revert();
-    if(_value > MAX_CSC)revert();
+    if(_value < MIN_DCSC)revert();
+    if(_value > MAX_DCSC)revert();
     Investor storage usuario = investors[_msgSender()];
 
     if( usuario.payAt.add(TIME_CLAIM) > block.timestamp)revert();
@@ -193,11 +198,19 @@ contract Exchange is Proxy{
     if (usuario.baneado) revert();
     if (_value > usuario.balance)revert();
 
-    if(FEE_CSC != 0){
-      if (_value.sub(FEE_CSC) < 0)revert();
+    if(FEE_DCSC != 0 ){
+      if(porcent && FEE_DCSC < 999){
+        if (!CSC_Contract.transfer(_msgSender(),  _value.mul(1000-FEE_DCSC).div(1000)))revert();
+      }else{
+        if (_value.sub(FEE_DCSC) < 0)revert();
+        if (!CSC_Contract.transfer(_msgSender(),  _value.sub(FEE_DCSC)))revert();
+      }
+      
+
+    }else{
+      if (!CSC_Contract.transfer(_msgSender(),  _value))revert();
     }
 
-    if (!CSC_Contract.transfer(_msgSender(),  _value.sub(FEE_CSC)))revert();
 
     usuario.balance -= _value;
     retiros += _value;
@@ -214,17 +227,19 @@ contract Exchange is Proxy{
       
     usuario.balance -= _value;
 
+    inGame = inGame.add(_value);
+
     return true;
     
   }
 
   function updateMinMax(uint256 _min, uint256 _max)public onlyOwner{
-    MIN_CSC = _min;
-    MAX_CSC = _max;
+    MIN_DCSC = _min;
+    MAX_DCSC = _max;
   }
 
   function updateFee(uint256 _fee)public onlyOwner{
-    FEE_CSC = _fee;
+    FEE_DCSC = _fee;
   }
 
   function updateTimeToClaim(uint256 _time)public onlyOwner{

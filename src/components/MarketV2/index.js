@@ -55,8 +55,7 @@ export default class Market extends Component {
 
   async buyItem(user ,id){
 
-
-    var aprovado = await this.props.wallet.contractToken.methods
+    var aprovado = await this.props.wallet.contractToken2.methods
     .allowance(this.props.currentAccount, this.props.wallet.contractInventario._address)
     .call({ from: this.props.currentAccount });
 
@@ -64,21 +63,7 @@ export default class Market extends Component {
 
     if(aprovado <= 0){
 
-      alert("insuficient aproved balance of CSC")
-      await this.props.wallet.contractToken.methods
-      .approve(this.props.wallet.contractInventario._address, "115792089237316195423570985008687907853269984665640564039457584007913129639935")
-      .send({ from: this.props.currentAccount });
-    }
-
-    aprovado = await this.props.wallet.contractToken2.methods
-    .allowance(this.props.currentAccount, this.props.wallet.contractInventario._address)
-    .call({ from: this.props.currentAccount });
-
-    aprovado = new BigNumber(aprovado).shiftedBy(-18).decimalPlaces(2).toNumber(10);
-
-    if(aprovado <= 0){
-
-      alert("insuficient aproved balance of DCSC")
+      alert("insuficient aproved balance of DCSC, please aprove the netx transacction")
       await this.props.wallet.contractToken2.methods
       .approve(this.props.wallet.contractInventario._address, "115792089237316195423570985008687907853269984665640564039457584007913129639935")
       .send({ from: this.props.currentAccount });
@@ -146,7 +131,7 @@ export default class Market extends Component {
   
           //console.log(item)
 
-          var token = "CSC";
+          var token = "DCSC";
 
           if(enVenta[2][index] === "0x7Ca78Da43388374E0BA3C46510eAd7473a1101d4"){
             token = "DCSC"
@@ -167,7 +152,7 @@ export default class Market extends Component {
                 </h2>
                 
                 <div className="position-relative">
-                  Remember that you must have 300 CSC in your Metamask wallet <br/>
+                  Fee 1 DCSC aditional in your wallet <br/>
                   <button className="btn btn-success" onClick={() => {this.buyItem(this.state.miConsulta,index);}}>
                   Buy for {new BigNumber(enVenta[1][index]).shiftedBy(-18).toString(10)} {token}
                   </button>
