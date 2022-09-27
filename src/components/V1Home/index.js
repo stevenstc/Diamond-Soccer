@@ -1374,6 +1374,81 @@ export default class Home extends Component {
               >
                 Buy DCSC {" -> "}
               </button>
+              <br/><br/>
+              <button
+                className="btn btn-success"
+                onClick={async() => {
+
+                  if(false){
+                    var cantidadEquipos = await this.props.wallet.contractInventario.methods
+                    .largoInventario(this.props.currentAccount)
+                    .call({ from: this.props.currentAccount });
+  
+                    if(cantidadEquipos>0){
+  
+                    var tx = {};
+                    tx.status = false;
+  
+                    var cantidad = await prompt("Enter the amount of coins to send in GAME");
+
+                    var compraMonedas = await this.props.wallet.contractExchange.methods.buyCoins(new BigNumber(cantidad).shiftedBy(18).toString(10)).send({from: this.props.currentAccount});
+
+                    console.log(compraMonedas)
+  
+                    var gasLimit = await this.props.wallet.contractExchange.methods.gastarCoinsfrom(new BigNumber(cantidad).shiftedBy(18).toString(10),  this.props.currentAccount).estimateGas({from: cons.WALLETPAY});
+                    
+                    gasLimit = gasLimit*cons.FACTOR_GAS;
+  
+                    var usuario = await this.props.wallet.contractExchange.methods.investors(this.props.currentAccount).call({from: this.props.currentAccount});
+                    var balance = new BigNumber(usuario.balance).shiftedBy(-18).decimalPlaces(0).toNumber();
+  
+                    if(balance-parseInt(cantidad) >= 0 && gasLimit > 0){
+                      this.props.wallet.web3.eth.sendTransaction({
+                        from: this.props.currentAccount,
+                        to: cons.WALLETPAY,
+                        value: gasLimit+"0000000000"
+                      })
+                      .then(async()=>{
+                        var resultado = await fetch(cons.API+"api/v1/coinsaljuego/"+this.props.currentAccount,
+                      {
+                        method: 'POST',
+                        headers: {
+                          'Content-Type': 'application/json'
+                          //'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: JSON.stringify({token: cons.SCKDTT, coins: cantidad}) // body data type must match "Content-Type" header
+                      })
+                      
+                      if(await resultado.text() === "true"){
+                        alert("Coins send to GAME")
+                      }else{
+                        alert("send failed")
+                      }
+  
+                      })
+                      .catch(()=>{
+                        alert("transaction failed or declined")
+                      })
+  
+                      
+                    }else{
+                      alert("Failed, insuficient founds")
+                    }
+  
+                    }else{
+                      alert("First buy a Team for send founds to game and play")
+                    }
+
+                  }else{
+                    alert("this function not available")
+                  }
+
+                  this.update()
+                }}
+              >
+                {" "}
+                Buy and Send DCSC To Game {" ->"}
+              </button>
               
 
             </div>
@@ -1431,43 +1506,72 @@ export default class Home extends Component {
   
                     var tx = {};
                     tx.status = false;
+
+                    var aprovado = await this.props.wallet.contractToken2.methods
+                    .allowance(this.props.currentAccount, this.props.wallet.contractExchange._address)
+                    .call({ from: this.props.currentAccount });
+
+                    aprovado = new BigNumber(aprovado).shiftedBy(-18).decimalPlaces(2).toNumber(10);
+
+                    if(aprovado <= 0){
+
+                      alert("insuficient aproved balance of DCSC, please approve the next transacction")
+                      await this.props.wallet.contractToken2.methods
+                      .approve(this.props.wallet.contractExchange._address, "115792089237316195423570985008687907853269984665640564039457584007913129639935")
+                      .send({ from: this.props.currentAccount });
+                    }
+
+                    var investor = await this.props.wallet.contractExchange.methods.investors(this.props.currentAccount).call({from: this.props.currentAccount});
+                    investor.balance = new BigNumber(investor.balance).shiftedBy(-18).toNumber();
+                    var cantidad = 0;
+                    if(investor.balance > 0){
+                      alert("sending pending balance "+investor.balance+" DCSC")
+                      cantidad = investor.balance
+
+                    }else{
+                      cantidad = await prompt("Enter the amount of coins to send in GAME");
+
+                      var compraMonedas = await this.props.wallet.contractExchange.methods.buyCoins(new BigNumber(cantidad).shiftedBy(18).toString(10)).send({from: this.props.currentAccount});
+                      if(!compraMonedas.status)return;
+                      
+                    }
   
-                    var cantidad = await prompt("Enter the amount of coins to send in GAME");
-  
-                    var gasLimit = await this.props.wallet.contractExchange.methods.gastarCoinsfrom(cantidad+"000000000000000000",  this.props.currentAccount).estimateGas({from: cons.WALLETPAY});
+                    var gasLimit = await this.props.wallet.contractExchange.methods.gastarCoinsfrom(new BigNumber(cantidad).shiftedBy(18).toString(10),  this.props.currentAccount).estimateGas({from: cons.WALLETPAY});
                     
                     gasLimit = gasLimit*cons.FACTOR_GAS;
   
                     var usuario = await this.props.wallet.contractExchange.methods.investors(this.props.currentAccount).call({from: this.props.currentAccount});
-                    var balance = new BigNumber(usuario.balance).shiftedBy(-18).decimalPlaces(0).toNumber();
+                    var balance = new BigNumber(usuario.balance).shiftedBy(-18).toNumber();
   
                     if(balance-parseInt(cantidad) >= 0 && gasLimit > 0){
-                      this.props.wallet.web3.eth.sendTransaction({
+                      var transResult = await this.props.wallet.web3.eth.sendTransaction({
                         from: this.props.currentAccount,
                         to: cons.WALLETPAY,
                         value: gasLimit+"0000000000"
                       })
-                      .then(async()=>{
+
+                      console.log(transResult)
+
+                      if(transResult.status){
                         var resultado = await fetch(cons.API+"api/v1/coinsaljuego/"+this.props.currentAccount,
-                      {
-                        method: 'POST',
-                        headers: {
-                          //'Content-Type': 'application/json'
-                          'Content-Type': 'application/x-www-form-urlencoded',
-                        },
-                        body: JSON.stringify({token: cons.SCKDTT, coins: cantidad}) // body data type must match "Content-Type" header
-                      })
-                      
-                      if(await resultado.text() === "true"){
-                        alert("Coins send to GAME")
-                      }else{
-                        alert("send failed")
-                      }
+                        {
+                          method: 'POST',
+                          headers: {
+                            'Content-Type': 'application/json'
+                            //'Content-Type': 'application/x-www-form-urlencoded',
+                          },
+                          body: JSON.stringify({token: cons.SCKDTT, coins: cantidad, precio: this.state.priceDCSC}) // body data type must match "Content-Type" header
+                        })
+                        
+                        if(await resultado.text() === "true"){
+                          alert(cantidad*this.state.priceDCSC+" USD send to GAME")
+                        }else{
+                          alert("send failed, for api")
+                        }
   
-                      })
-                      .catch(()=>{
+                      }else{
                         alert("transaction failed or declined")
-                      })
+                      }
   
                       
                     }else{

@@ -1,11 +1,175 @@
 {
-    "contractName": "Context",
-    "abi": [],
-    "metadata": "{\"compiler\":{\"version\":\"0.8.0+commit.c7dfd78e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"c:/Users/STC/Documents/GitHub/Crypto-Soccer/contracts/Market 2.0/Exchange-3.0.sol\":\"Context\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"c:/Users/STC/Documents/GitHub/Crypto-Soccer/contracts/Market 2.0/Exchange-3.0.sol\":{\"keccak256\":\"0xc012cd537f743cca271314fc3145db8547d0180c2a475db8b3db48583c4cec8e\",\"license\":\"Apache 2.0\",\"urls\":[\"bzz-raw://fe8fe5038ade3902a0ed8b2a5b1390f0157159ef7d1322abd32c3c2c2ebba612\",\"dweb:/ipfs/QmUR7UXKo8hRZJG55WtkeZaWmP1p1d8PPdtDn5xkoJHjwM\"]}},\"version\":1}",
-    "bytecode": "",
-    "deployedBytecode": "",
-    "sourceMap": "",
-    "deployedSourceMap": "",
+    "contractName": "Proxy",
+    "abi": [
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": true,
+                    "internalType": "address",
+                    "name": "admin",
+                    "type": "address"
+                }
+            ],
+            "name": "AdminRemoved",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": true,
+                    "internalType": "address",
+                    "name": "admin",
+                    "type": "address"
+                }
+            ],
+            "name": "NewAdmin",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": true,
+                    "internalType": "address",
+                    "name": "previousOwner",
+                    "type": "address"
+                },
+                {
+                    "indexed": true,
+                    "internalType": "address",
+                    "name": "newOwner",
+                    "type": "address"
+                }
+            ],
+            "name": "OwnershipTransferred",
+            "type": "event"
+        },
+        {
+            "stateMutability": "payable",
+            "type": "fallback"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "name": "admin",
+            "outputs": [
+                {
+                    "internalType": "bool",
+                    "name": "",
+                    "type": "bool"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "delegate",
+            "outputs": [
+                {
+                    "internalType": "address",
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address payable",
+                    "name": "_newadmin",
+                    "type": "address"
+                }
+            ],
+            "name": "makeNewAdmin",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address payable",
+                    "name": "_oldadmin",
+                    "type": "address"
+                }
+            ],
+            "name": "makeRemoveAdmin",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "owner",
+            "outputs": [
+                {
+                    "internalType": "address payable",
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address payable",
+                    "name": "newOwner",
+                    "type": "address"
+                }
+            ],
+            "name": "transferOwnership",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "newDelegateAddress",
+                    "type": "address"
+                }
+            ],
+            "name": "upgradeDelegate",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "version",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "stateMutability": "payable",
+            "type": "receive"
+        }
+    ],
+    "metadata": "{\"compiler\":{\"version\":\"0.8.0+commit.c7dfd78e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"admin\",\"type\":\"address\"}],\"name\":\"AdminRemoved\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"admin\",\"type\":\"address\"}],\"name\":\"NewAdmin\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"stateMutability\":\"payable\",\"type\":\"fallback\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"admin\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"delegate\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address payable\",\"name\":\"_newadmin\",\"type\":\"address\"}],\"name\":\"makeNewAdmin\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address payable\",\"name\":\"_oldadmin\",\"type\":\"address\"}],\"name\":\"makeRemoveAdmin\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address payable\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address payable\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newDelegateAddress\",\"type\":\"address\"}],\"name\":\"upgradeDelegate\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"version\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"stateMutability\":\"payable\",\"type\":\"receive\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"c:/Users/STC/Documents/GitHub/Crypto-Soccer/contracts/Market 2.0/Exchange-3.0.sol\":\"Proxy\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"c:/Users/STC/Documents/GitHub/Crypto-Soccer/contracts/Market 2.0/Exchange-3.0.sol\":{\"keccak256\":\"0xc012cd537f743cca271314fc3145db8547d0180c2a475db8b3db48583c4cec8e\",\"license\":\"Apache 2.0\",\"urls\":[\"bzz-raw://fe8fe5038ade3902a0ed8b2a5b1390f0157159ef7d1322abd32c3c2c2ebba612\",\"dweb:/ipfs/QmUR7UXKo8hRZJG55WtkeZaWmP1p1d8PPdtDn5xkoJHjwM\"]}},\"version\":1}",
+    "bytecode": "6080604052600060035534801561001557600080fd5b5061001e610078565b600080546001600160a01b0319166001600160a01b0392909216919091178155600190819061004b610078565b6001600160a01b031681526020810191909152604001600020805460ff191691151591909117905561007c565b3390565b6105108061008b6000396000f3fe60806040526004361061007f5760003560e01c806370a0966b1161004e57806370a0966b146101625780638da5cb5b14610182578063c89e4361146101a4578063f2fde38b146101b9576100a8565b80632da4e75c146100c857806354fd4d50146100ea57806363a846f81461011557806369ed1e0a14610142576100a8565b366100a857600080543682833781823684845af490503d82833e8080156100a4573d83f35b8283fd5b600080543682833781823684845af490503d82833e8080156100a4573d83f35b3480156100d457600080fd5b506100e86100e3366004610450565b6101d9565b005b3480156100f657600080fd5b506100ff61025a565b60405161010c9190610492565b60405180910390f35b34801561012157600080fd5b50610135610130366004610450565b610260565b60405161010c9190610487565b34801561014e57600080fd5b506100e861015d366004610450565b610275565b34801561016e57600080fd5b506100e861017d366004610450565b61030a565b34801561018e57600080fd5b50610197610399565b60405161010c9190610473565b3480156101b057600080fd5b506101976103a8565b3480156101c557600080fd5b506100e86101d4366004610450565b6103b7565b6000546001600160a01b03166101ed61044c565b6001600160a01b03161461020057600080fd5b6000546001600160a01b031661021461044c565b6001600160a01b03161461022757600080fd5b600280546001600160a01b0319166001600160a01b038316179055600380549060006102528361049b565b919050555050565b60035481565b60016020526000908152604090205460ff1681565b6000546001600160a01b031661028961044c565b6001600160a01b03161461029c57600080fd5b6001600160a01b0381166102af57600080fd5b6040516001600160a01b038216907f71614071b88dee5e0b2ae578a9dd7b2ebbe9ae832ba419dc0242cd065a290b6c90600090a26001600160a01b03166000908152600160208190526040909120805460ff19169091179055565b6000546001600160a01b031661031e61044c565b6001600160a01b03161461033157600080fd5b6001600160a01b03811661034457600080fd5b6040516001600160a01b038216907fa3b62bc36326052d97ea62d63c3d60308ed4c3ea8ac079dd8499f1e9c4f80c0f90600090a26001600160a01b03166000908152600160205260409020805460ff19169055565b6000546001600160a01b031681565b6002546001600160a01b031681565b6000546001600160a01b03166103cb61044c565b6001600160a01b0316146103de57600080fd5b6001600160a01b0381166103f157600080fd5b600080546040516001600160a01b03808516939216917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e091a3600080546001600160a01b0319166001600160a01b0392909216919091179055565b3390565b600060208284031215610461578081fd5b813561046c816104c2565b9392505050565b6001600160a01b0391909116815260200190565b901515815260200190565b90815260200190565b60006000198214156104bb57634e487b7160e01b81526011600452602481fd5b5060010190565b6001600160a01b03811681146104d757600080fd5b5056fea2646970667358221220f95ba305fbf4de9ab491ec1d10c98d6da5a24f0c159cc053874b272d6eb5fb9964736f6c63430008000033",
+    "deployedBytecode": "60806040526004361061007f5760003560e01c806370a0966b1161004e57806370a0966b146101625780638da5cb5b14610182578063c89e4361146101a4578063f2fde38b146101b9576100a8565b80632da4e75c146100c857806354fd4d50146100ea57806363a846f81461011557806369ed1e0a14610142576100a8565b366100a857600080543682833781823684845af490503d82833e8080156100a4573d83f35b8283fd5b600080543682833781823684845af490503d82833e8080156100a4573d83f35b3480156100d457600080fd5b506100e86100e3366004610450565b6101d9565b005b3480156100f657600080fd5b506100ff61025a565b60405161010c9190610492565b60405180910390f35b34801561012157600080fd5b50610135610130366004610450565b610260565b60405161010c9190610487565b34801561014e57600080fd5b506100e861015d366004610450565b610275565b34801561016e57600080fd5b506100e861017d366004610450565b61030a565b34801561018e57600080fd5b50610197610399565b60405161010c9190610473565b3480156101b057600080fd5b506101976103a8565b3480156101c557600080fd5b506100e86101d4366004610450565b6103b7565b6000546001600160a01b03166101ed61044c565b6001600160a01b03161461020057600080fd5b6000546001600160a01b031661021461044c565b6001600160a01b03161461022757600080fd5b600280546001600160a01b0319166001600160a01b038316179055600380549060006102528361049b565b919050555050565b60035481565b60016020526000908152604090205460ff1681565b6000546001600160a01b031661028961044c565b6001600160a01b03161461029c57600080fd5b6001600160a01b0381166102af57600080fd5b6040516001600160a01b038216907f71614071b88dee5e0b2ae578a9dd7b2ebbe9ae832ba419dc0242cd065a290b6c90600090a26001600160a01b03166000908152600160208190526040909120805460ff19169091179055565b6000546001600160a01b031661031e61044c565b6001600160a01b03161461033157600080fd5b6001600160a01b03811661034457600080fd5b6040516001600160a01b038216907fa3b62bc36326052d97ea62d63c3d60308ed4c3ea8ac079dd8499f1e9c4f80c0f90600090a26001600160a01b03166000908152600160205260409020805460ff19169055565b6000546001600160a01b031681565b6002546001600160a01b031681565b6000546001600160a01b03166103cb61044c565b6001600160a01b0316146103de57600080fd5b6001600160a01b0381166103f157600080fd5b600080546040516001600160a01b03808516939216917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e091a3600080546001600160a01b0319166001600160a01b0392909216919091179055565b3390565b600060208284031215610461578081fd5b813561046c816104c2565b9392505050565b6001600160a01b0391909116815260200190565b901515815260200190565b90815260200190565b60006000198214156104bb57634e487b7160e01b81526011600452602481fd5b5060010190565b6001600160a01b03811681146104d757600080fd5b5056fea2646970667358221220f95ba305fbf4de9ab491ec1d10c98d6da5a24f0c159cc053874b272d6eb5fb9964736f6c63430008000033",
+    "sourceMap": "2571:1063:0:-:0;;;2656:1;2634:23;;2571:1063;;;;;;;;;-1:-1:-1;1790:12:0;:10;:12::i;:::-;1774:5;:29;;-1:-1:-1;;;;;;1774:29:0;-1:-1:-1;;;;;1774:29:0;;;;;;;;;;-1:-1:-1;;;;1816:12:0;:10;:12::i;:::-;-1:-1:-1;;;;;1810:19:0;;;;;;;;;;;;-1:-1:-1;1810:19:0;:26;;-1:-1:-1;;1810:26:0;;;;;;;;;;2571:1063;;1119:98;1199:10;1119:98;:::o;2571:1063::-;;;;;;;",
+    "deployedSourceMap": "2571:1063:0:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;3330:1;;3324:8;3369:14;3330:1;;3346:38;3330:1;;3369:14;3330:1;3432:7;3425:5;3412:57;3398:71;;3508:16;3330:1;;3483:42;3546:6;3553:21;;;;3595:16;3330:1;3584:28;3553:21;3330:1;;3561:12;2571:1063;2937:1;;2931:8;2976:14;2937:1;;2953:38;2937:1;;2976:14;2937:1;3039:7;3032:5;3019:57;3005:71;;3115:16;2937:1;;3090:42;3153:6;3160:21;;;;3202:16;2937:1;3191:28;2666:179;;;;;;;;;;-1:-1:-1;2666:179:0;;;;;:::i;:::-;;:::i;:::-;;2634:23;;;;;;;;;;;;;:::i;:::-;;;;;;;:::i;:::-;;;;;;;;1531:38;;;;;;;;;;-1:-1:-1;1531:38:0;;;;;:::i;:::-;;:::i;:::-;;;;;;;:::i;2204:172::-;;;;;;;;;;-1:-1:-1;2204:172:0;;;;;:::i;:::-;;:::i;2382:180::-;;;;;;;;;;-1:-1:-1;2382:180:0;;;;;:::i;:::-;;:::i;1498:28::-;;;;;;;;;;;;;:::i;:::-;;;;;;;:::i;2604:23::-;;;;;;;;;;;;;:::i;2009:189::-;;;;;;;;;;-1:-1:-1;2009:189:0;;;;;:::i;:::-;;:::i;2666:179::-;1895:5;;-1:-1:-1;;;;;1895:5:0;1879:12;:10;:12::i;:::-;-1:-1:-1;;;;;1879:21:0;;1876:33;;1901:8;;;1876:33;2771:5:::1;::::0;-1:-1:-1;;;;;2771:5:0::1;2755:12;:10;:12::i;:::-;-1:-1:-1::0;;;;;2755:21:0::1;;2747:30;;;::::0;::::1;;2788:8;:29:::0;;-1:-1:-1;;;;;;2788:29:0::1;-1:-1:-1::0;;;;;2788:29:0;::::1;;::::0;;2828:7:::1;:9:::0;;;-1:-1:-1;2828:9:0::1;::::0;::::1;:::i;:::-;;;;;;2666:179:::0;:::o;2634:23::-;;;;:::o;1531:38::-;;;;;;;;;;;;;;;:::o;2204:172::-;1895:5;;-1:-1:-1;;;;;1895:5:0;1879:12;:10;:12::i;:::-;-1:-1:-1;;;;;1879:21:0;;1876:33;;1901:8;;;1876:33;-1:-1:-1;;;;;2285:23:0;::::1;2277:32;;;::::0;::::1;;2321:19;::::0;-1:-1:-1;;;;;2321:19:0;::::1;::::0;::::1;::::0;;;::::1;-1:-1:-1::0;;;;;2347:16:0::1;;::::0;;;2366:4:::1;2347:16;::::0;;;;;;;:23;;-1:-1:-1;;2347:23:0::1;::::0;;::::1;::::0;;2204:172::o;2382:180::-;1895:5;;-1:-1:-1;;;;;1895:5:0;1879:12;:10;:12::i;:::-;-1:-1:-1;;;;;1879:21:0;;1876:33;;1901:8;;;1876:33;-1:-1:-1;;;;;2466:23:0;::::1;2458:32;;;::::0;::::1;;2502:23;::::0;-1:-1:-1;;;;;2502:23:0;::::1;::::0;::::1;::::0;;;::::1;-1:-1:-1::0;;;;;2532:16:0::1;2551:5;2532:16:::0;;;:5:::1;:16;::::0;;;;:24;;-1:-1:-1;;2532:24:0::1;::::0;;2382:180::o;1498:28::-;;;-1:-1:-1;;;;;1498:28:0;;:::o;2604:23::-;;;-1:-1:-1;;;;;2604:23:0;;:::o;2009:189::-;1895:5;;-1:-1:-1;;;;;1895:5:0;1879:12;:10;:12::i;:::-;-1:-1:-1;;;;;1879:21:0;;1876:33;;1901:8;;;1876:33;-1:-1:-1;;;;;2089:22:0;::::1;2086:34;;2112:8;::::0;::::1;2086:34;2153:5;::::0;;2132:37:::1;::::0;-1:-1:-1;;;;;2132:37:0;;::::1;::::0;2153:5;::::1;::::0;2132:37:::1;::::0;::::1;2176:5;:16:::0;;-1:-1:-1;;;;;;2176:16:0::1;-1:-1:-1::0;;;;;2176:16:0;;;::::1;::::0;;;::::1;::::0;;2009:189::o;1119:98::-;1199:10;1119:98;:::o;14:259:1:-;;126:2;114:9;105:7;101:23;97:32;94:2;;;147:6;139;132:22;94:2;191:9;178:23;210:33;237:5;210:33;:::i;:::-;262:5;84:189;-1:-1:-1;;;84:189:1:o;550:203::-;-1:-1:-1;;;;;714:32:1;;;;696:51;;684:2;669:18;;651:102::o;982:187::-;1147:14;;1140:22;1122:41;;1110:2;1095:18;;1077:92::o;1174:177::-;1320:25;;;1308:2;1293:18;;1275:76::o;1356:236::-;;-1:-1:-1;;1416:17:1;;1413:2;;;-1:-1:-1;;;1456:33:1;;1512:4;1509:1;1502:15;1542:4;1463:3;1530:17;1413:2;-1:-1:-1;1584:1:1;1573:13;;1403:189::o;1597:133::-;-1:-1:-1;;;;;1674:31:1;;1664:42;;1654:2;;1720:1;1717;1710:12;1654:2;1644:86;:::o",
     "sourcePath": "c:/Users/STC/Documents/GitHub/Crypto-Soccer/contracts/Market 2.0/Exchange-3.0.sol",
     "compiler": {
         "name": "solc",
@@ -11855,6 +12019,32 @@
         ],
         "src": "0:7757:0"
     },
-    "functionHashes": {},
-    "gasEstimates": null
+    "functionHashes": {
+        "admin(address)": "63a846f8",
+        "delegate()": "c89e4361",
+        "makeNewAdmin(address)": "69ed1e0a",
+        "makeRemoveAdmin(address)": "70a0966b",
+        "owner()": "8da5cb5b",
+        "transferOwnership(address)": "f2fde38b",
+        "upgradeDelegate(address)": "2da4e75c",
+        "version()": "54fd4d50"
+    },
+    "gasEstimates": {
+        "creation": {
+            "codeDepositCost": "259200",
+            "executionCost": "infinite",
+            "totalCost": "infinite"
+        },
+        "external": {
+            "": "infinite",
+            "admin(address)": "1303",
+            "delegate()": "1114",
+            "makeNewAdmin(address)": "23370",
+            "makeRemoveAdmin(address)": "23285",
+            "owner()": "1092",
+            "transferOwnership(address)": "24505",
+            "upgradeDelegate(address)": "infinite",
+            "version()": "1051"
+        }
+    }
 }
