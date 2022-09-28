@@ -266,26 +266,32 @@ export default class Home extends Component {
     .balanceOf(this.props.currentAccount)
     .call({ from: this.props.currentAccount });
 
-    balance = new BigNumber(balance).shiftedBy(-18).decimalPlaces(3).toString(10);
+    balance = new BigNumber(balance).shiftedBy(-18).toNumber();
+    balance = balance.toFixed(3);
 
     var balanceDCSC = await this.props.wallet.contractToken2.methods
     .balanceOf(this.props.currentAccount)
     .call({ from: this.props.currentAccount });
 
-    balanceDCSC = new BigNumber(balanceDCSC).shiftedBy(-18).decimalPlaces(3).toString(10);
+    balanceDCSC = new BigNumber(balanceDCSC).shiftedBy(-18).toNumber();
+    balanceDCSC = balanceDCSC.toFixed(3);
 
 
     var balanceDCSCExchange = await this.props.wallet.contractToken2.methods
     .balanceOf(this.props.wallet.contractExchange._address)
     .call({ from: this.props.currentAccount });
 
-    balanceDCSCExchange = new BigNumber(balanceDCSCExchange).shiftedBy(-18).decimalPlaces(3).toString(10);
+    balanceDCSCExchange = new BigNumber(balanceDCSCExchange).shiftedBy(-18).toNumber();
+    balanceDCSCExchange = balanceDCSCExchange.toFixed(3);
+
 
     var balanceUSDT = await this.props.wallet.contractToken3.methods
     .balanceOf(this.props.currentAccount)
     .call({ from: this.props.currentAccount });
 
-    balanceUSDT = new BigNumber(balanceUSDT).shiftedBy(-18).decimalPlaces(3).toString(10);
+    balanceUSDT = new BigNumber(balanceUSDT).shiftedBy(-18).toNumber();
+    balanceUSDT = balanceUSDT.toFixed(3);
+
 
     var balanceUSDTPOOL = await this.props.wallet.contractToken3.methods
     .balanceOf(this.props.wallet.contractToken2._address)
@@ -313,7 +319,7 @@ export default class Home extends Component {
       balanceUSDTPOOL: balanceUSDTPOOL,
       balanceDCSCPOOL: balanceDCSCPOOL,
       priceDCSC: priceDCSC,
-      balanceDCSCExchange: balanceDCSCExchange
+      balanceDCSCExchange: (balanceDCSCExchange/priceDCSC).toFixed(3)
     });
   }
 
@@ -987,7 +993,7 @@ export default class Home extends Component {
               >
                 <i className="fas fa-sync"></i> sync email to game
               </button>
-              <br></br>
+              <br />
     </>)
 
     if(this.state.emailGame !== "email game not set"){
@@ -996,7 +1002,6 @@ export default class Home extends Component {
 
     var botonReg = (<>
     {syncEmail}
-      <br />
               <button
                 className="btn btn-info"
                 
@@ -1187,39 +1192,7 @@ export default class Home extends Component {
     return (
       <>
 
-        <div className="site-section pt-0 feature-blocks-1" data-aos="fade" data-aos-delay="100">
-            <div className="container">
-              <div className="row">
-                <div className="col-md-6 col-lg-4" >
-                  <div className="p-3 p-md-5 feature-block-1 mb-5 mb-lg-0 bg" style={{"backgroundImage": "url('assets/img/01.png')"}}>
-                    <div className="text">
-                      <h2 className="h5 text-white">1500 WCSC</h2>
-                      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Eos repellat autem illum nostrum sit distinctio!</p>
-                      <p className="mb-0" onClick={() => this.buyCoins(1500)}><button className="btn btn-primary btn-sm px-4 py-2 rounded-0">Buy</button></p>
-                    </div>
-                  </div>
-                </div>
-                <div className="col-md-6 col-lg-4">
-                  <div className="p-3 p-md-5 feature-block-1 mb-5 mb-lg-0 bg" style={{"backgroundImage": "url('assets/img/02.png')"}}>
-                    <div className="text">
-                      <h2 className="h5 text-white">3000 WCSC</h2>
-                      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Eos repellat autem illum nostrum sit distinctio!</p>
-                      <p className="mb-0" onClick={() => this.buyCoins(3000)}><button className="btn btn-primary btn-sm px-4 py-2 rounded-0">Buy</button></p>
-                    </div>
-                  </div>
-                </div>
-                <div className="col-md-6 col-lg-4">
-                  <div className="p-3 p-md-5 feature-block-1 mb-5 mb-lg-0 bg" style={{"backgroundImage": "url('assets/img/03.png')"}}>
-                    <div className="text">
-                      <h2 className="h5 text-white">10000 WCSC</h2>
-                      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Eos repellat autem illum nostrum sit distinctio!</p>
-                      <p className="mb-0" onClick={() => this.buyCoins(10000)}><button className="btn btn-primary btn-sm px-4 py-2 rounded-0">Buy</button></p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-        </div>
+        
 
         <div className="container mt-3 mb-3">
           <div className="row text-center">
@@ -1328,7 +1301,6 @@ export default class Home extends Component {
               Username: {this.state.username}</span> | {this.state.pais} <br />
                {this.state.emailGame}
               <br /><br />
-
               {botonReg}
               
             </div>
@@ -1341,7 +1313,7 @@ export default class Home extends Component {
 
             <div className="col-md-12">
               <h3>
-                <b>Liquidity for withdrawals: {this.state.balanceDCSCExchange/this.state.priceDCSC} USD </b>
+                <b>Liquidity for withdrawals: {this.state.balanceDCSCExchange} USD </b>
               </h3>
               <h4>aviable for daily misions: {this.state.coinsdiaria} USD</h4>
               <hr></hr>
@@ -1479,7 +1451,7 @@ export default class Home extends Component {
                 onClick={async() => 
                 { 
 
-                  var cantidad = await prompt("Enter the amount of DCSC to withdraw to your wallet");
+                  var cantidad = await prompt("Enter the amount of DCSC to withdraw to your wallet",this.state.balanceDCSC-0.01);
 
                   if( parseFloat(cantidad) > 0 && cantidad <= this.state.balanceDCSC){
 
@@ -1518,7 +1490,7 @@ export default class Home extends Component {
                     .allowance(this.props.currentAccount, this.props.wallet.contractExchange._address)
                     .call({ from: this.props.currentAccount });
 
-                    aprovado = new BigNumber(aprovado).shiftedBy(-18).decimalPlaces(2).toNumber(10);
+                    aprovado = new BigNumber(aprovado).shiftedBy(-18).toNumber(10);
 
                     if(aprovado <= 0){
 
