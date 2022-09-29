@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import cons from "../../cons"
-const BigNumber = require('bignumber.js');
+var BigNumber = require('bignumber.js');
+BigNumber.config({ ROUNDING_MODE: 3 });
 
 export default class Home extends Component {
   constructor(props) {
@@ -273,25 +274,19 @@ export default class Home extends Component {
     .balanceOf(this.props.currentAccount)
     .call({ from: this.props.currentAccount });
 
-    balanceDCSC = new BigNumber(balanceDCSC).shiftedBy(-18).toNumber();
-    balanceDCSC = balanceDCSC.toFixed(3);
-
-
+    balanceDCSC = new BigNumber(balanceDCSC).shiftedBy(-18).decimalPlaces(3).toNumber();
+  
     var balanceDCSCExchange = await this.props.wallet.contractToken2.methods
     .balanceOf(this.props.wallet.contractExchange._address)
     .call({ from: this.props.currentAccount });
 
-    balanceDCSCExchange = new BigNumber(balanceDCSCExchange).shiftedBy(-18).toNumber();
-    balanceDCSCExchange = balanceDCSCExchange.toFixed(3);
-
+    balanceDCSCExchange = new BigNumber(balanceDCSCExchange).shiftedBy(-18).decimalPlaces(3).toNumber();
 
     var balanceUSDT = await this.props.wallet.contractToken3.methods
     .balanceOf(this.props.currentAccount)
     .call({ from: this.props.currentAccount });
 
-    balanceUSDT = new BigNumber(balanceUSDT).shiftedBy(-18).toNumber();
-    balanceUSDT = balanceUSDT.toFixed(3);
-
+    balanceUSDT = new BigNumber(balanceUSDT).shiftedBy(-18).decimalPlaces(3).toNumber();
 
     var balanceUSDTPOOL = await this.props.wallet.contractToken3.methods
     .balanceOf(this.props.wallet.contractToken2._address)
@@ -1451,7 +1446,7 @@ export default class Home extends Component {
                 onClick={async() => 
                 { 
 
-                  var cantidad = await prompt("Enter the amount of DCSC to withdraw to your wallet",this.state.balanceDCSC-0.01);
+                  var cantidad = await prompt("Enter the amount of DCSC to withdraw to your wallet",this.state.balanceDCSC);
 
                   if( parseFloat(cantidad) > 0 && cantidad <= this.state.balanceDCSC){
 
