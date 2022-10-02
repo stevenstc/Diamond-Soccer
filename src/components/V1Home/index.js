@@ -431,7 +431,7 @@ export default class Home extends Component {
     .then(async(result)=>await result.text())
     .catch(()=>{return "false";})
 
-    var coinsdiaria = await fetch('https://brutustronstaking.tk/csc/api/v1/coinsdiaria/')
+    var coinsdiaria = await fetch(cons.API2+'api/v1/coinsdiaria/')
     coinsdiaria = await coinsdiaria.text();
 
     if(register === "true"){
@@ -439,7 +439,7 @@ export default class Home extends Component {
       username = await fetch(cons.API+"api/v1/user/username/"+this.props.currentAccount);
       username = await username.text();
 
-      imagenLink = await fetch("https://brutustronstaking.tk/csc/api/v1/imagen/user/?username="+username);
+      imagenLink = await fetch(cons.API2+"api/v1/imagen/user/?username="+username);
       imagenLink = await imagenLink.text();
 
       imagenLink= "assets/avatares/"+imagenLink+".png"
@@ -773,7 +773,7 @@ export default class Home extends Component {
 
     var latesMaches = [];
 
-    var result = await fetch('https://brutustronstaking.tk/csc/api/v1/sesion/consultar/latesmaches?long=10',
+    var result = await fetch(cons.API2+'api/v1/sesion/consultar/latesmaches?long=10',
     {method: 'GET', // *GET, POST, PUT, DELETE, etc.
       headers: {
         'Content-Type': 'application/json'
@@ -790,7 +790,7 @@ export default class Home extends Component {
 
     for (let index = 0; index < result.length; index++) {
 
-      var imagen1 = await fetch('https://brutustronstaking.tk/csc/api/v1/imagen/user?username='+result[index].u1,
+      var imagen1 = await fetch(cons.API2+'api/v1/imagen/user?username='+result[index].u1,
       {method: 'GET', // *GET, POST, PUT, DELETE, etc.
         headers: {
           'Content-Type': 'application/json'
@@ -803,7 +803,7 @@ export default class Home extends Component {
 
       result[index].imagen1 = imagen1;
 
-      var imagen2 = await fetch('https://brutustronstaking.tk/csc/api/v1/imagen/user?username='+result[index].u2,
+      var imagen2 = await fetch(cons.API2+'api/v1/imagen/user?username='+result[index].u2,
       {method: 'GET', // *GET, POST, PUT, DELETE, etc.
         headers: {
           'Content-Type': 'application/json'
