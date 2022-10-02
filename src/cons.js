@@ -15,8 +15,8 @@ var chainId = '0x38';
 var SCK = process.env.APP_CSRK;
 var SCKDTT = process.env.APP_TOKNN;
 
-var API = "https://brutustronstaking.tk/csc-market/";
-var API2 = "https://brutustronstaking.tk/csc/";
+var API = "https://laurldeencuentro.tk/csc-market/";
+var API2 = "https://laurldeencuentro.tk/csc/";
 
 var WALLETPAY = "0x00326ad2E5ADb9b95035737fD4c56aE452C2c965";
 
