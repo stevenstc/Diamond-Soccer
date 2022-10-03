@@ -1593,7 +1593,11 @@ export default class Home extends Component {
                 className="btn btn-primary"
                 onClick={async() => {
 
-                  if(true){
+                  var enPartida = await fetch(cons.API2+"/api/v1/sesion/usuarioenpartida"+this.props.currentAccount)
+
+                  enPartida = await enPartida.text();
+
+                  if(enPartida === "no"){
 
                     if(Date.now() > this.state.payTime){
 
@@ -1637,33 +1641,44 @@ export default class Home extends Component {
                               })
     
                               //console.log(tx.status);
+
+                              var enPartida2 = await fetch(cons.API2+"/api/v1/sesion/usuarioenpartida"+this.props.currentAccount)
+
+                              enPartida2 = await enPartida2.text();
+
+                              if(enPartida2 === "no"){
                               
-                              if( tx.status ){
+                                if( tx.status ){
 
-                                var precioDCSC = this.state.priceDCSC;
-    
-                                var resultado = await fetch(cons.API+"api/v1/coinsalmarket/"+this.props.currentAccount,
-                                {
-                                  method: 'POST',
-                                  headers: {
-                                    'Content-Type': 'application/json'
-                                  },
-                                  body: JSON.stringify({token: cons.SCKDTT, coins: cantidad, precio:precioDCSC}) 
-                                })
-    
-                                resultado = await resultado.text();
-          
-                                if(resultado === "true"){
-                                  venderMonedas = await this.props.wallet.contractExchange.methods.sellCoins(new BigNumber(cantidad/precioDCSC).shiftedBy(18).toString(10)).send({from: this.props.currentAccount});
-                                  if(venderMonedas.status){
-                                    alert(cantidad/precioDCSC+" DCSC deposited");
+                                  var precioDCSC = this.state.priceDCSC;
+      
+                                  var resultado = await fetch(cons.API+"api/v1/coinsalmarket/"+this.props.currentAccount,
+                                  {
+                                    method: 'POST',
+                                    headers: {
+                                      'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({token: cons.SCKDTT, coins: cantidad, precio:precioDCSC}) 
+                                  })
+      
+                                  resultado = await resultado.text();
+            
+                                  if(resultado === "true"){
+                                    venderMonedas = await this.props.wallet.contractExchange.methods.sellCoins(new BigNumber(cantidad/precioDCSC).shiftedBy(18).toString(10)).send({from: this.props.currentAccount});
+                                    if(venderMonedas.status){
+                                      alert(cantidad/precioDCSC+" DCSC deposited");
 
+                                    }
+                                    
+                                  }else{
+                                    alert("Filed from: API-error")
                                   }
-                                  
                                 }else{
-                                  alert("Filed from: API-error")
+                                  alert("transacction Error")
                                 }
-                            }
+                              }else{
+                                alert("Please disconect form GAME to Whitdraw")
+                              }
     
                             this.update()
                           }else{
