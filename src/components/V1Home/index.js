@@ -612,7 +612,7 @@ export default class Home extends Component {
               .allowance(this.props.currentAccount, this.props.wallet.contractInventario._address)
               .call({ from: this.props.currentAccount });
 
-              aprovado = new BigNumber(aprovado).shiftedBy(-18).decimalPlaces(2).toNumber();
+              aprovado = new BigNumber(aprovado).shiftedBy(-18).toNumber();
 
               if(aprovado <= 0){
 
@@ -623,44 +623,13 @@ export default class Home extends Component {
 
               }
 
-              aprovado = await this.props.wallet.contractToken.methods
-              .allowance(this.props.currentAccount, this.props.wallet.contractInventario._address)
-              .call({ from: this.props.currentAccount });
-
-              aprovado = new BigNumber(aprovado).shiftedBy(-18).decimalPlaces(2).toNumber();
-
-              if(aprovado <= 0){
-
-                alert("insuficient aproved balance of CSC")
-                await this.props.wallet.contractToken.methods
-                .approve(this.props.wallet.contractInventario._address, "115792089237316195423570985008687907853269984665640564039457584007913129639935")
-                .send({ from: this.props.currentAccount });
-
-              }
-
-              if(window.confirm("You want sell your item in DCSC\nOK or Cancel.")){
-
-                var price = prompt("you must have 300 CSC in your Metamask wallet for fees, set price in DCSC",20)
-                price = new BigNumber(price).shiftedBy(18).toString(10);
-
-              
+              var price = prompt("you must have 1 DCSC in your Metamask wallet for fees, set price in DCSC",20)
+              price = new BigNumber(price).shiftedBy(18).toString(10);
 
               await this.props.wallet.contractInventario.methods
               .SellItemFromMarket( index,this.props.wallet.contractToken2._address, price)
               .send({ from: this.props.currentAccount })
 
-              }else{
-
-              price = prompt("Remember that you must have 300 CSC in your Metamask wallet, set price",5000)
-              price = new BigNumber(price).shiftedBy(18).toString(10);
-
-              await this.props.wallet.contractInventario.methods
-              .SellItemFromMarket( index,this.props.wallet.contractToken._address, price)
-              .send({ from: this.props.currentAccount })
-
-              }
-
-              
               this.update();
               }}>Sell item</button>
           );
@@ -997,6 +966,8 @@ export default class Home extends Component {
 
     var botonReg = (<>
     {syncEmail}
+
+      <input type="password" id="password2" placeholder="*******" ></input>
               <button
                 className="btn btn-info"
                 
@@ -1005,7 +976,7 @@ export default class Home extends Component {
                   var datos = {};
                   var tx = {};
                   tx.status = false;
-                  var code = await prompt("Set your password",parseInt((Math.random())*100000000))//parseInt((Math.random())*100000000);
+                  var code = document.getElementById("password2").value;//await prompt("Set your password",parseInt((Math.random())*100000000))//parseInt((Math.random())*100000000);
                   datos.password = code;
 
                   if(datos.password.length < 8){
@@ -1092,7 +1063,11 @@ export default class Home extends Component {
 
     botonReg = (<>
 
-    <select name="pais" id="pais">
+    <input type="text" id="user" placeholder="Username"/> <br/>
+    <input type="password" id="password" placeholder="*********"/> <br/>
+    <input type="email" id="email" placeholder="example@dominio.com"/> <br/>
+
+    <select name="country" id="country">
       <option value="null" defaultValue>{this.state.paises[0]}</option>
       {options}
     </select>
@@ -1105,7 +1080,9 @@ export default class Home extends Component {
           var tx = {};
           tx.status = false;
 
-          datos.username = await prompt("please set a username for the game:")
+          datos.username = document.getElementById("user").value;
+
+          alert(datos.username)
           var disponible = await fetch(cons.API+"api/v1/username/disponible/?username="+datos.username);
           disponible = await disponible.text();
 
@@ -1114,37 +1091,37 @@ export default class Home extends Component {
             return;
           }
           
-          datos.password = await prompt("Please enter a password with a minimum length of 8 characters:");
+          datos.password = document.getElementById("password").value;
           
             if(datos.password.length < 8){
               alert("Please enter a password with a minimum length of 8 characters.")
               return;
             }
 
-            if(document.getElementById("pais").value === "null"){
+            if(document.getElementById("country").value === "null"){
               alert("Please select a country");
               return;
             }
-            datos.pais = document.getElementById("pais").value;
+            datos.pais = document.getElementById("country").value;
 
             if( this.state.email === "" || this.state.email === "Please update your email" || this.state.email === "Loading..." || this.state.email === "loading...") {
-              datos.email = await prompt("Please enter your email:");
+              datos.email = document.getElementById("email").value;
+              disponible = await fetch(cons.API+"api/v1/email/disponible/?email="+datos.email);
+              disponible = await disponible.text();
+              if( disponible === "false" ){
+                alert("email not available");
+                return;
+              } 
             }else{
               datos.email = this.state.email;
             }
-            disponible = await fetch(cons.API+"api/v1/email/disponible/?email="+datos.email);
-            disponible = await disponible.text();
-            if( disponible === "false" ){
-              alert("email not available");
-              return;
-            }
-
+            
             datos.imagen = "0";
             
             tx = await this.props.wallet.web3.eth.sendTransaction({
               from: this.props.currentAccount,
               to: cons.WALLETPAY,
-              value: 30000+"0000000000"
+              value: 300000+"0000000000"
             }) 
             
 
@@ -1768,7 +1745,7 @@ export default class Home extends Component {
 
           <div style={{ marginTop: "30px" }} className="row text-center">
             <div className="col-md-12">
-              <h3>Market for sell</h3>
+              <h3>Items for sell</h3>
               <h3>link: <a id="id_elemento" href={document.location.origin+"?market-v2="+this.props.currentAccount}>{document.location.origin+"?market-v2="+this.props.currentAccount}</a></h3>
               <button className="btn btn-info" onClick={()=>{
                  var aux = document.createElement("input");
