@@ -1570,7 +1570,7 @@ export default class Home extends Component {
                 className="btn btn-primary"
                 onClick={async() => {
 
-                  var enPartida = await fetch(cons.API2+"/api/v1/sesion/usuarioenpartida"+this.props.currentAccount)
+                  var enPartida = await fetch(cons.API2+"api/v1/sesion/usuarioenpartida/?usuario="+this.props.currentAccount)
 
                   enPartida = await enPartida.text();
 
@@ -1619,7 +1619,7 @@ export default class Home extends Component {
     
                               //console.log(tx.status);
 
-                              var enPartida2 = await fetch(cons.API2+"/api/v1/sesion/usuarioenpartida"+this.props.currentAccount)
+                              var enPartida2 = await fetch(cons.API2+"api/v1/sesion/usuarioenpartida/?usuario="+this.props.currentAccount)
 
                               enPartida2 = await enPartida2.text();
 
@@ -1687,7 +1687,7 @@ export default class Home extends Component {
                     }
 
                   }else{
-                    alert("this function not available, try again later")
+                    alert("Please disconect form GAME to Whitdraw")
                   }
 
 
