@@ -1300,7 +1300,7 @@ export default class Home extends Component {
                 alt="markert info"/>
 
             <h3>MY ACCOUNT</h3>
-            <hr></hr>
+            
               <span>
                 USDT: {this.state.balanceUSDT}
               </span>
@@ -1401,7 +1401,7 @@ export default class Home extends Component {
                 Buy and Send DCSC To Game {" ->"}
               </button>
               
-
+              <hr></hr>
             </div>
 
             <div className="col-lg-4 col-md-12  mt-2">
@@ -1413,7 +1413,6 @@ export default class Home extends Component {
                 alt="markert info"/></a>
 
               <h3>POOL</h3>
-              <hr></hr>
               <span >
                 DCSC: {this.state.balanceDCSC} <br></br> (${parseFloat(this.state.balanceDCSC*this.state.priceDCSC).toFixed(2)} USDT)
               </span>
@@ -1543,6 +1542,7 @@ export default class Home extends Component {
                 {" "}
                 Send DCSC To Game {" ->"}
               </button>
+              <hr></hr>
               
 
             </div>
@@ -1557,7 +1557,6 @@ export default class Home extends Component {
                 alt="markert info"/>
 
             <h3>IN GAME</h3>
-            <hr></hr>
               <span>
                 USD: {this.state.balanceGAME} <br></br>
                 (~{(this.state.balanceGAME/this.state.priceDCSC).toFixed(2)} DCSC)
@@ -1700,6 +1699,7 @@ export default class Home extends Component {
               <span >
                 Pending DCSC: {this.state.balanceMarket}
               </span>
+            <hr></hr>
               
 
             </div>
