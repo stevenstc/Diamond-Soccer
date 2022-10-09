@@ -1370,11 +1370,12 @@ export default class Home extends Component {
 
             <div className="col-lg-4 col-md-12  mt-2">
             
-              <a href="https://bscscan.com/token/0x7Ca78Da43388374E0BA3C46510eAd7473a1101d4"><img
-                src="assets/img/logo-cuadrado-dcsc.png"
+              <a href="https://bscscan.com/token/0x456D75D8cE68Aff9e746b77B1AEC0b052cD29e57">
+                <img src="assets/img/logo-cuadrado-dcsc.png"
                 className="meta-gray"
                 height="100" 
-                alt="markert info"/></a>
+                alt="markert info"/>
+              </a>
 
               <h3>POOL</h3>
               <span >
