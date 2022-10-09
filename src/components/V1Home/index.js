@@ -1346,7 +1346,7 @@ export default class Home extends Component {
   
                     if(cantidadDCSC>0){
   
-                      await this.props.wallet.contractDCSC.methods.buyToken(cantidadDCSC).send({from: this.props.currentAccount});
+                      await this.props.wallet.contractDCSC.methods.sellToken(cantidadDCSC).send({from: this.props.currentAccount});
                       alert("Change is done")
                  
                 
