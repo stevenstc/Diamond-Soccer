@@ -63,7 +63,7 @@ export default class Market extends Component {
 
     if(aprovado <= 0){
 
-      alert("insuficient aproved balance of DCSC, please aprove the netx transacction")
+      alert("insuficient aproved balance of DSGC, please aprove the netx transacction")
       await this.props.wallet.contractToken2.methods
       .approve(this.props.wallet.contractInventario._address, "115792089237316195423570985008687907853269984665640564039457584007913129639935")
       .send({ from: this.props.currentAccount });
@@ -131,10 +131,10 @@ export default class Market extends Component {
   
           //console.log(item)
 
-          var token = "DCSC";
+          var token = "DSGC";
 
           if(enVenta[2][index] === "0x7Ca78Da43388374E0BA3C46510eAd7473a1101d4"){
-            token = "DCSC"
+            token = "DSGC"
           }
 
           itemsMarket[index] = (
@@ -152,7 +152,7 @@ export default class Market extends Component {
                 </h2>
                 
                 <div className="position-relative">
-                  Fee 1 DCSC aditional in your wallet <br/>
+                  Fee 1 DSGC aditional in your wallet <br/>
                   <button className="btn btn-success" onClick={() => {this.buyItem(this.state.miConsulta,index);}}>
                   Buy for {new BigNumber(enVenta[1][index]).shiftedBy(-18).toString(10)} {token}
                   </button>

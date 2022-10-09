@@ -150,6 +150,11 @@ class App extends Component {
           cons.SC6
         )
 
+        var contractDCSC = new web3.eth.Contract(
+          abiDiamonCSC,
+          cons.SC7
+        );
+
         var loc = document.location.href;
         var walletconsulta = "0x0000000000000000000000000000000000000000"
 
@@ -173,7 +178,8 @@ class App extends Component {
             contractStaking: contractStaking,
             contractFaucet: contractFaucet,
             contractInventario: contractInventario,
-            contractExchange: contractExchange
+            contractExchange: contractExchange,
+            contractDCSC: contractDCSC
           }
         })
   

@@ -307,9 +307,17 @@ export default class Home extends Component {
     var priceDCSC = new BigNumber( balanceUSDTPOOL2/balanceDCSCPOOL2).decimalPlaces(6).toString(10);
 
 
+    var balanceOldDCSC = await this.props.wallet.contractDCSC.methods
+      .balanceOf(this.props.currentAccount)
+      .call({ from: this.props.currentAccount })
+    balanceOldDCSC = new BigNumber(balanceOldDCSC).shiftedBy(-18).decimalPlaces(6).toString(10);
+    
+
+
     this.setState({
       balance: balance,
       balanceDCSC: balanceDCSC,
+      balanceOldDCSC: balanceOldDCSC,
       balanceUSDT: balanceUSDT,
       balanceUSDTPOOL: balanceUSDTPOOL,
       balanceDCSCPOOL: balanceDCSCPOOL,
@@ -504,29 +512,28 @@ export default class Home extends Component {
     var compra = new BigNumber(amount).shiftedBy(18).toString(10);
     amount = new BigNumber(amount).toNumber();
 
-    if(aprovado > 0){
+    if(aprovado <= 0){
 
-      if (balance>=amount) {
-
-        this.props.wallet.contractToken2.methods.buyToken(compra).send({ from: this.props.currentAccount })
-        .then(()=>{
-          alert("coins buyed");
-        })
-        .catch(()=>{
-          alert("transaction fail");
-        })
-        
-        
-      }else{
-        alert("insuficient founds")
-      }
-
-    }else{
       alert("insuficient aproved balance")
       await this.props.wallet.contractToken3.methods
       .approve(this.props.wallet.contractToken2._address, "115792089237316195423570985008687907853269984665640564039457584007913129639935")
       .send({ from: this.props.currentAccount });
 
+    }
+
+    if (balance>=amount) {
+
+      this.props.wallet.contractToken2.methods.buyToken(compra).send({ from: this.props.currentAccount })
+      .then(()=>{
+        alert("coins buyed");
+      })
+      .catch(()=>{
+        alert("transaction fail");
+      })
+      
+      
+    }else{
+      alert("insuficient founds")
     }
 
     this.update();
@@ -1182,7 +1189,7 @@ export default class Home extends Component {
                     type: 'ERC20',
                     options: {
                       address: this.props.wallet.contractToken2._address,
-                      symbol: 'DCSC',
+                      symbol: 'DSGC',
                       decimals: 18,
                       image: 'https://diamondsoccer.tk/assets/img/DCSC.png',
                     },
@@ -1190,7 +1197,7 @@ export default class Home extends Component {
                 })
                   .then((success) => {
                     if (success) {
-                      console.log('DCSC successfully added to wallet!')
+                      console.log('DSGC successfully added to wallet!')
                     } else {
                       throw new Error('Something went wrong.')
                     }
@@ -1303,6 +1310,8 @@ export default class Home extends Component {
             
               <span>
                 USDT: {this.state.balanceUSDT}
+                <br /><br />
+                DCSC: {this.state.balanceOldDCSC}
               </span>
               <br/><br/>
               
@@ -1323,71 +1332,26 @@ export default class Home extends Component {
 
                 }}
               >
-                Buy DCSC {" -> "}
+                Buy DSGC {" -> "}
               </button>
               <br/><br/>
               <button
-                className="btn btn-success"
+                className="btn btn btn-warning"
                 onClick={async() => {
 
-                  if(false){
-                    var cantidadEquipos = await this.props.wallet.contractInventario.methods
-                    .largoInventario(this.props.currentAccount)
+                  if(true){
+                    var cantidadDCSC = await this.props.wallet.contractDCSC.methods
+                    .balanceOf(this.props.currentAccount)
                     .call({ from: this.props.currentAccount });
   
-                    if(cantidadEquipos>0){
+                    if(cantidadDCSC>0){
   
-                    var tx = {};
-                    tx.status = false;
-  
-                    var cantidad = await prompt("Enter the amount of coins to send in GAME");
-
-                    var compraMonedas = await this.props.wallet.contractExchange.methods.buyCoins(new BigNumber(cantidad).shiftedBy(18).toString(10)).send({from: this.props.currentAccount});
-
-                    console.log(compraMonedas)
-  
-                    var gasLimit = await this.props.wallet.contractExchange.methods.gastarCoinsfrom(new BigNumber(cantidad).shiftedBy(18).toString(10),  this.props.currentAccount).estimateGas({from: cons.WALLETPAY});
-                    
-                    gasLimit = gasLimit*cons.FACTOR_GAS;
-  
-                    var usuario = await this.props.wallet.contractExchange.methods.investors(this.props.currentAccount).call({from: this.props.currentAccount});
-                    var balance = new BigNumber(usuario.balance).shiftedBy(-18).decimalPlaces(0).toNumber();
-  
-                    if(balance-parseInt(cantidad) >= 0 && gasLimit > 0){
-                      this.props.wallet.web3.eth.sendTransaction({
-                        from: this.props.currentAccount,
-                        to: cons.WALLETPAY,
-                        value: gasLimit+"0000000000"
-                      })
-                      .then(async()=>{
-                        var resultado = await fetch(cons.API+"api/v1/coinsaljuego/"+this.props.currentAccount,
-                      {
-                        method: 'POST',
-                        headers: {
-                          'Content-Type': 'application/json'
-                          //'Content-Type': 'application/x-www-form-urlencoded',
-                        },
-                        body: JSON.stringify({token: cons.SCKDTT, coins: cantidad}) // body data type must match "Content-Type" header
-                      })
-                      
-                      if(await resultado.text() === "true"){
-                        alert("Coins send to GAME")
-                      }else{
-                        alert("send failed")
-                      }
-  
-                      })
-                      .catch(()=>{
-                        alert("transaction failed or declined")
-                      })
-  
-                      
+                      await this.props.wallet.contractDCSC.methods.buyToken(cantidadDCSC).send({from: this.props.currentAccount});
+                      alert("Change is done")
+                 
+                
                     }else{
-                      alert("Failed, insuficient founds")
-                    }
-  
-                    }else{
-                      alert("First buy a Team for send founds to game and play")
+                      alert("You don't have DCSC for change.")
                     }
 
                   }else{
@@ -1398,7 +1362,7 @@ export default class Home extends Component {
                 }}
               >
                 {" "}
-                Buy and Send DCSC To Game {" ->"}
+                SELL DCSC {" ->"} USDT 
               </button>
               
               <hr></hr>
@@ -1414,7 +1378,7 @@ export default class Home extends Component {
 
               <h3>POOL</h3>
               <span >
-                DCSC: {this.state.balanceDCSC} <br></br> (${parseFloat(this.state.balanceDCSC*this.state.priceDCSC).toFixed(2)} USDT)
+                DSGC: {this.state.balanceDCSC} <br></br> (${parseFloat(this.state.balanceDCSC*this.state.priceDCSC).toFixed(2)} USDT)
               </span>
               <br/><br/>
               <button
@@ -1422,7 +1386,7 @@ export default class Home extends Component {
                 onClick={async() => 
                 { 
 
-                  var cantidad = await prompt("Enter the amount of DCSC to withdraw to your wallet",this.state.balanceDCSC);
+                  var cantidad = await prompt("Enter the amount of DSGC to withdraw to your wallet",this.state.balanceDCSC);
 
                   if( parseFloat(cantidad) > 0 && cantidad <= this.state.balanceDCSC){
 
@@ -1440,7 +1404,7 @@ export default class Home extends Component {
 
                 }}
               >
-                {" <- "}Sell DCSC
+                {" <- "}Sell DSGC
               </button>
               <br/><br/>
               <button
@@ -1475,7 +1439,7 @@ export default class Home extends Component {
                     investor.balance = new BigNumber(investor.balance).shiftedBy(-18).toNumber();
                     var cantidad = 0;
                     if(investor.balance > 0){
-                      alert("sending pending balance "+investor.balance+" DCSC")
+                      alert("sending pending balance "+investor.balance+" DSGC")
                       cantidad = investor.balance
 
                     }else{
@@ -1540,7 +1504,7 @@ export default class Home extends Component {
                 }}
               >
                 {" "}
-                Send DCSC To Game {" ->"}
+                Send DSGC To Game {" ->"}
               </button>
               <hr></hr>
               
@@ -1559,7 +1523,7 @@ export default class Home extends Component {
             <h3>IN GAME</h3>
               <span>
                 USD: {this.state.balanceGAME} <br></br>
-                (~{(this.state.balanceGAME/this.state.priceDCSC).toFixed(2)} DCSC)
+                (~{(this.state.balanceGAME/this.state.priceDCSC).toFixed(2)} DSGC)
               </span>
                 <br></br>
               Cool down: {this.state.payday}
@@ -1589,10 +1553,10 @@ export default class Home extends Component {
                         
                         var cantidad = new BigNumber(investor.balance).shiftedBy(-18).toNumber();
                         if(cantidad > 0){
-                          alert("receiving pending balance "+cantidad+" DCSC");
+                          alert("receiving pending balance "+cantidad+" DSGC");
                           var venderMonedas = await this.props.wallet.contractExchange.methods.sellCoins(investor.balance).send({from: this.props.currentAccount});
                           if(venderMonedas.status){
-                            alert(cantidad+" DCSC deposited");
+                            alert(cantidad+" DSGC deposited");
 
                           }
 
@@ -1642,7 +1606,7 @@ export default class Home extends Component {
                                   if(resultado === "true"){
                                     venderMonedas = await this.props.wallet.contractExchange.methods.sellCoins(new BigNumber(cantidad/precioDCSC).shiftedBy(18).toString(10)).send({from: this.props.currentAccount});
                                     if(venderMonedas.status){
-                                      alert(cantidad/precioDCSC+" DCSC deposited");
+                                      alert(cantidad/precioDCSC+" DSGC deposited");
 
                                     }
                                     
@@ -1697,7 +1661,7 @@ export default class Home extends Component {
               </button>
               <br></br>
               <span >
-                Pending DCSC: {this.state.balanceMarket}
+                Pending DSGC: {this.state.balanceMarket}
               </span>
             <hr></hr>
               
@@ -1714,8 +1678,8 @@ export default class Home extends Component {
 
             <div className="col-md-12">
               <h3>
-                <b>POOL: {this.state.balanceUSDTPOOL} USDT / {this.state.balanceDCSCPOOL} DCSC</b><br></br>
-                <b>1 DCSC = {this.state.priceDCSC} USDT</b>
+                <b>POOL: {this.state.balanceUSDTPOOL} USDT / {this.state.balanceDCSCPOOL} DSGC</b><br></br>
+                <b>1 DSGC = {this.state.priceDCSC} USDT</b>
               </h3>
 
             </div>

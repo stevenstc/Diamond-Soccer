@@ -80,7 +80,7 @@ export default class Market extends Component {
           alert("item buy");
         }
     }else{
-        alert("insuficient DCSC aproved balance")
+        alert("insuficient DSGC aproved balance")
       await this.props.wallet.contractToken.methods
       .approve(this.props.wallet.contractInventario._address, "115792089237316195423570985008687907853269984665640564039457584007913129639935")
       .send({ from: this.props.currentAccount });
@@ -143,7 +143,7 @@ export default class Market extends Component {
                   }
                   
                 }}>
-                  Buy for {new BigNumber(_items[3][index]).shiftedBy(-18).toString(10)} DCSC
+                  Buy for {new BigNumber(_items[3][index]).shiftedBy(-18).toString(10)} DSGC
                 </button>
               </div>
             </div>
@@ -195,7 +195,7 @@ export default class Market extends Component {
         <div className="container px-5">
         <div className="row">
             <div className="col-lg-12 col-md-12 p-4 text-center bg-secondary bg-gradient text-white">
-              <h2 className=" pb-4">DCSC available:</h2><br></br>
+              <h2 className=" pb-4">DSGC available:</h2><br></br>
               <h3 className=" pb-4">{this.state.balance}</h3>
             </div>
 

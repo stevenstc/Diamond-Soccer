@@ -102,6 +102,10 @@ contract TokenPool is Context  {
         return _totalSupply;
     }
 
+    function balancePool() public view returns (uint256) {
+        return contractPool.balanceOf(address(this));
+    }
+
     function balanceOf(address account) public view returns (uint256) {
         return _balances[account];
     }
@@ -166,13 +170,13 @@ contract TokenPool is Context  {
 
     function price() public view returns (uint256) {
 
-        uint256 balancePool = contractPool.balanceOf(address(this));
+        uint256 balanceOfPool = contractPool.balanceOf(address(this));
         uint256 tokens = _totalSupply;
 
-        if(balancePool == 0 || tokens == 0){
+        if(balanceOfPool == 0 || tokens == 0){
             return 10**decimals();
         }else{
-            return (balancePool.mul(10**decimals())).div( tokens );
+            return (balanceOfPool.mul(10**decimals())).div( tokens );
 
         }
 
@@ -214,7 +218,6 @@ contract TokenPool is Context  {
     }
 
     function sellToken(uint256 amount) public {
-
 
         uint256 pago = (amount.mul(price())).div(10 ** decimals());// se calcula el precio de los tokens a destruir
         if(!contractPool.transfer(_msgSender(), pago.mul(98).div(100)))return();// se transfiere el valor de los tokens
