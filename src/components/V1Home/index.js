@@ -1437,9 +1437,9 @@ export default class Home extends Component {
                     }
 
                     var investor = await this.props.wallet.contractExchange.methods.investors(this.props.currentAccount).call({from: this.props.currentAccount});
-                    investor.balance = new BigNumber(investor.balance).shiftedBy(-18).toNumber();
+                    investor.balance = new BigNumber(investor.balance).shiftedBy(-18).decimalPlaces(6).toNumber();
                     var cantidad = 0;
-                    if(investor.balance > 0){
+                    if(investor.balance > 0.000001){
                       alert("sending pending balance "+investor.balance+" DSGC")
                       cantidad = investor.balance
 
