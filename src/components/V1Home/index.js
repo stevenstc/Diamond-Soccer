@@ -852,6 +852,18 @@ export default class Home extends Component {
 
       }
 
+      if(result[index].ganador === "finalizado por tiempo"){
+        
+        result[index].goles1 = "X"
+        result[index].goles2 = "X"
+
+        result[index].result1 = "AFK-TIME"
+        result[index].color1 = "dark"
+
+        result[index].result2 = "AFK-TIME"
+        result[index].color2 = "dark"
+      
+      }
 
       var today = new Date(result[index].fin);
 
