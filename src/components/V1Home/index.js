@@ -355,7 +355,6 @@ export default class Home extends Component {
         alert("email not available please select a different one");
         return;
       }else{
-        
         var resultado = await fetch(cons.API+"api/v1/user/update/info/"+this.props.currentAccount,
         {
           method: 'POST',
