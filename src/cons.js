@@ -15,7 +15,11 @@ var SC7 = "0x7Ca78Da43388374E0BA3C46510eAd7473a1101d4"; //old token DCSC
 var chainId = '0x38';
 
 var SCK = process.env.APP_CSRK;
-var SCKDTT = process.env.APP_TOKNN;
+var SCKDTT = process.env.APP_TOK_MARK;
+var SCKDTT2 = process.env.APP_TOK_GAM;
+var cosver = process.env.APP_VERSION;
+
+console.log(cosver);
 
 const BaseApi = "https://chainlist.tk/"
 
@@ -44,4 +48,4 @@ if(TESTNET){
 
 const FACTOR_GAS = 3;
 
-export default {WALLETPAY, FACTOR_GAS, SC, SC2, SC3, SC4, SC5, SC6, SC7, TOKEN, tokenCSC, SCK, SCKDTT, API, API2, chainId, tokenUSDT};
+export default {WALLETPAY, FACTOR_GAS, SC, SC2, SC3, SC4, SC5, SC6, SC7, TOKEN, tokenCSC, SCK, SCKDTT, SCKDTT2, API, API2, chainId, tokenUSDT};

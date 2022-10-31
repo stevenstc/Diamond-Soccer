@@ -356,16 +356,14 @@ export default class Home extends Component {
         return;
       }else{
         
-        datos.token =  cons.SCKDTT;
-        
         var resultado = await fetch(cons.API+"api/v1/user/update/info/"+this.props.currentAccount,
         {
-          method: 'POST', // *GET, POST, PUT, DELETE, etc.
+          method: 'POST',
           headers: {
-            'Content-Type': 'application/json'
-            // 'Content-Type': 'application/x-www-form-urlencoded',
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${cons.SCKDTT}`
           },
-          body: JSON.stringify(datos) // body data type must match "Content-Type" header
+          body: JSON.stringify(datos) 
         });
         
         if(await resultado.text() === "true"){
@@ -750,10 +748,9 @@ export default class Home extends Component {
     var latesMaches = [];
 
     var result = await fetch(cons.API2+'api/v1/sesion/consultar/latesmaches?long=10',
-    {method: 'GET', // *GET, POST, PUT, DELETE, etc.
+    {method: 'GET',
       headers: {
         'Content-Type': 'application/json'
-        // 'Content-Type': 'application/x-www-form-urlencoded',
       }
     })
     .then(response => response.json())
@@ -767,10 +764,9 @@ export default class Home extends Component {
     for (let index = 0; index < result.length; index++) {
 
       var imagen1 = await fetch(cons.API2+'api/v1/imagen/user?username='+result[index].u1,
-      {method: 'GET', // *GET, POST, PUT, DELETE, etc.
+      {method: 'GET',
         headers: {
           'Content-Type': 'application/json'
-          // 'Content-Type': 'application/x-www-form-urlencoded',
         }
       })
       .then(response => response.json())
@@ -780,10 +776,9 @@ export default class Home extends Component {
       result[index].imagen1 = imagen1;
 
       var imagen2 = await fetch(cons.API2+'api/v1/imagen/user?username='+result[index].u2,
-      {method: 'GET', // *GET, POST, PUT, DELETE, etc.
+      {method: 'GET', 
         headers: {
           'Content-Type': 'application/json'
-          // 'Content-Type': 'application/x-www-form-urlencoded',
         }
       })
       .then(response => response.json())
@@ -946,19 +941,16 @@ export default class Home extends Component {
                     datos.email = this.state.email;
                   }
 
-
                   if(true){
-                    
-                    datos.token =  cons.SCKDTT;
                     
                     var resultado = await fetch(cons.API+"api/v1/user/update/info/"+this.props.currentAccount,
                     {
-                      method: 'POST', // *GET, POST, PUT, DELETE, etc.
+                      method: 'POST',
                       headers: {
-                        'Content-Type': 'application/json'
-                        // 'Content-Type': 'application/x-www-form-urlencoded',
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${cons.SCKDTT}`
                       },
-                      body: JSON.stringify(datos) // body data type must match "Content-Type" header
+                      body: JSON.stringify(datos)
                     })
                     
                     if(await resultado.text() === "true"){
@@ -1015,16 +1007,14 @@ export default class Home extends Component {
 
                   if(tx.status){
                     
-                    datos.token =  cons.SCKDTT;
-                    
                     var resultado = await fetch(cons.API+"api/v1/user/update/info/"+this.props.currentAccount,
                     {
-                      method: 'POST', // *GET, POST, PUT, DELETE, etc.
+                      method: 'POST', 
                       headers: {
-                        'Content-Type': 'application/json'
-                        // 'Content-Type': 'application/x-www-form-urlencoded',
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${cons.SCKDTT}`
                       },
-                      body: JSON.stringify(datos) // body data type must match "Content-Type" header
+                      body: JSON.stringify(datos) 
                     })
 
                     resultado = await resultado.text();
@@ -1032,7 +1022,6 @@ export default class Home extends Component {
                     if(resultado === "true"){
 
                       datos = {};
-                      datos.token =  cons.SCKDTT;
                       var emailGame = await fetch(cons.API+"api/v1/user/email/"+this.props.currentAccount+"?tokenemail=nuevo123");
                       emailGame = await emailGame.text();
 
@@ -1045,12 +1034,12 @@ export default class Home extends Component {
 
                       fetch(cons.API+"api/v1/sendmail",
                       {
-                        method: 'POST', // *GET, POST, PUT, DELETE, etc.
+                        method: 'POST', 
                         headers: {
-                          'Content-Type': 'application/json'
-                          // 'Content-Type': 'application/x-www-form-urlencoded',
+                          'Content-Type': 'application/json',
+                          'Authorization': `Bearer ${cons.SCKDTT}`
                         },
-                        body: JSON.stringify(datos) // body data type must match "Content-Type" header
+                        body: JSON.stringify(datos) 
                       }).then(()=>{
                         alert("PIN sended to "+ emailGame)
                       }).catch(()=>{
@@ -1146,16 +1135,14 @@ export default class Home extends Component {
 
           if(tx.status){
             
-            datos.token =  cons.SCKDTT;
-
             var resultado = await fetch(cons.API+"api/v1/user/update/info/"+this.props.currentAccount,
             {
-              method: 'POST', // *GET, POST, PUT, DELETE, etc.
+              method: 'POST', 
               headers: {
-                'Content-Type': 'application/json'
-                // 'Content-Type': 'application/x-www-form-urlencoded',
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${cons.SCKDTT}`
               },
-              body: JSON.stringify(datos) // body data type must match "Content-Type" header
+              body: JSON.stringify(datos) 
             })
 
             resultado = await resultado.text();
@@ -1265,16 +1252,14 @@ export default class Home extends Component {
 
               if(tx.status){
                 
-                datos.token =  cons.SCKDTT;
-                
                 var resultado = await fetch(cons.API+"api/v1/user/update/info/"+this.props.currentAccount,
                 {
-                  method: 'POST', // *GET, POST, PUT, DELETE, etc.
+                  method: 'POST', 
                   headers: {
-                    'Content-Type': 'application/json'
-                    // 'Content-Type': 'application/x-www-form-urlencoded',
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${cons.SCKDTT}`
                   },
-                  body: JSON.stringify(datos) // body data type must match "Content-Type" header
+                  body: JSON.stringify(datos)
                 })
                 
                 if(await resultado.text() === "true"){
@@ -1477,17 +1462,15 @@ export default class Home extends Component {
                         value: gasLimit+"0000000000"
                       })
 
-                      console.log(transResult)
-
                       if(transResult.status){
                         var resultado = await fetch(cons.API+"api/v1/coinsaljuego/"+this.props.currentAccount,
                         {
                           method: 'POST',
                           headers: {
-                            'Content-Type': 'application/json'
-                            //'Content-Type': 'application/x-www-form-urlencoded',
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${cons.SCKDTT}`
                           },
-                          body: JSON.stringify({token: cons.SCKDTT, coins: cantidad, precio: this.state.priceDCSC}) // body data type must match "Content-Type" header
+                          body: JSON.stringify({ coins: cantidad, precio: this.state.priceDCSC}) 
                         })
                         
                         if(await resultado.text() === "true"){
@@ -1609,9 +1592,10 @@ export default class Home extends Component {
                                   {
                                     method: 'POST',
                                     headers: {
-                                      'Content-Type': 'application/json'
+                                      'Content-Type': 'application/json',
+                                      'Authorization': `Bearer ${cons.SCKDTT}`
                                     },
-                                    body: JSON.stringify({token: cons.SCKDTT, coins: cantidad, precio:precioDCSC}) 
+                                    body: JSON.stringify({coins: cantidad, precio:precioDCSC}) 
                                   })
       
                                   resultado = await resultado.text();
