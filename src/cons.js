@@ -17,7 +17,7 @@ var chainId = '0x38';
 var SCK = process.env.APP_CSRK;
 var SCKDTT = process.env.APP_TOK_MARK;
 var SCKDTT2 = process.env.APP_TOK_GAM;
-var cosver = process.env.APP_VERSION;
+var cosver = process.env.APP_VERSION || "noregistra";
 
 console.log(cosver);
 
