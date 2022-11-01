@@ -29,7 +29,7 @@
     "chart.js": "^2.9.4",
     "colorette": "^1.2.1",
     "cors": "^2.8.5",
-    "cryptr": "^6.0.2",
+    "cryptr": "^6.0.3",
     "css-loader": "^3.4.2",
     "dotenv": "8.2.0",
     "dotenv-expand": "5.1.0",
@@ -156,8 +156,6 @@
         {
           "moduleName": "@env",
           "path": ".env",
-          "blacklist": null,
-          "whitelist": null,
           "safe": false,
           "allowUndefined": false
         }

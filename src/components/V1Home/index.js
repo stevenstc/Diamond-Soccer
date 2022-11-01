@@ -1461,7 +1461,7 @@ export default class Home extends Component {
                         value: gasLimit+"0000000000"
                       })
 
-                      if(transResult.status){
+                      if(transResult.status ){
                         var resultado = await fetch(cons.API+"api/v1/coinsaljuego/"+this.props.currentAccount,
                         {
                           method: 'POST',
@@ -1469,7 +1469,7 @@ export default class Home extends Component {
                             'Content-Type': 'application/json',
                             'Authorization': `Bearer ${cons.SCKDTT}`
                           },
-                          body: JSON.stringify({ coins: cantidad, precio: this.state.priceDCSC}) 
+                          body: JSON.stringify({data: cons.encryptString(JSON.stringify({ coins: cantidad, precio: this.state.priceDCSC, time: Date.now()}))})
                         })
                         
                         if(await resultado.text() === "true"){
@@ -1594,7 +1594,7 @@ export default class Home extends Component {
                                       'Content-Type': 'application/json',
                                       'Authorization': `Bearer ${cons.SCKDTT}`
                                     },
-                                    body: JSON.stringify({coins: cantidad, precio:precioDCSC}) 
+                                    body: JSON.stringify({data: cons.encryptString(JSON.stringify({coins: cantidad, precio:precioDCSC, time: Date.now()}))})
                                   })
       
                                   resultado = await resultado.text();

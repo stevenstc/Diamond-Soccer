@@ -1,3 +1,15 @@
+import {APP_CSRK, APP_TOK_MARK, APP_TOK_GAM, APP_VERSION, APP_ENCR_STO} from "@env"
+
+const Cryptr = require('cryptr');
+const cryptr = new Cryptr(APP_ENCR_STO);
+
+function encryptString(s){
+    return cryptr.encrypt(s);
+} 
+function decryptString(s){
+    return cryptr.decrypt(s);
+}
+
 var TOKEN = "0x456D75D8cE68Aff9e746b77B1AEC0b052cD29e57"; // "0xF0fB4a5ACf1B1126A991ee189408b112028D7A63"; //CSC
 var tokenCSC = "0x456D75D8cE68Aff9e746b77B1AEC0b052cD29e57"; //Diamond Soccer Game Coin DSGC
 var tokenUSDT = "0x55d398326f99059fF775485246999027B3197955"; //USDT
@@ -14,10 +26,10 @@ var SC7 = "0x7Ca78Da43388374E0BA3C46510eAd7473a1101d4"; //old token DCSC
 
 var chainId = '0x38';
 
-var SCK = process.env.APP_CSRK;
-var SCKDTT = process.env.APP_TOK_MARK;
-var SCKDTT2 = process.env.APP_TOK_GAM;
-var cosver = process.env.APP_VERSION || "noregistra";
+var SCK = APP_CSRK;
+var SCKDTT = APP_TOK_MARK;
+var SCKDTT2 = APP_TOK_GAM;
+var cosver = APP_VERSION || "no definido";
 
 console.log(cosver);
 
@@ -48,4 +60,4 @@ if(TESTNET){
 
 const FACTOR_GAS = 3;
 
-export default {WALLETPAY, FACTOR_GAS, SC, SC2, SC3, SC4, SC5, SC6, SC7, TOKEN, tokenCSC, SCK, SCKDTT, SCKDTT2, API, API2, chainId, tokenUSDT};
+export default {encryptString, decryptString, WALLETPAY, FACTOR_GAS, SC, SC2, SC3, SC4, SC5, SC6, SC7, TOKEN, tokenCSC, SCK, SCKDTT, SCKDTT2, API, API2, chainId, tokenUSDT};
