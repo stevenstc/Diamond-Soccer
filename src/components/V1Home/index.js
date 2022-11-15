@@ -322,7 +322,7 @@ export default class Home extends Component {
       balanceUSDTPOOL: balanceUSDTPOOL,
       balanceDCSCPOOL: balanceDCSCPOOL,
       priceDCSC: priceDCSC,
-      balanceDCSCExchange: (balanceDCSCExchange/priceDCSC).toFixed(3)
+      balanceDCSCExchange: (balanceDCSCExchange*priceDCSC).toFixed(3)
     });
   }
 
