@@ -1640,6 +1640,8 @@ export default class Home extends Component {
                         this.setState({
                           botonwit: true
                         })
+                      }else{
+                        alert("Loading... please wait")
                       }
                     }else{
                       alert("It's not time to claim, try again in 24 hours")
