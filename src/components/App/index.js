@@ -226,6 +226,8 @@ class App extends Component {
             return(<Market wallet={this.state.binanceM} currentAccount={this.state.currentAccount}/>);
           case "market-v2":
             return(<MarketV2 wallet={this.state.binanceM} currentAccount={this.state.currentAccount} consulta={this.state.walletconsulta}/>);
+          case "user":
+            return(<MarketV2 wallet={this.state.binanceM} currentAccount={this.state.currentAccount} consulta={this.state.walletconsulta}/>);
           default:
             return(<Home wallet={this.state.binanceM} currentAccount={this.state.currentAccount}/>);
         }

@@ -31,8 +31,6 @@ var SCKDTT = APP_TOK_MARK;
 var SCKDTT2 = APP_TOK_GAM;
 var cosver = APP_VERSION || "no definido";
 
-console.log(cosver);
-
 const BaseApi = "https://chainlist.tk/"
 
 var API = BaseApi+"csc-market/";
