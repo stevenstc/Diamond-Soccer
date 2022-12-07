@@ -1,4 +1,4 @@
-import {APP_CSRK, APP_TOK_MARK, APP_TOK_GAM, APP_VERSION, APP_ENCR_STO} from "@env"
+import {APP_CSRK, APP_TOK_MARK, APP_TOK_GAM, APP_ENCR_STO} from "@env"
 
 const Cryptr = require('cryptr');
 const cryptr = new Cryptr(APP_ENCR_STO);
@@ -29,7 +29,6 @@ var chainId = '0x38';
 var SCK = APP_CSRK;
 var SCKDTT = APP_TOK_MARK;
 var SCKDTT2 = APP_TOK_GAM;
-var cosver = APP_VERSION || "no definido";
 
 const BaseApi = "https://chainlist.tk/"
 
