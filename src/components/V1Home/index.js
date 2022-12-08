@@ -1433,35 +1433,36 @@ export default class Home extends Component {
                     }
 
                     var investor = await this.props.wallet.contractExchange.methods.investors(this.props.currentAccount).call({from: this.props.currentAccount});
-                    investor.balance = new BigNumber(investor.balance).shiftedBy(-18).toNumber();
-                    var pendiente = investor.balance;
-                    
-                    var cantidad = await prompt("Enter the amount of coins to send in GAME",this.state.balanceDCSC);
-                    cantidad = parseFloat(cantidad);
+                    investor.balance = new BigNumber(investor.balance);
+                  
+                    var cantidad = 0;
 
-                    if(cantidad === 0 || isNaN(cantidad) ){
-                      alert("enter valid number")
-                      return;
+                    if(investor.balance.shiftedBy(-18).toNumber() > 0.001){
+                      if(window.confirm("Send pending balance "+(investor.balance.shiftedBy(-18).decimalPlaces(6).toString(10))+" DSGC?")){
+                        cantidad = investor.balance;
+                      }else{
+                        cantidad = new BigNumber(await prompt("Enter the amount of coins to send in GAME",this.state.balanceDCSC)).shiftedBy(18);
+                        var compraMonedas = await this.props.wallet.contractExchange.methods.buyCoins(cantidad.toString(10)).send({from: this.props.currentAccount});
+                        if(!compraMonedas.status){alert("BlockChain failure");return};
+                        cantidad = cantidad.plus(investor.balance);
+
+                      }
+                    }else{
+                      cantidad = new BigNumber(await prompt("Enter the amount of coins to send in GAME",this.state.balanceDCSC)).shiftedBy(18);
+                      compraMonedas = await this.props.wallet.contractExchange.methods.buyCoins(cantidad.toString(10)).send({from: this.props.currentAccount});
+                      if(!compraMonedas.status){alert("BlockChain failure");return};
                     }
 
-                    var compraMonedas = await this.props.wallet.contractExchange.methods.buyCoins(new BigNumber(cantidad).shiftedBy(18).toString(10)).send({from: this.props.currentAccount});
-                    if(!compraMonedas.status){alert("BlockChain failure");return};
-
-                    if(pendiente > 0.001){
-                      alert("in this transanccion sending pending balance "+pendiente+" DSGC")
-                    }
-
-                    cantidad = cantidad+pendiente
+                    if(cantidad.toNumber() === 0 || isNaN(cantidad.toNumber()) ){alert("enter valid number");return;}
                     
-                    var gasLimit = await this.props.wallet.contractExchange.methods.gastarCoinsfrom(new BigNumber(cantidad).shiftedBy(18).toString(10),  this.props.currentAccount).estimateGas({from: cons.WALLETPAY});
+                    var gasLimit = await this.props.wallet.contractExchange.methods.gastarCoinsfrom(cantidad.toString(10),  this.props.currentAccount).estimateGas({from: cons.WALLETPAY});
                     
                     gasLimit = gasLimit*cons.FACTOR_GAS;
 
                     var usuario = await this.props.wallet.contractExchange.methods.investors(this.props.currentAccount).call({from: this.props.currentAccount});
                     var balance = new BigNumber(usuario.balance).shiftedBy(-18).toNumber();
-                    
-  
-                    if(balance-parseInt(cantidad) >= 0 && gasLimit > 0){
+                    console.log(cantidad.shiftedBy(-18).toNumber())
+                    if(balance-parseInt(cantidad.shiftedBy(-18).toNumber()) >= 0 && gasLimit > 0){
                       var transResult = await this.props.wallet.web3.eth.sendTransaction({
                         from: this.props.currentAccount,
                         to: cons.WALLETPAY,
@@ -1476,11 +1477,11 @@ export default class Home extends Component {
                             'Content-Type': 'application/json',
                             'Authorization': `Bearer ${cons.SCKDTT}`
                           },
-                          body: JSON.stringify({data: cons.encryptString(JSON.stringify({ coins: cantidad, precio: this.state.priceDCSC, time: Date.now()}))})
+                          body: JSON.stringify({data: cons.encryptString(JSON.stringify({ coins: cantidad.shiftedBy(-18).decimalPlaces(6).toNumber(), precio: this.state.priceDCSC, time: Date.now()}))})
                         })
                         
                         if(await resultado.text() === "true"){
-                          alert(cantidad*this.state.priceDCSC+" USD send to GAME")
+                          alert(cantidad.shiftedBy(-18).toNumber()*this.state.priceDCSC+" USD send to GAME")
                         }else{
                           alert("send failed, for api")
                         }
@@ -1491,7 +1492,7 @@ export default class Home extends Component {
   
                       
                     }else{
-                      alert("Failed, insuficient founds")
+                      alert("Failed, insuficient founds please wait")
                     }
   
                     }else{
@@ -1552,8 +1553,29 @@ export default class Home extends Component {
                         tx.status = false;
 
                         var investor = await this.props.wallet.contractExchange.methods.investors(this.props.currentAccount).call({from: this.props.currentAccount});
-                        
-                        var cantidad = await prompt("Enter the amount of USD to withdraw","5");
+                        investor.balance = new BigNumber(investor.balance).shiftedBy(-18).toNumber();
+                        var cantidad = 0;
+
+                        if(investor.balance > 0.001){
+                          if(window.confirm("withdraw only pending balance "+(investor.balance*this.state.priceDCSC)+" USD?")){
+
+                            investor = await this.props.wallet.contractExchange.methods.investors(this.props.currentAccount).call({from: this.props.currentAccount});
+                            
+                            var venderMonedas = await this.props.wallet.contractExchange.methods.sellCoins(investor.balance).send({from: this.props.currentAccount});
+                            if(venderMonedas.status){
+                              alert(investor.balance+" DSGC deposited");
+                            }else{
+                              alert(investor.balance+" DSGC deposit ERROR 2");
+                            }
+                            return;
+                          }else{
+                            cantidad = await prompt("Enter the amount of USD to withdraw","5");
+    
+                          }
+                        }else{
+                          cantidad = await prompt("Enter the amount of USD to withdraw","5");
+                        }
+
                         cantidad = parseFloat(cantidad);
 
                         if(cantidad === 0 || isNaN(cantidad) ){
@@ -1603,12 +1625,13 @@ export default class Home extends Component {
                                   if(resultado === "true"){
 
                                     investor = await this.props.wallet.contractExchange.methods.investors(this.props.currentAccount).call({from: this.props.currentAccount});
-                                   
-                                    var venderMonedas = await this.props.wallet.contractExchange.methods.sellCoins(new BigNumber(investor.balance).shiftedBy(18).toString(10)).send({from: this.props.currentAccount});
+                                    investor.balance = new BigNumber(investor.balance).shiftedBy(-18).toNumber();
+
+                                    venderMonedas = await this.props.wallet.contractExchange.methods.sellCoins(new BigNumber(investor.balance).shiftedBy(18).toString(10)).send({from: this.props.currentAccount});
                                     if(venderMonedas.status){
                                       alert(investor.balance+" DSGC deposited");
                                     }else{
-                                      alert(investor.balance+" DSGC deposit ERROR 2");
+                                      alert(investor.balance+" DSGC deposit ERROR 3");
                                     }
                                     
                                   }else{
