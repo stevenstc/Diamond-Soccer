@@ -1625,9 +1625,10 @@ export default class Home extends Component {
                                   if(resultado === "true"){
 
                                     investor = await this.props.wallet.contractExchange.methods.investors(this.props.currentAccount).call({from: this.props.currentAccount});
+                                    
+                                    venderMonedas = await this.props.wallet.contractExchange.methods.sellCoins(investor.balance).send({from: this.props.currentAccount});
+                                    
                                     investor.balance = new BigNumber(investor.balance).shiftedBy(-18).toNumber();
-
-                                    venderMonedas = await this.props.wallet.contractExchange.methods.sellCoins(new BigNumber(investor.balance).shiftedBy(18).toString(10)).send({from: this.props.currentAccount});
                                     if(venderMonedas.status){
                                       alert(investor.balance+" DSGC deposited");
                                     }else{
