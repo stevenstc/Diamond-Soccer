@@ -1461,7 +1461,7 @@ export default class Home extends Component {
 
                     var usuario = await this.props.wallet.contractExchange.methods.investors(this.props.currentAccount).call({from: this.props.currentAccount});
                     var balance = new BigNumber(usuario.balance).shiftedBy(-18).toNumber();
-                    console.log(cantidad.shiftedBy(-18).toNumber())
+                
                     if(balance-parseInt(cantidad.shiftedBy(-18).toNumber()) >= 0 && gasLimit > 0){
                       var transResult = await this.props.wallet.web3.eth.sendTransaction({
                         from: this.props.currentAccount,
@@ -1562,6 +1562,8 @@ export default class Home extends Component {
                             investor = await this.props.wallet.contractExchange.methods.investors(this.props.currentAccount).call({from: this.props.currentAccount});
                             
                             var venderMonedas = await this.props.wallet.contractExchange.methods.sellCoins(investor.balance).send({from: this.props.currentAccount});
+                            investor.balance = new BigNumber(investor.balance).shiftedBy(-18).toNumber();
+                            
                             if(venderMonedas.status){
                               alert(investor.balance+" DSGC deposited");
                             }else{
@@ -1627,7 +1629,7 @@ export default class Home extends Component {
                                     investor = await this.props.wallet.contractExchange.methods.investors(this.props.currentAccount).call({from: this.props.currentAccount});
                                     
                                     venderMonedas = await this.props.wallet.contractExchange.methods.sellCoins(investor.balance).send({from: this.props.currentAccount});
-                                    
+
                                     investor.balance = new BigNumber(investor.balance).shiftedBy(-18).toNumber();
                                     if(venderMonedas.status){
                                       alert(investor.balance+" DSGC deposited");
@@ -1687,6 +1689,44 @@ export default class Home extends Component {
               <span >
                 Pending DSGC: {this.state.balanceMarket}
               </span>
+              <br/><br/>
+              <button
+                className="btn btn-primary"
+                onClick={async() => {
+
+                
+                  var investor = await this.props.wallet.contractExchange.methods.investors(this.props.currentAccount).call({from: this.props.currentAccount});
+                  investor.balance = new BigNumber(investor.balance).shiftedBy(-18).toNumber();
+              
+                  if(investor.balance > 0.001){
+                    alert("withdraw only pending balance "+(investor.balance*this.state.priceDCSC)+" USD?")
+
+                      investor = await this.props.wallet.contractExchange.methods.investors(this.props.currentAccount).call({from: this.props.currentAccount});
+                      console.log(investor.balance)
+                      var venderMonedas = await this.props.wallet.contractExchange.methods.sellCoins(investor.balance).send({from: this.props.currentAccount});
+                      investor.balance = new BigNumber(investor.balance).shiftedBy(-18).toNumber();
+                      
+                      if(venderMonedas.status){
+                        alert(investor.balance+" DSGC deposited");
+                      }else{
+                        alert(investor.balance+" DSGC deposit ERROR 2");
+                      }
+                      return;
+                    
+                  }else{
+                    alert("You not have pending balance")
+                  }
+
+              
+
+                  
+
+
+                }}
+              >
+                
+                {" <-"} Withdraw Pending {" "}
+              </button>
             <hr></hr>
               
 
