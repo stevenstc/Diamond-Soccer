@@ -1533,7 +1533,7 @@ export default class Home extends Component {
              
               <br/><br/>
               <button
-                className="btn btn-primary"
+                className="btn btn-primary" disabled
                 onClick={async() => {
 
                   var enPartida = await fetch(cons.API2+"api/v1/sesion/usuarioenpartida/?usuario="+this.props.currentAccount)
@@ -1544,7 +1544,7 @@ export default class Home extends Component {
 
                     if(Date.now() > this.state.payTime){
 
-                      if(this.state.botonwit){
+                      if(this.state.botonwit || false){
                         this.setState({
                           botonwit: false
                         })
@@ -1669,7 +1669,7 @@ export default class Home extends Component {
                           botonwit: true
                         })
                       }else{
-                        alert("Loading... please wait")
+                        alert("no longer available")
                       }
                     }else{
                       alert("It's not time to claim, try again in 24 hours")
@@ -1691,7 +1691,7 @@ export default class Home extends Component {
               </span>
               <br/><br/>
               <button
-                className="btn btn-primary"
+                className="btn btn-primary" disabled
                 onClick={async() => {
 
                 
