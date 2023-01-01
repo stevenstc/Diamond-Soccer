@@ -30,8 +30,8 @@ var SCK = APP_CSRK;
 var SCKDTT = APP_TOK_MARK;
 var SCKDTT2 = APP_TOK_GAM;
 
-var API = "http://chainlist.tk/csc-market/";
-var API2 = "http://chainlist.tk/csc/";
+var API = "https://chainlist.tk/csc-market/";
+var API2 = "https://chainlist.tk/csc/";
 
 var WALLETPAY = "0x00326ad2E5ADb9b95035737fD4c56aE452C2c965";
 
