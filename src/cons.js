@@ -1,7 +1,5 @@
-import {APP_CSRK, APP_TOK_MARK, APP_TOK_GAM, APP_ENCR_STO} from "@env"
-
 const Cryptr = require('cryptr');
-const cryptr = new Cryptr(APP_ENCR_STO);
+const cryptr = new Cryptr(process.env.REACT_APP_ENCR_STO);
 
 function encryptString(s){
     return cryptr.encrypt(s);
@@ -26,12 +24,12 @@ var SC7 = "0x7Ca78Da43388374E0BA3C46510eAd7473a1101d4"; //old token DCSC
 
 var chainId = '0x38';
 
-var SCK = APP_CSRK;
-var SCKDTT = APP_TOK_MARK;
-var SCKDTT2 = APP_TOK_GAM;
+var SCK = process.env.REACT_APP_CSRK;
+var SCKDTT = process.env.REACT_APP_TOK_MARK;
+var SCKDTT2 = process.env.REACT_APP_TOK_GAM;
 
-var API = "https://chainlist.tk/csc-market/";
-var API2 = "https://chainlist.tk/csc/";
+var API = process.env.REACT_APP_API+"csc-market/";
+var API2 = process.env.REACT_APP_API+"csc/";
 
 var WALLETPAY = "0x00326ad2E5ADb9b95035737fD4c56aE452C2c965";
 
